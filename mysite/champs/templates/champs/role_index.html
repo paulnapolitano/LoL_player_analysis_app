@@ -1,0 +1,9 @@
+{% if champ_list %}
+    <ul>
+    {% for champ in champ_list %}
+        <li><a href="{% url 'champs:league_index' champ.smart_role_name %}">{{ champ.smart_role_name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No lanes are available.</p>
+{% endif %}

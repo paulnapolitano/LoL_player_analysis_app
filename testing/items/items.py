@@ -1,5 +1,3 @@
-from operator import itemgetter
-
 print 'importing json'
 import json
 
@@ -22,6 +20,7 @@ api = RiotAPI(API_KEY)
 #
 # Constant-time lookups are made possible by the 'items' attribute, which is a
 # dictionary whose keys are item IDs and whose values are ItemNode objects.
+
 class ItemTree:
     def __init__(self, item_dict={'data':{}}, items={}):
         data = item_dict['data']
