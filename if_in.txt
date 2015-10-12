@@ -1,0 +1,4 @@
+		self.match_history_uri = dict['matchHistoryUri']
+		self.profile_icon = dict['profileIcon']
+		self.summoner_id = dict['summonerId']
+		self.summoner_name = dict['summonerName']

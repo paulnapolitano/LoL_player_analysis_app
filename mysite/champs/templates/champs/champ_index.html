@@ -1,0 +1,9 @@
+{% if champ_list %}
+    <ul>
+    {% for champ in champ_list %}
+        <li><a href="{% url 'champs:role_index' champ.champ_name %}">{{ champ.champ_name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No champs are available.</p>
+{% endif %}

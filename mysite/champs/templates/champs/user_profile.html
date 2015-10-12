@@ -1,0 +1,11 @@
+<html>
+
+{% if match_list %}
+    <ul>
+    {% for match in match_list %}
+        <li><a href="{% url 'champs:match_profile' summoner_name match.match_id %}">{{ match.match_id }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No matches are available.</p>
+{% endif %}

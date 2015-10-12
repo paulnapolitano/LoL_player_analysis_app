@@ -1,0 +1,8 @@
+	def get_match_history_uri(self):
+		return self.match_history_uri
+	def get_profile_icon(self):
+		return self.profile_icon
+	def get_summoner_id(self):
+		return self.summoner_id
+	def get_summoner_name(self):
+		return self.summoner_name

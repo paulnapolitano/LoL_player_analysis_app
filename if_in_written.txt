@@ -1,0 +1,8 @@
+		if 'matchHistoryUri' in dict:
+			self.match_history_uri = dict['matchHistoryUri']
+		if 'profileIcon' in dict:
+			self.profile_icon = dict['profileIcon']
+		if 'summonerId' in dict:
+			self.summoner_id = dict['summonerId']
+		if 'summonerName' in dict:
+			self.summoner_name = dict['summonerName']

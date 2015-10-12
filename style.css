@@ -1,0 +1,77 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: #3562B6;
+}
+
+.container {
+	margin: 0 auto; 
+	padding: 0 10px; 
+}
+
+.site-elements li{
+    display:inline;
+    float:left;
+    margin:0;
+    padding:0;
+}
+
+.login li {
+    display:inline;
+    float:right;
+    margin:0;
+    padding:0;
+}
+
+.mynav {
+    background-color: #081939;
+    margin: 0;
+    padding: 0;
+    position:fixed;
+    width:100%;
+    z-index:999;
+    opacity:97%;
+    height:40px;
+}
+
+.mynav ul {
+    list-style-type: none;
+    margin: auto;
+    padding: 0;
+    font-family:'helvetica';
+    width: 840px;
+}
+
+.mynav a:link, a:visited {
+    display:block;
+    width:120px;
+    font-weight:bold;
+    color:#fff;
+    text-align:center;
+    padding:11px 0px;
+    text-decoration:none;
+    text-transform:uppercase;
+}
+
+.mynav a:hover, a:active {
+    background-color: #0C56DE;
+}
+
+.jumbotron {
+}
+
+.jumbotron img {
+    display: block;
+    position: center;
+    padding: 100px;
+    margin-left: auto;
+    margin-right: auto;
+    height: 100px;
+}
+
+p {
+    display:block;
+    width:1000px;
+}
+
+<!http://paletton.com/palette.php?uid=13L0u0kllllaFw0g0qFqFg0w0aF>
