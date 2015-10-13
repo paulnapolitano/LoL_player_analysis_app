@@ -46,7 +46,6 @@ class Player(models.Model):
         return self.summoner_id
         
     def is_in_db(self):
-        print "{id} is already in database...".format(id=self.summoner_id)
         return Player.objects.filter(summoner_id=self.summoner_id).exists()  
         
 class StatSet(models.Model):
@@ -125,7 +124,7 @@ class ItemParentChild(models.Model):
 
 # Table lists all items in the game, pointed to by ItemParentChild
 class Item(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.CharField(primary_key=True, max_length=4)
 
     # consume_on_full = models.BooleanField(blank=True)
     # consumed = models.BooleanField(blank=True)
@@ -231,6 +230,9 @@ class Item(models.Model):
     # sanitized_description = models.CharField(blank=True, max_length=200)
     # tags
 
+    def __unicode__(self):
+        return unicode(self.id)
+    
 class BuildComponent(models.Model):
     statset = models.ForeignKey(StatSet, blank=True)
     item = models.ForeignKey(Item, blank=True)
@@ -239,7 +241,7 @@ class BuildComponent(models.Model):
     item_batch = models.IntegerField(blank=True)
     
     def __unicode__(self):
-        return self.item
+        return unicode(self.item)
         
     def is_in_db(self):
         return BuildComponent.objects.filter(pk=self.pk).exists()
