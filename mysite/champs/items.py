@@ -27,7 +27,7 @@ api = RiotAPI(API_KEY)
 # Constant-time lookups are made possible by the 'items' attribute, which is a
 # dictionary whose keys are item IDs and whose values are ItemNode objects.
 
-class ItemTree:
+class ItemTree(object):
     def __init__(self, item_dict={'data':{}}, items={}):
         if 'data' in item_dict:
             data = item_dict['data']
@@ -86,7 +86,7 @@ class ItemTree:
 
         
 # Class form of 
-class ItemNode:
+class ItemNode(object):
     def __init__(self, item_data):
         self.id = item_data['id']
         self.name = item_data['name']
@@ -190,11 +190,11 @@ class ItemNode:
 # see when several purchases happen at roughly the same time. A running batch
 # count is kept as an attribute.
 
-class Build:
-    def __init__(self, build_history=[], last_timestamp=-100000, current_batch=0):
-        self.build_history = build_history
-        self.last_timestamp = last_timestamp
-        self.current_batch = current_batch
+class Build(object):
+    def __init__(self):
+        self.build_history = []
+        self.last_timestamp = -100000
+        self.current_batch = 0
               
     def __str__(self):
         string = ''
@@ -278,7 +278,8 @@ class Build:
        
         self.last_timestamp = timestamp
         last_index = self.find_last_existing(item)
-        self.build_history[last_index].death_time = timestamp
+        if last_index is not None:
+            self.build_history[last_index].death_time = timestamp
      
     # Items are destroyed when they are consumed (e.g. potions) or when a
     # parent of that item is bought (i.e. item upgrade). Functions just as
@@ -315,7 +316,7 @@ class Build:
             return existing_children
                 
                 
-class BuildComponent:
+class BuildComponent(object):
     def __init__(self, item, batch, birth_time=None, death_time=None):
         self.item = item
         self.birth_time = birth_time
@@ -334,7 +335,7 @@ class BuildComponent:
                 self.death_time>timestamp) or not self.death_time)
             
             
-class ItemImage:
+class ItemImage(object):
     def __init__(self, item_image_dict):
         self.width = item_image_dict['w']
         self.height = item_image_dict['h']
@@ -380,10 +381,12 @@ def get_player_items(participant_id, match):
         
     # Create list of all events in game involving item transactions for the given player
     player_item_events = item_events_from_frames(frames, participant_id)
-
+    
     # Initialize build object
     build = Build()
-                    
+   
+    print "EVENTS:"
+    
     for event in player_item_events:
         timestamp = event['timestamp']
         if 'itemId' in event:
@@ -393,6 +396,9 @@ def get_player_items(participant_id, match):
         else:
             item_id = event['itemAfter']
         item = item_tree.get_item(item_id)
+        
+        print item
+        
         type = event['eventType']
         
         if type == 'ITEM_PURCHASED':
@@ -406,7 +412,12 @@ def get_player_items(participant_id, match):
             
         else:
             build.destroy(item, timestamp)
+    print ""
     
+    print "COMPONENTS:"
+    for component in build.build_history:
+        print component
+    print ''
     return build
         
         

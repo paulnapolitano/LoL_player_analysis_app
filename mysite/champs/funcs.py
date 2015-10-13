@@ -154,6 +154,7 @@ def match_to_db(match):
                 
             participant_id = participant['participantId']
             # Add all BuildComponents to insert list, to be saved to DB in bulk later
+            build = 0
             build = get_player_items(participant_id, match)
             for component in build.build_history:
                 bc = create_build_component(component, ss)

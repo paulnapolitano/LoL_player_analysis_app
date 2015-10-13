@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Champ, StatSet, Player, Match, Item
+from .models import Champ, StatSet, Player, Match, Item, BuildComponent
 
 class StatSetInline(admin.TabularInline):
     model = StatSet
@@ -36,10 +36,11 @@ class PlayerAdmin(admin.ModelAdmin):
 class ItemAdmin(admin.ModelAdmin):
     fields = ['id', 'name', 'depth', 'map_11']
     list_display = ['id', 'name', 'depth', 'map_11']
-    
+
 # Register your models here.
 admin.site.register(Champ, ChampAdmin)
 admin.site.register(Player, PlayerAdmin)
 admin.site.register(Match, MatchAdmin)
 admin.site.register(StatSet)
-admin.site.register(Item, ItemAdmin)
+admin.site.register(Item)
+admin.site.register(BuildComponent)

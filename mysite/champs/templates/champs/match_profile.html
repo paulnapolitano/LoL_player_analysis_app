@@ -1,31 +1,52 @@
-{% if statset and stat_comparison %}
-    <p>{{ statset.champ }}</p>
-    
-    <ul>
-    {% for key, value in stat_comparison.items %}
-        {# value.avg -> avg val #}
-        {# value.local -> local val #}
-        {# value.rel_percentage -> rel percentage #}        
-        {# value.name -> un-camelcased key #}
-        {# value.win_percentage -> win percentage #}
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="poobygg.css"></link>
+        <title> {{ name }}'s Match Analysis </title>
+    </head>
         
-        <li>{{ value.name }}: {{ value.local }}</li>
-        <p></p>
-        
-        {% if value.local > value.avg %}
-            <p>Above Average in {{ value.name }}</p>
-        {% elif value.local < value.avg %}
-            <p>Below Average in {{ value.name }}</p>
+    <body>
+        {% if statset and stat_comparison %}
+            <p>{{ statset.champ }}</p>
+            
+            <ul>
+            {% for key, value in stat_comparison.items %}
+                {# value.avg -> avg val #}
+                {# value.local -> local val #}
+                {# value.rel_percentage -> rel percentage #}        
+                {# value.name -> un-camelcased key #}
+                {# value.win_percentage -> win percentage #}
+                
+                <li>{{ value.name }}: {{ value.local }}</li>
+                <p></p>
+                
+                {% if value.local > value.avg %}
+                    <p>Above Average in {{ value.name }}</p>
+                {% elif value.local < value.avg %}
+                    <p>Below Average in {{ value.name }}</p>
+                {% else %}
+                    <p>Average in {{ value.name }}</p>
+                {% endif %}
+                
+                <p>You did better than {{ value.rel_percentage }}% of all {{ statset.champ.smart_role_name.lower }} {{ statset.champ.champ_name }} players in {{ statset.champ.league_name }}</p>
+                <p>You did better than {{ value.win_percentage }}% of winning {{ statset.champ.smart_role_name.lower }} {{ statset.champ.champ_name }} players in {{ statset.champ.league_name }}</p>
+                
+            {% endfor %}
+            </ul>
+            
         {% else %}
-            <p>Average in {{ value.name }}</p>
+            <p>No matches are available.</p>
         {% endif %}
-        
-        <p>You did better than {{ value.rel_percentage }}% of all {{ statset.champ.smart_role_name.lower }} {{ statset.champ.champ_name }} players in {{ statset.champ.league_name }}</p>
-        <p>You did better than {{ value.win_percentage }}% of winning {{ statset.champ.smart_role_name.lower }} {{ statset.champ.champ_name }} players in {{ statset.champ.league_name }}</p>
-        
-    {% endfor %}
-    </ul>
-    
-{% else %}
-    <p>No matches are available.</p>
-{% endif %}
+
+        <div class="build">
+            {% if build %}
+                <ul>
+                {% for component in build %}
+                    {% if not component.item_death %}
+                        <li>{{ component.item.name }}</li>
+                    {% endif %}
+                {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    </body>
+</html>

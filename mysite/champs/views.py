@@ -67,9 +67,14 @@ def match_profile(request, match_id, summoner_name):
     player = Player.objects.get(std_summoner_name=summoner_name)
     statset_id = match_id + '_' + player.summoner_id
     
+    name = player.summoner_name
+    
     statset = StatSet.objects.get(statset_id=statset_id)
+    build = BuildComponent.objects.filter(statset=statset)
     stat_comparison = get_stat_comparison(statset)
     context = {
+        'name':name,
+        'build':build,
         'statset':statset,
         'stat_comparison':stat_comparison,
     }
