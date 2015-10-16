@@ -3,24 +3,10 @@ if __name__ == '__main__' and __package__ is None:
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
     
 from models import Item, ItemParentChild
-from item_funcs import read_items_file, read_patch_file, get_current_patch, timestamp_to_game_time
-
-print 'importing json'
-import json
-
-print 'importing time'
-import time
-
-print 'importing timezone'
-from django.utils import timezone
+from text_funcs import timestamp_to_game_time
 
 print 'importing RiotAPI'
-from riot_app import RiotAPI
-
-print 'importing API_KEY\n'
-from api_key import API_KEY
-
-api = RiotAPI(API_KEY)
+from riot_app import api
 
 # Takes dictionary containing item data from Riot's API, constructs an 
 # ItemNode instance for each one. After constructing all ItemNode instances,
@@ -305,7 +291,10 @@ class Build(object):
         
         else:
             # print '{comp} doesnt exist! Checking children...\n'.format(comp=parent_item.name)
-            children = parent_item.children
+            parent_children_pairs = ItemParentChild.objects.filter(parent_id=parent_item.id)
+            children = []
+            for pair in parent_children_pairs:
+                children.append(Item.objects.get(id=pair.child_id))
             for child in children:
                 existing_children = self.get_existing_children(child, existing_children)
             return existing_children
@@ -346,61 +335,3 @@ class ItemImage(object):
         base_url = realm['cdn']
         url = base_url + '/{ver}/img/item/{full}'.format(ver=version, full=self.full)
         return url 
-        
-        
-# Return list of all events in game involving item transactions for the given player
-def item_events_from_frames(frames, participant_id):
-    player_item_events = []
-    for frame in frames:
-        if 'events' in frame:
-            events = frame['events']
-            for event in events:
-                type = event['eventType']
-                if (type=='ITEM_PURCHASED' or type=='ITEM_UNDO' or type=='ITEM_SOLD' or type=='ITEM_DESTROYED') and event['participantId']==participant_id:
-                    player_item_events.append(event)
-    
-    return player_item_events
-
-    
-# Get full list of items belonging to player throughout match, 
-# including item 'birth time' and 'death time' 
-def get_player_items(participant_id, match):
-    # Get item_dict (json), which includes info on all items in game
-    item_dict = read_items_file('champs/all_items.json')
-    item_tree = ItemTree(item_dict).summoners_rift()
-    
-    # Get list of timestamped events, including item purchases
-    timeline = match['timeline']
-    frames = timeline['frames']
-    frame_interval = timeline['frameInterval']
-        
-    # Create list of all events in game involving item transactions for the given player
-    player_item_events = item_events_from_frames(frames, participant_id)
-    
-    # Initialize build object
-    build = Build()
-       
-    for event in player_item_events:
-        timestamp = event['timestamp']
-        if 'itemId' in event:
-            item_id = event['itemId']
-        elif event['itemAfter'] == 0:
-            item_id = event['itemBefore']
-        else:
-            item_id = event['itemAfter']
-        item = item_tree.get_item(item_id)        
-        type = event['eventType']
-        
-        if type == 'ITEM_PURCHASED':
-            build.buy(item, timestamp)
-
-        elif type == 'ITEM_UNDO':
-            build.undo()
-                    
-        elif type == 'ITEM_SOLD':
-            build.sell(item, timestamp)
-            
-        else:
-            build.destroy(item, timestamp)
-    
-    return build

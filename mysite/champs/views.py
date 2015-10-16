@@ -7,15 +7,20 @@ from django.utils import timezone
 
 import datetime
 
-from riot_app import *
-from funcs import *
+from text_funcs import sum_name_standardize
+from database_funcs import matches_to_db
+from view_funcs import get_stat_comparison
 
-from .models import Champ, StatSet, Match, Player
-from api_key import API_KEY
+from riot_app import api
 
-api = RiotAPI(API_KEY)
+from .models import Player, Match, StatSet, BuildComponent, Champ
 
-# Create your views here.
+# ------------------------------------ VIEWS ---------------------------------
+
+
+# User Profile View
+# DEPENDENCIES: sum_name_standardize, Player, timezone, api, matches_to_db,
+#               Match, StatSet
 def user_profile(request):
     # Get user's standardized summoner name from search
     std_summoner_name = sum_name_standardize(request.GET.get('userName'))
@@ -24,7 +29,8 @@ def user_profile(request):
     if Player.objects.filter(std_summoner_name=std_summoner_name).exists():
         print '{name} found in database'.format(name=std_summoner_name)
         req_player = Player.objects.get(std_summoner_name=std_summoner_name)
-        secs_since_last_update = (timezone.now() - req_player.last_update).total_seconds()
+        secs_since_last_update = (timezone.now() - req_player.last_update
+                                    ).total_seconds()
         print "{secs} seconds since last update".format(secs=secs_since_last_update)
         
         if secs_since_last_update > 1800:
@@ -57,11 +63,19 @@ def user_profile(request):
         'summoner_name':std_summoner_name,
     }
     return render(request, 'champs/user_profile.html', context)
+
     
+    
+# User Search View
+# DEPENDENCIES: None
 def user_search(request):
     context = None
     return render(request, 'champs/user_search.html', context)
-    
+   
+
+
+# User Search View
+# DEPENDENCIES: Match, Player, StatSet, BuildComponent, get_stat_comparison   
 def match_profile(request, match_id, summoner_name):
     match = Match.objects.get(match_id=match_id)
     player = Player.objects.get(std_summoner_name=summoner_name)
@@ -80,11 +94,19 @@ def match_profile(request, match_id, summoner_name):
     }
     return render(request, 'champs/match_profile.html', context)
     
+    
+    
+# Champ Index View
+# DEPENDENCIES: Champ
 def champ_index(request):
     champ_list = Champ.objects.values('champ_name').distinct()
     context = {'champ_list':champ_list}
     return render(request, 'champs/champ_index.html', context)
-    
+  
+
+
+# Role Index View
+# DEPENDENCIES: Champ  
 def role_index(request, champ_name):
     champ_list = Champ.objects.filter(
         champ_name=champ_name).order_by().values('champ_name',
@@ -92,6 +114,10 @@ def role_index(request, champ_name):
     context = {'champ_list':champ_list}
     return render(request, 'champs/role_index.html', context)
 
+    
+    
+# League Index View
+# DEPENDENCIES: None
 def league_index(request):
     pass
     

@@ -131,7 +131,7 @@ class Item(models.Model):
     # consumed = models.BooleanField(blank=True)
     depth = models.IntegerField(blank=True)
     description = models.CharField(blank=True, max_length=5000)
-    group = models.CharField(blank=True, max_length=30)
+    # group = models.CharField(blank=True, max_length=30)
     # hide_from_all = models.BooleanField(blank=True)
     # in_store = models.BooleanField(blank=True)
     name = models.CharField(blank=True, max_length=30)

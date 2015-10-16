@@ -1,59 +1,89 @@
 print 'importing RiotAPI'
-from riot_app import RiotAPI
-
-print 'importing timezone'
-from django.utils import timezone
-
-print 'importing API_KEY\n'
-from api_key import API_KEY
+from riot_app import api
 
 print 'importing json'
 import json
 
-api = RiotAPI(API_KEY)
+from models import Item
+from items import Build
 
-from models import Patch
+# ------------------------------- FUNCTIONS ---------------------------------
+
+
+# Get full list of items belonging to player throughout match, 
+# including item 'birth time' and 'death time' 
+# DEPENDENCIES: Item, item_events_from_frames, Build
+def get_player_items(participant_id, match):
+    # Get list of all items in db that exist on Summoner's Rift
+    item_list = Item.objects.filter(map_11=True)
     
-def get_current_patch(region='na'):
-    # Get current patch if it exists (current patch won't have end_datetime)
-    # If no current patch, create current patch
-    try:
-        current_patch = Patch.objects.get(end_datetime__isnull=True)
-    except:
-        items_to_db()
-        champions_to_db()
-        this_patch = api.get_versions(region, reverse=False)[0]
-        current_patch = Patch(patch=this_patch, region=region)
-        current_patch.save()
+    # Get list of timestamped events, including item purchases
+    timeline = match['timeline']
+    frames = timeline['frames']
+    frame_interval = timeline['frameInterval']
         
-    secs_since_check = (timezone.now() - current_patch.last_check).total_seconds()
+    # Create list of all events in game involving item transactions for the given player
+    player_item_events = item_events_from_frames(frames, participant_id)
     
-    if secs_since_check>3600:
-        print '{secs} seconds since patch last checked'.format(secs=secs_since_check)
-        this_patch = api.get_versions(region, reverse=False)[0]
-        if current_patch.patch == this_patch:
-            current_patch.last_check = timezone.now()
+    # Initialize build object
+    build = Build()
+       
+    for event in player_item_events:
+        timestamp = event['timestamp']
+        if 'itemId' in event:
+            item_id = event['itemId']
+        elif event['itemAfter'] == 0:
+            item_id = event['itemBefore']
         else:
-            items_to_db()
-            champions_to_db()
-            current_patch.end_datetime = timezone.now()
-            new_patch = Patch(patch=this_patch, region=region)
-            new_patch.save()
-            
-        current_patch.save()
-    return current_patch.patch
+            item_id = event['itemAfter']
+        item = Item.objects.get(id=item_id)        
+        type = event['eventType']
         
-def read_items_file(filename):
+        if type == 'ITEM_PURCHASED':
+            build.buy(item, timestamp)
+
+        elif type == 'ITEM_UNDO':
+            build.undo()
+                    
+        elif type == 'ITEM_SOLD':
+            build.sell(item, timestamp)
+            
+        else:
+            build.destroy(item, timestamp)
+    
+    return build
+        
+        
+        
+# Return list of all events in game involving item transactions for the given player
+# DEPENDENCIES: None
+def item_events_from_frames(frames, participant_id):
+    player_item_events = []
+    for frame in frames:
+        if 'events' in frame:
+            events = frame['events']
+            for event in events:
+                type = event['eventType']
+                if (type=='ITEM_PURCHASED' or type=='ITEM_UNDO' or 
+                            type=='ITEM_SOLD' or type=='ITEM_DESTROYED'
+                            ) and event['participantId']==participant_id:
+                    player_item_events.append(event)
+    
+    return player_item_events
+        
+        
+        
+# Read or create JSON file containing information on all items
+# DEPENDENCIES: api, json
+def read_items_file(filename, patch):
+    print 'opening file'
     with open(filename) as f:
         item_string = f.read()
-    
-    # this_patch = read_patch_file(r'champs/current_patch.json')
-    this_patch = get_current_patch()
 
     # If file is empty or outdated, replace its contents with new ones
-    if 'data' not in item_string or this_patch not in item_string:
+    if 'data' not in item_string or patch not in item_string:
         item_dict = api.get_all_items('na')
-        item_dict['patch'] = this_patch
+        item_dict['patch'] = patch
         
         with open(filename, 'w') as f:
             f.write(json.dumps(item_dict))
@@ -63,6 +93,10 @@ def read_items_file(filename):
 
     return item_dict
 
+    
+    
+# Read or create JSON file containing information on current patch
+# DEPENDENCIES: api, json
 def read_patch_file(filename, region='na'):
     with open(filename) as f:
         patch_string = f.read()
@@ -96,16 +130,3 @@ def read_patch_file(filename, region='na'):
 
     return patch_dict[region]['current_patch']
     
-# Converts timestamp (in milliseconds) to 'mm:ss' or 'h:mm:ss' string
-def timestamp_to_game_time(timestamp):
-    if timestamp is None:
-        return ''
-
-    secs = timestamp/1000%60%60
-    mins = timestamp/1000/60%60
-    hrs = timestamp/1000/60/60
-    if hrs:
-        game_time = '{h:02d}:{m:02d}:{s:02d}'.format(h=hrs, m=mins, s=secs)
-    else:
-        game_time = '{m:02d}:{s:02d}'.format(m=mins, s=secs)
-    return game_time
