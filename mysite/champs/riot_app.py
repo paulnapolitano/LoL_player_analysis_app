@@ -13,7 +13,7 @@ URL = {
     'base':'https://{server}.api.pvp.net/api/lol/{region}/{url}',
     'obs_base':'https://{server}.api.pvp.net/observer-mode/rest/{url}',
     'static_base':'https://global.api.pvp.net/api/lol/static-data/{region}/{url}',
-    'dd_base':'https://http://ddragon.leagueoflegends.com/',
+    'dd_base':'http://ddragon.leagueoflegends.com/{url}',
     'all_champions':'{ver}/champion',
     'match':'{ver}/match/{matchId}',
     'match_list':'{ver}/matchlist/by-summoner/{summonerId}',
@@ -35,6 +35,7 @@ URL = {
     'static_item':'{ver}/item',
     'static_item_id':'{ver}/item/{id}',
     'static_versions':'{ver}/versions',
+    'item_img':'cdn/4.4.3/img/item/{id}.png'
 }
 
 ROLES = (
@@ -177,14 +178,14 @@ class RiotAPI:
             tries += 1
             return self._request(api_url, req_region, params=params, tries=tries)
             
-        elif r.status_code==429:
-            headers = r.headers
-            retry_time = headers['Retry-After']
-            print 'retrying after {retry_time} seconds'.format(retry_time=retry_time)
-            start_time = time.time()
-            while time.time() - start_time < retry_time:
-                pass
-            return self._request(api_url, req_region, params, tries)
+        # elif r.status_code==429:
+            # headers = r.headers
+            # retry_time = headers['Retry-After']
+            # print 'retrying after {retry_time} seconds'.format(retry_time=retry_time)
+            # start_time = time.time()
+            # while time.time() - start_time < retry_time:
+                # pass
+            # return self._request(api_url, req_region, params, tries)
  
         raise_error(r)
                         
@@ -349,8 +350,8 @@ class RiotAPI:
         return avg_league
                 
                 
-    def get_smart_role(self, champ_id, champ_list, lane, role):
-        tags = champ_list[str(champ_id)]['tags']
+    def get_smart_role(self, champ, lane, role):
+        tags = [tag.tag for tag in champ.tags.all()]
         
         if lane=='TOP' or lane=='MID' or lane=='MIDDLE' or lane=='JUNGLE':
             smart_role = lane
@@ -445,6 +446,7 @@ class RiotAPI:
         match_dict = self._request(url, req_region=region, params=params)
 
         return match_dict
+   
     
 class KnownSummonerList:
     def __init__(self, summoners={}):

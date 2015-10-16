@@ -42,7 +42,8 @@
                 <ul>
                 {% for component in build %}
                     {% if not component.item_death %}
-                        <li>{{ component.item.name }}</li>
+                        <li>{{ component.item.name }} ({{component.item_birth_time}})</li>
+                        <img src="{{ component.item.img }}"></img>
                     {% endif %}
                 {% endfor %}
                 </ul>

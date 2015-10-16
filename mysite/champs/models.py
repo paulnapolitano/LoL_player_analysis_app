@@ -15,7 +15,7 @@ class Match(models.Model):
         return Match.objects.filter(match_id=self.match_id).exists()
        
 class Champ(models.Model):
-    champ_pk = models.CharField(primary_key=True, max_length=30, default='UNKNOWN')
+    champ_pk = models.CharField(primary_key=True, max_length=30, blank=True)
     champ_name = models.CharField(max_length=20)
     champ_id = models.IntegerField()
     smart_role_name = models.CharField(max_length=20)
@@ -125,7 +125,8 @@ class ItemParentChild(models.Model):
 # Table lists all items in the game, pointed to by ItemParentChild
 class Item(models.Model):
     id = models.CharField(primary_key=True, max_length=4)
-
+    img = models.CharField(blank=True, max_length=50)
+    
     # consume_on_full = models.BooleanField(blank=True)
     # consumed = models.BooleanField(blank=True)
     depth = models.IntegerField(blank=True)
@@ -231,13 +232,15 @@ class Item(models.Model):
     # tags
 
     def __unicode__(self):
-        return unicode(self.id)
+        return u'{name} ({id})'.format(name=self.name, id=self.id)
     
 class BuildComponent(models.Model):
     statset = models.ForeignKey(StatSet, blank=True)
     item = models.ForeignKey(Item, blank=True)
     item_birth = models.IntegerField(blank=True)
+    item_birth_time = models.CharField(blank=True, max_length=20)
     item_death = models.IntegerField(blank=True, null=True)
+    item_death_time = models.CharField(blank=True, max_length=20)
     item_batch = models.IntegerField(blank=True)
     
     def __unicode__(self):
@@ -245,3 +248,71 @@ class BuildComponent(models.Model):
         
     def is_in_db(self):
         return BuildComponent.objects.filter(pk=self.pk).exists()
+        
+class Patch(models.Model):
+    patch = models.CharField(primary_key=True, blank=True, max_length=20)
+    region = models.CharField(blank=True, max_length=20)
+    start_datetime = models.DateTimeField(default=timezone.now)
+    end_datetime = models.DateTimeField(blank=True, null=True)
+    last_check = models.DateTimeField(default=timezone.now)
+    
+    def __unicode__(self):
+        return unicode(self.patch)
+  
+class ChampionTag(models.Model):
+    tag = models.CharField(primary_key=True, max_length=15)
+    
+    def __unicode__(self):
+        return unicode(self.tag)
+        
+class ChampionStatic(models.Model):
+    id = models.CharField(primary_key=True, max_length=4)
+    name = models.CharField(blank=True, max_length=20)
+    # img = models.CharField(blank=True, max_length=50)
+    tags = models.ManyToManyField(ChampionTag)
+    
+    # stats_attack_range = models.FloatField(blank=True)
+    # stats_mp_per_level = models.FloatField(blank=True)
+    # stats_mp = models.FloatField(blank=True)
+    # stats_ad = models.FloatField(blank=True)
+    # stats_hp = models.FloatField(blank=True)
+    # stats_hp_per_level = models.FloatField(blank=True)
+    # stats_ad_per_level = models.FloatField(blank=True)
+    # stats_armor = models.FloatField(blank=True)
+    # stats_mp_regen_per_level = models.FloatField(blank=True)
+    # stats_hp_regen = models.FloatField(blank=True)
+    # stats_crit_per_level = models.FloatField(blank=True)
+    # stats_spell_block_per_level = models.FloatField(blank=True)
+    # stats_mp_regen = models.FloatField(blank=True)
+    # stats_as_per_level = models.FloatField(blank=True)
+    # stats_mr = models.FloatField(blank=True)
+    # stats_ms = models.FloatField(blank=True)
+    # stats_as_offset = models.FloatField(blank=True)
+    # stats_crit = models.FloatField(blank=True)
+    # stats_hp_regen_per_level = models.FloatField(blank=True)
+    # stats_armor_per_level = models.FloatField(blank=True)
+    
+    def __unicode__(self):
+        return unicode(self.name)
+    
+class SpellStatic(models.Model):
+    champion = models.ForeignKey(ChampionStatic, blank=True)
+    img = models.CharField(blank=True, max_length=50)
+
+    lv1_range = models.IntegerField(blank=True)
+    lv2_range = models.IntegerField(blank=True)
+    lv3_range = models.IntegerField(blank=True)
+    lv4_range = models.IntegerField(blank=True)
+    lv5_range = models.IntegerField(blank=True)
+
+    lv1_cd = models.IntegerField(blank=True)
+    lv2_cd = models.IntegerField(blank=True)
+    lv3_cd = models.IntegerField(blank=True)
+    lv4_cd = models.IntegerField(blank=True)
+    lv5_cd = models.IntegerField(blank=True)
+    
+    lv1_cost = models.IntegerField(blank=True)
+    lv2_cost = models.IntegerField(blank=True)
+    lv3_cost = models.IntegerField(blank=True)
+    lv4_cost = models.IntegerField(blank=True)
+    lv5_cost = models.IntegerField(blank=True)
