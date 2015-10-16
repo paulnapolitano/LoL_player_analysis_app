@@ -35,7 +35,7 @@ URL = {
     'static_item':'{ver}/item',
     'static_item_id':'{ver}/item/{id}',
     'static_versions':'{ver}/versions',
-    'item_img':'cdn/4.4.3/img/item/{id}.png'
+    'item_img':'cdn/{patch}/img/item/{id}.png'
 }
 
 ROLES = (
@@ -705,139 +705,6 @@ def init_champ_stats():
     
 def get_item_list(player_id, timeline):
     return None
-    
-# def data_to_db(data_str):
-    # print type(data_str)
-    # if type(data_str) is str or type(data_str) is unicode:
-        # data = json.loads(data_str, encoding='ISO-8859-1')
-    # elif type(data_str) is list or type(data_str) is dict:
-        # data = data_str
-    
-    # match_count = 0
-    # champ_insert_list = []
-    # statset_insert_list = [] 
-    # player_insert_list = []
-    # match_insert_list = []
-    
-    # for match in data['matches']:
-        # match_id = match['matchId']
-        # match_duration = match['matchDuration']
-        # match_version = match['matchVersion']
-        # match_creation = secs_to_datetime(match['matchCreation'])
-        
-        # if 'timeline' in match:
-            # timeline = match['timeline']
-        # else:
-            # match = api.get_match('na', match_id)
-            # data_to_db(match_history)
-        
-        # m = Match(
-            # matchId=match_id,
-            # matchDuration=match_duration,
-            # matchCreation=match_creation,
-        # )
-                
-        # if not m in match_insert_list and not Match.objects.filter(
-                # matchId=match_id, 
-                # ).exists():                   
-            # match_insert_list.append(m)
-
-            # #Neat print of status of current file
-            # match_count +=1
-            # # print '{file} in progress... {count}/100\r'.format(
-                # # file=file,
-                # # count=match_count,
-            # # ),
-            
-            # #Get list of summoner IDS for league request
-            # player_id_list = [pi['player']['summonerId'] 
-                # for pi in match['participantIdentities']]  
-            # league_dict = api.get_solo_leagues(
-                # region=match['region'].lower(),
-                # summoner_ids=str(player_id_list)[1:-1],
-            # ) 
-            
-            
-            
-            # league_name = api.get_avg_solo_league(league_dict)
-            
-            # for participant in match['participants']:
-                # summoner_id = match['participantIdentities'][
-                    # participant['participantId']-1]['player']['summonerId']
-                # champ_id = participant['championId']
-                # champ_name = champ_list[str(champ_id)]['name']
-                # participant_timeline = participant['timeline']
-                # first_item = get_first_item(timeline)
-                # first_completed_item = get_first_completed_item(summoner_id, timeline)
-                # second_completed_item = get_second_completed_item(timeline)
-                # third_completed_item = get_third_completed_item(timeline)
-                # fourth_completed_item = get_fourth_completed_item(timeline)
-                # fifth_completed_item = get_fifth_completed_item(timeline)
-                # sixth_completed_item = get_sixth_completed_item(timeline)
-                # lane_name = participant_timeline['lane']
-                # role_name = participant_timeline['role']
-                # smart_role_name = api.get_smart_role(
-                    # champ_id, champ_list, lane_name, role_name)
-                # stats = participant['stats']
-                # del stats['totalScoreRank']
-                # del stats['totalPlayerScore']
-                # del stats['objectivePlayerScore']
-                # del stats['combatPlayerScore']
-              
-                # champ_pk = champ_name + '_' + smart_role_name + '_' + league_name
-                
-                # if str(summoner_id) in league_dict:
-                    # rank_num = league_dict[str(summoner_id)]
-                # else:
-                    # rank_num = 0
-                
-                # p = Player(
-                    # summoner_id=summoner_id,
-                    # rank_num=rank_num,
-                # )
-                # if not p in player_insert_list and not Player.objects.filter(
-                        # summoner_id=summoner_id).exists():
-                    # player_insert_list.append(p)
-              
-                # # Save Champ object if it doesn't exist
-                # c = Champ(
-                    # champ_pk=champ_pk,
-                    # champ_name=champ_name,
-                    # champ_id=champ_id,
-                    # smart_role_name=smart_role_name,
-                    # league_name=league_name,
-                    # match_version=match_version,
-                # )
-                
-                # if not c in champ_insert_list and not Champ.objects.filter(
-                        # champ_pk=champ_pk).exists():
-                    # champ_insert_list.append(c)
-
-                # kwargs=stats
-                # kwargs['champ'] = c
-                # kwargs['player'] = p
-                # kwargs['match'] = m
-                # statset_id = str(match_id) + '_' + str(summoner_id)
-                # kwargs['statsetId'] = statset_id
-                # ss = StatSet(**kwargs)
-
-                # # Save StatSet object if it doesn't exist
-                # if not ss in statset_insert_list and not StatSet.objects.filter(
-                    # statsetId=statset_id, 
-                # ).exists():                   
-                    # statset_insert_list.append(ss)
-                
-        # # print '{count}/100 completed... time={time}'.format(count=match_count, time=time.time())
-    
-    # print 'creating Match table... time={time}'.format(time=time.time())
-    # Match.objects.bulk_create(match_insert_list)
-    # print 'creating Champ table... time={time}'.format(time=time.time())
-    # Champ.objects.bulk_create(champ_insert_list)
-    # print 'creating Player table... time={time}'.format(time=time.time())
-    # Player.objects.bulk_create(player_insert_list)
-    # print 'creating StatSet table... time={time}'.format(time=time.time())
-    # StatSet.objects.bulk_create(statset_insert_list)
-    # print 'Done! time={time}'.format(time=time.time())
   
 ref_url = 'https://developer.riotgames.com/api/methods#!/1015'
 ref_page = requests.get(ref_url).text
@@ -882,3 +749,5 @@ SUB_TYPES = get_sub_types(ref_page)
 #   'KING_PORO',
 #   'COUNTER_PICK',
 #   'BILGEWATER']
+
+api = RiotAPI(API_KEY)
