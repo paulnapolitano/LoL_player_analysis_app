@@ -28,7 +28,7 @@ def user_profile(request):
         print "{secs} seconds since last update".format(secs=secs_since_last_update)
         
         if secs_since_last_update > 1800:
-            match_list = api.get_match_list('na', req_player.summoner_id)
+            match_list = api.get_match_list('na', req_player.summoner_id, begin_time=1444806000000)
             
             req_player.last_update = timezone.now()
             req_player.save()

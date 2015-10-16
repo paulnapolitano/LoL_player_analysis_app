@@ -3,12 +3,16 @@ if __name__ == '__main__' and __package__ is None:
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
     
 from models import Item, ItemParentChild
+from item_funcs import read_items_file, read_patch_file, get_current_patch, timestamp_to_game_time
 
 print 'importing json'
 import json
 
 print 'importing time'
 import time
+
+print 'importing timezone'
+from django.utils import timezone
 
 print 'importing RiotAPI'
 from riot_app import RiotAPI
@@ -205,7 +209,7 @@ class Build(object):
     
     # Print player inventory at a given timestamp
     def get_inventory_at(self, timestamp):
-        game_time = self.timestamp_to_game_time(timestamp)
+        game_time = timestamp_to_game_time(timestamp)
         
         string = 'INVENTORY AT {time}:\n'.format(time=game_time)
         for component in self.build_history:
@@ -219,16 +223,7 @@ class Build(object):
             if component.batch == batch_number:
                 print component
     
-    # Converts timestamp (in milliseconds) to 'mm:ss' or 'h:mm:ss' string
-    def timestamp_to_game_time(self, timestamp):
-        secs = timestamp/1000%60%60
-        mins = timestamp/1000/60%60
-        hrs = timestamp/1000/60/60
-        if hrs:
-            game_time = '{h}:{m}:{s}'.format(h=hrs, m=mins, s=secs)
-        else:
-            game_time = '{m}:{s}'.format(m=mins, s=secs)
-        return game_time
+
     
     # Return count of a given item in the build_history
     def count(self, item):
@@ -384,9 +379,7 @@ def get_player_items(participant_id, match):
     
     # Initialize build object
     build = Build()
-   
-    print "EVENTS:"
-    
+       
     for event in player_item_events:
         timestamp = event['timestamp']
         if 'itemId' in event:
@@ -395,10 +388,7 @@ def get_player_items(participant_id, match):
             item_id = event['itemBefore']
         else:
             item_id = event['itemAfter']
-        item = item_tree.get_item(item_id)
-        
-        print item
-        
+        item = item_tree.get_item(item_id)        
         type = event['eventType']
         
         if type == 'ITEM_PURCHASED':
@@ -412,98 +402,5 @@ def get_player_items(participant_id, match):
             
         else:
             build.destroy(item, timestamp)
-    print ""
     
-    print "COMPONENTS:"
-    for component in build.build_history:
-        print component
-    print ''
     return build
-        
-        
-def read_items_file(filename):
-    with open(filename) as f:
-        item_string = f.read()
-    
-    this_patch = read_patch_file(r'champs/current_patch.json')
-    
-    # If file is empty or outdated, replace its contents with new ones
-    if 'data' not in item_string or this_patch not in item_string:
-        item_dict = api.get_all_items('na')
-        item_dict['patch'] = this_patch
-        
-        with open(filename, 'w') as f:
-            f.write(json.dumps(item_dict))
-            
-    else:
-        item_dict = json.loads(item_string)
-
-    return item_dict
-  
-  
-def read_patch_file(filename, region='na'):
-    with open(filename) as f:
-        patch_string = f.read()
-                
-    # If file is empty, fill its contents with new ones
-    if 'last_update' not in patch_string:
-        this_patch = api.get_versions(region, reverse=False)[0]
-        patch_dict = {region:{'current_patch':this_patch, 'last_update':time.time()}}
-        
-        with open(filename, 'w') as f:
-            f.write(json.dumps(patch_dict))
-            
-    elif region not in patch_string:
-        patch_dict = json.loads(patch_string)
-        this_patch = api.get_versions(region, reverse=False)[0]
-        patch_dict[region] = {'current_patch':this_patch, 'last_update':time.time()}
-        
-        with open(filename, 'w') as f:
-            f.write(json.dumps(patch_dict))
-            
-    else:
-        patch_dict = json.loads(patch_string)
-        
-        # If file is outdated (check every hour), update current patch
-        if time.time() - patch_dict[region]['last_update'] > 3600:
-            this_patch = api.get_versions(region, reverse=False)[0]
-            patch_dict[region] = {'current_patch':this_patch, 'last_update':time.time()}
-            
-            with open(filename, 'w') as f:
-                f.write(json.dumps(patch_dict))
-
-    return patch_dict[region]['current_patch']
-
-    
-  
-def patch_from_db(region='na'):
-    patch = Patch.objects.filter
-                
-    # If file is empty, fill its contents with new ones
-    if 'last_update' not in patch_string:
-        this_patch = api.get_versions(region, reverse=False)[0]
-        patch_dict = {region:{'current_patch':this_patch, 'last_update':time.time()}}
-        
-        with open(filename, 'w') as f:
-            f.write(json.dumps(patch_dict))
-            
-    elif region not in patch_string:
-        patch_dict = json.loads(patch_string)
-        this_patch = api.get_versions(region, reverse=False)[0]
-        patch_dict[region] = {'current_patch':this_patch, 'last_update':time.time()}
-        
-        with open(filename, 'w') as f:
-            f.write(json.dumps(patch_dict))
-            
-    else:
-        patch_dict = json.loads(patch_string)
-        
-        # If file is outdated (check every hour), update current patch
-        if time.time() - patch_dict[region]['last_update'] > 3600:
-            this_patch = api.get_versions(region, reverse=False)[0]
-            patch_dict[region] = {'current_patch':this_patch, 'last_update':time.time()}
-            
-            with open(filename, 'w') as f:
-                f.write(json.dumps(patch_dict))
-
-    return patch_dict[region]['current_patch']

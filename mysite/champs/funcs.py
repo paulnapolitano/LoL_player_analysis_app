@@ -5,13 +5,14 @@ if __name__ == '__main__' and __package__ is None:
 import re
 import os
 import time
+import datetime
 import json
-from riot_app import RiotAPI
+from riot_app import RiotAPI, URL
 from django.db.models import Avg
 from django.utils import timezone
 
-from models import Match, Champ, StatSet, Player, Item, ItemParentChild, BuildComponent
-
+from models import Match, Champ, StatSet, Player, Item, ItemParentChild, BuildComponent, Patch, ChampionStatic, ChampionTag
+from item_funcs import read_items_file, read_patch_file, get_current_patch, timestamp_to_game_time
 from api_key import API_KEY
 from items import ItemTree, get_player_items
 
@@ -101,13 +102,11 @@ def matches_to_db(match_id_list):
         
         
 def match_to_db(match):    
-    print 'reading champ list'
-    champ_list = read_champs_file(r'champs/all_champs.json')['data']
     print 'reading item list'
     item_list = read_items_file(r'champs/all_items.json')['data']
     item_tree = ItemTree(item_list).summoners_rift()
-    print 'saving items to db'
-    items_to_db()
+    
+    get_current_patch()
  
     print 'creating match instance'
     m = create_match(match)
@@ -143,7 +142,7 @@ def match_to_db(match):
                 player_insert_list.append(p)
 
             # Create Champ instance and save to DB if it's not there yet
-            c = create_champ(match, participant, league_name, champ_list)
+            c = create_champ(match, participant, league_name)
             if not c in champ_insert_list and not c.is_in_db():
                 champ_insert_list.append(c)
 
@@ -167,7 +166,7 @@ def match_to_db(match):
 def create_match(match):
     match_id = match['matchId']
     match_duration = match['matchDuration']
-    match_creation = secs_to_datetime(match['matchCreation'])
+    match_creation = millis_to_timezone(match['matchCreation'])
     
     m = Match(
         match_id=match_id,
@@ -178,14 +177,15 @@ def create_match(match):
     return m
                 
                        
-def create_champ(match, participant, league_name, champ_list):
+def create_champ(match, participant, league_name):
     champ_id = participant['championId']
     timeline = participant['timeline']       
     lane_name = timeline['lane']
     role_name = timeline['role']            
-    champ_name = champ_list[str(champ_id)]['name']
+    champ = ChampionStatic.objects.get(id=champ_id)
+    champ_name = champ.name
     smart_role_name = api.get_smart_role(
-        champ_id, champ_list, lane_name, role_name)
+        champ, lane_name, role_name)
     champ_pk = champ_name + '_' + smart_role_name + '_' + league_name
     match_version = match['matchVersion']
 
@@ -254,7 +254,9 @@ def create_build_component(component, statset):
     item = Item.objects.get(id=item_id)
     kwargs['item'] = item
     kwargs['item_birth'] = component.birth_time
+    kwargs['item_birth_time'] = timestamp_to_game_time(component.birth_time)
     kwargs['item_death'] = component.death_time
+    kwargs['item_death_time'] = timestamp_to_game_time(component.death_time)
     kwargs['item_batch'] = component.batch
     bc = BuildComponent(**kwargs)
     
@@ -276,6 +278,7 @@ def items_from_db():
     sr_items = Item.objects.filter(map_11=True)
     return sr_items
  
+ 
 def items_to_db():
     item_dict = read_items_file('champs/all_items.json')
     item_tree = ItemTree(item_dict).summoners_rift()
@@ -285,6 +288,8 @@ def items_to_db():
         item = item_tree.items[id]
         kwargs = {}
         kwargs['id'] = id
+        url = URL['item_img'].format(id=id)
+        kwargs['img'] = URL['dd_base'].format(url=url)
         kwargs['depth'] = item.depth
         kwargs['description'] = item.description
         kwargs['group'] = item.group
@@ -304,6 +309,44 @@ def items_to_db():
     Item.objects.bulk_create(item_insert_list)
 
     
+def champions_to_db(region='na'):
+    champ_dict = api.get_all_champions(dataById=True, champData='tags')
+
+    champion_tag_insert_list = []
+    champion_static_insert_list = []
+
+    for id in champ_dict['data']:
+        champ_data = champ_dict['data'][id]
+        name = champ_data['name']
+        tags = champ_data['tags']
+                    
+
+        if not ChampionStatic.objects.filter(id=id).exists():
+            kwargs = {}
+            kwargs['id'] = id
+            kwargs['name'] = name
+            url = URL['item_img'].format(id=id)
+            kwargs['img'] = URL['dd_base'].format(url=url)
+            cs = ChampionStatic(**kwargs)
+            print 'adding champion {cs}'.format(cs=cs)
+            cs.save()
+        else:
+            cs = ChampionStatic.objects.get(id=id)
+            print 'getting champion {cs}'.format(cs=cs)
+
+        for tag in tags:
+            # Create ChampionTag object and save to DB if it doesn't exist yet
+            if not ChampionTag.objects.filter(tag=tag).exists():
+                ct = ChampionTag(tag=tag)
+                ct.save()
+            else: 
+                ct = ChampionTag.objects.get(tag=tag)
+            # Create many-to-many relationship between tags and champions
+            cs.tags.add(ct)
+        
+    ChampionStatic.objects.bulk_create(champion_static_insert_list)
+
+    
 def save_or_bulk_create(klass, object_or_list):
     print 'creating {klass} table... time={time}'.format(klass=klass.__name__, time=time.time())
     if type(object_or_list) is list:
@@ -311,171 +354,17 @@ def save_or_bulk_create(klass, object_or_list):
     else:
         object_or_list.save()
     
- 
-def data_to_db(data_str):
-    champ_list = api.get_all_champions(
-        dataById=True, champData='tags')['data']
-    item_list = api.get_all_items()['data']
+def millis_to_timezone(millis):
+    return timezone.make_aware(datetime.datetime.fromtimestamp(millis/1000))
 
-    print type(data_str)
-    if type(data_str) is str or type(data_str) is unicode:
-        data = json.loads(data_str, encoding='ISO-8859-1')
-    elif type(data_str) is list or type(data_str) is dict:
-        data = data_str
-    
-    match_count = 0
-    champ_insert_list = []
-    statset_insert_list = [] 
-    player_insert_list = []
-    match_insert_list = []
-    
-    for match in data['matches']:
-        m = create_match(match)
-        
-        if 'timeline' in match:
-            timeline = match['timeline']
-        else:
-            match = api.get_match('na', match_id)
-            data_to_db(match_history)
-        
-        if not m in match_insert_list and not Match.objects.filter(
-                matchId=match_id, 
-                ).exists():                   
-            match_insert_list.append(m)
-
-            #Neat print of status of current file
-            match_count +=1
-            # print '{file} in progress... {count}/100\r'.format(
-                # file=file,
-                # count=match_count,
-            # ),
-            
-            #Get list of summoner IDS for league request
-            player_id_list = [pi['player']['summonerId'] 
-                for pi in match['participantIdentities']]  
-            id_name_dict = api.get_summoner_names('na', player_id_list)
-            league_dict = api.get_solo_leagues(
-                region=match['region'].lower(),
-                summoner_ids=str(player_id_list)[1:-1],
-            ) 
-            
-            league_name = api.get_avg_solo_league(league_dict)
-            
-            for participant in match['participants']:
-                summoner_id = match['participantIdentities'][
-                    participant['participantId']-1]['player']['summonerId']
-                summoner_name = id_name_dict[summoner_id]
-                champ_id = participant['championId']
-                champ_name = champ_list[str(champ_id)]['name']
-                timeline = participant['timeline']
-                lane_name = timeline['lane']
-                role_name = timeline['role']
-                smart_role_name = api.get_smart_role(
-                    champ_id, champ_list, lane_name, role_name)
-                stats = participant['stats']
-                del stats['totalScoreRank']
-                del stats['totalPlayerScore']
-                del stats['objectivePlayerScore']
-                del stats['combatPlayerScore']
-              
-                champ_pk = champ_name + '_' + smart_role_name + '_' + league_name
-                
-                if str(summoner_id) in league_dict:
-                    rank_num = league_dict[str(summoner_id)]
-                else:
-                    rank_num = 0
-                
-                p = Player(
-                    summoner_id=summoner_id,
-                    summoner_name=summoner_name,
-                    rank_num=rank_num,
-                )
-                if not p in player_insert_list and not Player.objects.filter(
-                        summoner_id=summoner_id).exists():
-                    player_insert_list.append(p)
-              
-                # Save Champ object if it doesn't exist
-                c = Champ(
-                    champ_pk=champ_pk,
-                    champ_name=champ_name,
-                    champ_id=champ_id,
-                    smart_role_name=smart_role_name,
-                    league_name=league_name,
-                    match_version=match_version,
-                )
-                
-                if not c in champ_insert_list and not Champ.objects.filter(
-                        champ_pk=champ_pk).exists():
-                    champ_insert_list.append(c)
-
-                kwargs=stats
-                kwargs['champ'] = c
-                kwargs['player'] = p
-                kwargs['match'] = m
-                statset_id = str(match_id) + '_' + str(summoner_id)
-                kwargs['statsetId'] = statset_id
-                ss = StatSet(**kwargs)
-
-                # Save StatSet object if it doesn't exist
-                if not ss in statset_insert_list and not StatSet.objects.filter(
-                    statsetId=statset_id, 
-                ).exists():                   
-                    statset_insert_list.append(ss)
-                
-        # print '{count}/100 completed... time={time}'.format(count=match_count, time=time.time())
-    
-    print 'creating Match table... time={time}'.format(time=time.time())
-    Match.objects.bulk_create(match_insert_list)
-    print 'creating Champ table... time={time}'.format(time=time.time())
-    Champ.objects.bulk_create(champ_insert_list)
-    print 'creating Player table... time={time}'.format(time=time.time())
-    Player.objects.bulk_create(player_insert_list)
-    print 'creating StatSet table... time={time}'.format(time=time.time())
-    StatSet.objects.bulk_create(statset_insert_list)
-    print 'Done! time={time}'.format(time=time.time())
-    
-def secs_to_datetime(secs):
-    return time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(secs/1000))
-    
-def read_patch_file(filename, region='na'):
-    with open(filename) as f:
-        patch_string = f.read()
-                
-    # If file is empty, fill its contents with new ones
-    if 'last_update' not in patch_string:
-        this_patch = api.get_versions(region, reverse=False)[0]
-        patch_dict = {region:{'current_patch':this_patch, 'last_update':time.time()}}
-        
-        with open(filename, 'w') as f:
-            f.write(json.dumps(patch_dict))
-            
-    elif region not in patch_string:
-        patch_dict = json.loads(patch_string)
-        this_patch = api.get_versions(region, reverse=False)[0]
-        patch_dict[region] = {'current_patch':this_patch, 'last_update':time.time()}
-        
-        with open(filename, 'w') as f:
-            f.write(json.dumps(patch_dict))
-            
-    else:
-        patch_dict = json.loads(patch_string)
-        
-        # If file is outdated (check every hour), update current patch
-        if time.time() - patch_dict[region]['last_update'] > 3600:
-            this_patch = api.get_versions(region, reverse=False)[0]
-            patch_dict[region] = {'current_patch':this_patch, 'last_update':time.time()}
-            
-            with open(filename, 'w') as f:
-                f.write(json.dumps(patch_dict))
-
-    return patch_dict[region]['current_patch']
     
 def read_champs_file(filename):
     with open(filename) as f:
         champ_string = f.read()
     
-    this_patch = read_patch_file(r'champs/current_patch.json')
-    
+    # this_patch = read_patch_file(r'champs/current_patch.json')
+    this_patch = get_current_patch()
+  
     # If file is empty or outdated, replace its contents with new ones
     if 'data' not in champ_string:
         champ_dict = api.get_all_champions(dataById=True, champData='tags')
@@ -488,25 +377,7 @@ def read_champs_file(filename):
         champ_dict = json.loads(champ_string)
 
     return champ_dict
-    
-def read_items_file(filename):
-    with open(filename) as f:
-        item_string = f.read()
-    
-    this_patch = read_patch_file(r'champs/current_patch.json')
-    
-    # If file is empty or outdated, replace its contents with new ones
-    if 'data' not in item_string or this_patch not in item_string:
-        item_dict = api.get_all_items('na')
-        item_dict['patch'] = this_patch
-        
-        with open(filename, 'w') as f:
-            f.write(json.dumps(item_dict))
-            
-    else:
-        item_dict = json.loads(item_string)
 
-    return item_dict
     
 def sum_name_standardize(name):
     standardized_name = ''
