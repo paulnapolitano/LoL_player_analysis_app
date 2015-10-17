@@ -34,7 +34,7 @@ def user_profile(request):
         print "{secs} seconds since last update".format(secs=secs_since_last_update)
         
         if secs_since_last_update > 1800:
-            match_list = api.get_match_list('na', req_player.summoner_id, begin_time=1444806000000)
+            match_list = api.get_match_list('na', req_player.summoner_id)
             
             req_player.last_update = timezone.now()
             req_player.save()
@@ -83,6 +83,8 @@ def match_profile(request, match_id, summoner_name):
     
     name = player.summoner_name
     
+    match_duration = match.match_duration
+    
     statset = StatSet.objects.get(statset_id=statset_id)
     build = BuildComponent.objects.filter(statset=statset)
     stat_comparison = get_stat_comparison(statset)
@@ -91,6 +93,7 @@ def match_profile(request, match_id, summoner_name):
         'build':build,
         'statset':statset,
         'stat_comparison':stat_comparison,
+        'match_duration':match_duration,
     }
     return render(request, 'champs/match_profile.html', context)
     
