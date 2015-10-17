@@ -1,0 +1,19 @@
+.build ol{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.build ul{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.build li{
+    display: inline;
+}
+
+.hide {
+    opacity: 0;
+}

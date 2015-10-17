@@ -1,6 +1,8 @@
 <html>
     <head>
-        <link rel="stylesheet" type="text/css" href="poobygg.css"></link>
+        {% load staticfiles %}
+        <link rel="stylesheet" type="text/css" href="{% static 'champs/poobygg.css' %}"/>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <title> {{ name }}'s Match Analysis </title>
     </head>
         
@@ -37,17 +39,32 @@
             <p>Match not found, or missing information...</p>
         {% endif %}
 
-        <div class="build">
-            {% if build %}
-                <ul>
+        <label for="game_time">Game Time</label>
+        <input id="game_time" type="range" value="30" min="0" max="{{ match_duration }}" step="10" oninput="outputUpdate(value)"/>
+        <output for="game_time" id="time">00:00:30</output>
+        <script src="{% static 'champs/poobygg.js' %}"></script>
+
+        {% if build %}
+            <div class="build">
+                <ul class="time_items">
+                {% for component in build %}
+                    <li data-birth={{ component.item_birth }} data-death={{ component.item_death }}>
+                        <img src="{{ component.item.img }}" title="{{ component.item.name }} ({{ component.item_birth_time }}-{{ component.item_death_time }})" height="50px" width="50px"></img>
+                    </li>
+                {% endfor %}
+                    <li></li>
+                </ul>
+            
+                <ul class="final_items">
                 {% for component in build %}
                     {% if not component.item_death %}
-                        <li>{{ component.item.name }} ({{component.item_birth_time}})</li>
-                        <img src="{{ component.item.img }}"></img>
+                        <li class="final_item_slot">
+                            <img src="{{ component.item.img }}" title="{{ component.item.name }} ({{ component.item_birth_time }}-{{ component.item_death_time }})" height="50px" width="50px"></img>
+                        </li>
                     {% endif %}
                 {% endfor %}
                 </ul>
-            {% endif %}
-        </div>
+            </div>
+        {% endif %}
     </body>
 </html>
