@@ -4,7 +4,7 @@ from django.db import models
 from django.utils import timezone
 
 class Match(models.Model):
-    match_id = models.CharField(max_length=20, primary_key=True)
+    match_id = models.CharField(db_index=True, max_length=20, primary_key=True)
     match_duration = models.IntegerField(default=0)
     match_creation = models.DateTimeField()
     
@@ -34,12 +34,12 @@ class Champ(models.Model):
         return Champ.objects.filter(champ_pk=self.champ_pk).exists()      
         
 class Player(models.Model):
-    summoner_id = models.CharField(max_length=20, primary_key=True)
+    summoner_id = models.CharField(db_index=True, max_length=20, primary_key=True)
     summoner_name = models.CharField(max_length=20, default='UNKNOWN')
     profile_icon_id = models.CharField(max_length=20, default='UNKNOWN', blank=True)
     last_update = models.DateTimeField(default=timezone.now, blank=True)
     summoner_level = models.IntegerField(default=0)
-    std_summoner_name = models.CharField(max_length=20, default='UNKNOWN')
+    std_summoner_name = models.CharField(db_index=True, max_length=20, default='UNKNOWN')
     rank_num = models.IntegerField(default=0)
     
     def __unicode__(self):
@@ -124,8 +124,9 @@ class ItemParentChild(models.Model):
 
 # Table lists all items in the game, pointed to by ItemParentChild
 class Item(models.Model):
-    id = models.CharField(primary_key=True, max_length=4)
+    item_id = models.CharField(db_index=True, blank=True, max_length=4)
     img = models.CharField(blank=True, max_length=50)
+    version = models.CharField(db_index=True, blank=True, max_length=50)
     
     # consume_on_full = models.BooleanField(blank=True)
     # consumed = models.BooleanField(blank=True)
@@ -232,7 +233,7 @@ class Item(models.Model):
     # tags
 
     def __unicode__(self):
-        return u'{name} ({id})'.format(name=self.name, id=self.id)
+        return u'{name} ({id})'.format(name=self.name, id=self.item_id)
     
 class BuildComponent(models.Model):
     statset = models.ForeignKey(StatSet, blank=True)
@@ -247,7 +248,7 @@ class BuildComponent(models.Model):
         return unicode(self.item)
         
     def is_in_db(self):
-        return BuildComponent.objects.filter(pk=self.pk).exists()
+        return BuildComponent.objects.filter(statset=self.statset, item=self.item, item_birth=self.item_birth).exists()
         
 class Patch(models.Model):
     patch = models.CharField(primary_key=True, blank=True, max_length=20)
@@ -260,13 +261,13 @@ class Patch(models.Model):
         return unicode(self.patch)
   
 class ChampionTag(models.Model):
-    tag = models.CharField(primary_key=True, max_length=15)
+    tag = models.CharField(db_index=True, primary_key=True, max_length=15)
     
     def __unicode__(self):
         return unicode(self.tag)
         
 class ChampionStatic(models.Model):
-    id = models.CharField(primary_key=True, max_length=4)
+    id = models.CharField(db_index=True, primary_key=True, max_length=4)
     name = models.CharField(blank=True, max_length=20)
     # img = models.CharField(blank=True, max_length=50)
     tags = models.ManyToManyField(ChampionTag)

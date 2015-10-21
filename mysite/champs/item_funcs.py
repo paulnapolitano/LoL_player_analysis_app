@@ -4,8 +4,12 @@ from riot_app import api
 print 'importing json'
 import json
 
+import time
+
 from models import Item
 from items import Build
+
+from text_funcs import version_standardize
 
 # ------------------------------- FUNCTIONS ---------------------------------
 
@@ -14,42 +18,50 @@ from items import Build
 # including item 'birth time' and 'death time' 
 # DEPENDENCIES: Item, item_events_from_frames, Build
 def get_player_items(participant_id, match):
-    # Get list of all items in db that exist on Summoner's Rift
-    item_list = Item.objects.filter(map_11=True)
+    # Get version of match
+    version = version_standardize(match['matchVersion'])
+    items_this_version = Item.objects.filter(version=version)
     
     # Get list of timestamped events, including item purchases
     timeline = match['timeline']
     frames = timeline['frames']
     frame_interval = timeline['frameInterval']
-        
+     
     # Create list of all events in game involving item transactions for the given player
     player_item_events = item_events_from_frames(frames, participant_id)
     
     # Initialize build object
     build = Build()
-       
+    
     for event in player_item_events:
         timestamp = event['timestamp']
+        
+
         if 'itemId' in event:
             item_id = event['itemId']
         elif event['itemAfter'] == 0:
             item_id = event['itemBefore']
         else:
             item_id = event['itemAfter']
-        item = Item.objects.get(id=item_id)        
+            
+        item = items_this_version.get(item_id=item_id) 
+        
         type = event['eventType']
         
         if type == 'ITEM_PURCHASED':
             build.buy(item, timestamp)
+            last_event = 'buy'
 
-        elif type == 'ITEM_UNDO':
-            build.undo()
+        elif type == 'ITEM_UNDO': 
+            build.undo(last_event)
                     
         elif type == 'ITEM_SOLD':
             build.sell(item, timestamp)
+            last_event = 'sell'
             
         else:
-            build.destroy(item, timestamp)
+            build.destroy(item, timestamp) 
+            last_event = 'destroy'
     
     return build
         

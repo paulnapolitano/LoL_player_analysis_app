@@ -64,3 +64,22 @@ def un_camelcase(str):
         return_str = return_str[0].upper() + return_str[1:]
         
     return return_str
+    
+
+# Converts long version into short version (as given by api.get_versions)
+# DEPENDENCIES: None    
+def version_standardize(version):
+    dots = 2
+    std_ver = ''
+    
+    for char in version:
+        # '5.20.' -> '5.20.1'
+        if dots == 0:
+            num = int(char) + 1
+            std_ver += str(num)
+            return str(std_ver)  
+        # '' -> '5.20.'
+        std_ver += char
+        if char == '.':
+            dots -= 1
+       

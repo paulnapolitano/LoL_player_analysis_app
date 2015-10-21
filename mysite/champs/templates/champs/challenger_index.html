@@ -1,0 +1,9 @@
+{% if challenger_list %}
+    <ul>
+    {% for player in challenger_list %}
+        <li><a href="{% url 'champs:match_history' player.std_summoner_name %}">{{ player.summoner_name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No champs are available.</p>
+{% endif %}
