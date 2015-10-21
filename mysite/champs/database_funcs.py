@@ -11,7 +11,7 @@ from models import BuildComponent, ChampionTag
 
 from item_funcs import get_player_items
 from text_funcs import sum_name_standardize, camelcase_to_underscore
-from text_funcs import timestamp_to_game_time
+from text_funcs import timestamp_to_game_time, version_standardize
 from misc_funcs import millis_to_timezone
 
 from django.utils import timezone
@@ -31,7 +31,7 @@ def get_current_patch(region='na'):
         print 'No patches in DB. Making call for most recent patch...'
         this_patch = api.get_versions(region, reverse=False)[0]
         print 'versions found'
-        items_to_db(this_patch)
+        items_to_db()
         print 'items sent to db'
         champions_to_db()    
         print 'champions sent to db'
@@ -56,51 +56,92 @@ def get_current_patch(region='na'):
             
         current_patch.save()
     return current_patch.patch
-    
-    
-    
-# Get and return all items that exist on Summoner's Rift
-# DEPENDENCIES: Item
-def items_from_db():
-    sr_items = Item.objects.filter(map_11=True)
-    return sr_items
    
    
     
 # Store static information on all items in database, if they don't exist
-# DEPENDENCIES: api, URL, Item
-def items_to_db(patch):
-    item_dict = api.get_all_items()['data']
-    item_insert_list = []
+# DEPENDENCIES: api, item_to_db, Item
+def items_to_db():
+    # Only get pre-beta versions
+    version_list = api.get_versions()[9:]
+    for version in version_list:
+        item_dict = api.get_all_items(version=version)['data']
+        item_insert_list = []
+       
+        for id in item_dict:
+            i = item_to_db(id, version, item_dict)
+            if not i in item_insert_list and not Item.objects.filter(id=id, version=version).exists():
+                item_insert_list.append(i)            
+
+        print 'creating item objects in bulk'    
+        Item.objects.bulk_create(item_insert_list)
+
    
-    for id in item_dict:
+# DEPENDENCIES: URL, Item
+def item_to_db(id, version, item_dict=None, save=False): 
+    if item_dict is None:
+        item = api.get_item_by_id(id, version=version)
+    else:
         item = item_dict[id]
-        kwargs = {}
-        kwargs['id'] = id
-        url = URL['item_img'].format(patch=patch, id=id)
-        kwargs['img'] = URL['dd_base'].format(url=url)
-        if 'depth' in item:
-            kwargs['depth'] = item['depth']
+    kwargs = {}
+    kwargs['item_id'] = id
+    kwargs['version'] = version
+    url = URL['item_img'].format(patch=version, id=id)
+    kwargs['img'] = URL['dd_base'].format(url=url)
+    if 'depth' in item:
+        kwargs['depth'] = item['depth']
+    else:
+        kwargs['depth'] = 1
+    if 'description' in item:
+        kwargs['description'] = item['description']
+    else:
+        kwargs['description'] = ''
+    kwargs['name'] = item['name']
+    if 'maps' in item:
+        if '1' in item['maps']:
+            kwargs['map_1'] = item['maps']['1']
         else:
-            kwargs['depth'] = 1
-        if 'description' in item:
-            kwargs['description'] = item['description']
-        else:
-            kwargs['description'] = ''
-        kwargs['name'] = item['name']
-        kwargs['map_1'] = item['maps']['1']
-        kwargs['map_8'] = item['maps']['8']
-        kwargs['map_10'] = item['maps']['10']
-        kwargs['map_11'] = item['maps']['11']
-        kwargs['map_12'] = item['maps']['12']
-        kwargs['map_14'] = item['maps']['14']
-        i = Item(**kwargs)
-        print 'adding item {i}'.format(i=i)
+            kwargs['map_1'] = False
         
-        if not i in item_insert_list and not Item.objects.filter(id=id).exists():
-            item_insert_list.append(i)
-    print 'creating item objects in bulk'    
-    Item.objects.bulk_create(item_insert_list)
+        if '8' in item['maps']:
+            kwargs['map_8'] = item['maps']['8']
+        else:
+            kwargs['map_8'] = False 
+
+        if '10' in item['maps']:
+            kwargs['map_10'] = item['maps']['10']
+        else:
+            kwargs['map_10'] = False 
+
+        if '11' in item['maps']:
+            kwargs['map_11'] = item['maps']['11']
+        else:
+            kwargs['map_11'] = False   
+
+        if '12' in item['maps']:
+            kwargs['map_12'] = item['maps']['12']
+        else:
+            kwargs['map_12'] = False             
+
+        if '14' in item['maps']:
+            kwargs['map_14'] = item['maps']['14']
+        else:
+            kwargs['map_14'] = False               
+            
+    else:
+        kwargs['map_1'] = True
+        kwargs['map_8'] = True
+        kwargs['map_10'] = True
+        kwargs['map_11'] = True
+        kwargs['map_12'] = True
+        kwargs['map_14'] = True
+    i = Item(**kwargs)
+    print 'adding item {i}'.format(i=i)
+    
+    if save:
+        i.save()
+    
+    return i
 
     
     
@@ -177,7 +218,7 @@ def match_to_db(match_id, region='na'):
             build = get_player_items(participant_id, match)
             for component in build.build_history:
                 bc = create_build_component(component, ss)
-                if not bc in build_component_insert_list and not bc.is_in_db():
+                if not bc in build_component_insert_list:
                     build_component_insert_list.append(bc)
 
         save_in_bulk(m, champ_insert_list, player_insert_list, statset_insert_list, build_component_insert_list)
@@ -289,9 +330,13 @@ def create_statset(participant, champ, player, match):
 # DEPENDENCIES: Item, timestamp_to_game_time, BuildComponent
 def create_build_component(component, statset):
     kwargs = {}
+    version = version_standardize(statset.champ.match_version)
     kwargs['statset'] = statset
-    item_id = component.item.id
-    item = Item.objects.get(id=item_id)
+    item_id = component.item.item_id
+    if Item.objects.filter(item_id=item_id).exists():
+        item = Item.objects.get(item_id=item_id, version=version)
+    else:
+        item = item_to_db(item_id, version=version, save=True)
     kwargs['item'] = item
     kwargs['item_birth'] = component.birth_time
     kwargs['item_birth_time'] = timestamp_to_game_time(component.birth_time)
@@ -366,3 +411,60 @@ def save_or_bulk_create(klass, object_or_list):
         klass.objects.bulk_create(object_or_list)
     else:
         object_or_list.save()
+        
+
+        
+# Get list of all players in Challenger league, save their match histories to
+# DB
+# DEPENDENCIES: api, sum_name_standardize
+def challenger_to_db(region='na'):
+    challenger_list = api.get_challenger(region=region)
+    for challenger in challenger_list:
+        std_name = sum_name_standardize(challenger['playerOrTeamName'])
+        sum_id = challenger['playerOrTeamId']
+        summoner_to_db_display(std_name, sum_id)
+                
+        
+
+# Takes summoner name and optionally summoner ID (one less call to API if ID
+# is passed), saves their match history to database and returns match_display,
+# a list of all matches on record for the player        
+# DEPENDENCIES: Player, timezone, api, matches_to_db, Match, StatSet
+def summoner_to_db_display(std_summoner_name, sum_id=None):
+    # First look for player in database
+    if Player.objects.filter(std_summoner_name=std_summoner_name).exists():
+        print '{name} found in database'.format(name=std_summoner_name)
+        req_player = Player.objects.get(std_summoner_name=std_summoner_name)
+        secs_since_last_update = (timezone.now() - req_player.last_update
+                                    ).total_seconds()
+        print "{secs} seconds since last update".format(secs=secs_since_last_update)
+        
+        if secs_since_last_update > 1800:
+            match_list = api.get_match_list('na', req_player.summoner_id)
+            
+            req_player.last_update = timezone.now()
+            req_player.save()
+            
+            match_id_list = [str(match['matchId']) for match in match_list['matches']]
+            matches_to_db(match_id_list)
+            match_display = Match.objects.filter(match_id__in=match_id_list)
+          
+        else:
+            # Get player's last 15 matches from DB
+            rel_statsets = StatSet.objects.filter(player=req_player)
+            match_display = [statset.match for statset in rel_statsets]
+   
+    # If player doesn't exist, make call to api
+    else:
+        print 'adding {name} to database'.format(name=std_summoner_name)
+        if sum_id is None:
+            sum_dict = api.get_summoners_by_name('na', std_summoner_name)    
+            match_list = api.get_match_list('na', sum_dict[std_summoner_name]['id'])
+        else:
+            match_list = api.get_match_list('na', sum_id)
+            
+        match_id_list = [str(match['matchId']) for match in match_list['matches']]
+        matches_to_db(match_id_list)
+        match_display = Match.objects.filter(match_id__in=match_id_list)
+        
+    return match_display

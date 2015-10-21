@@ -8,7 +8,8 @@ from django.utils import timezone
 import datetime
 
 from text_funcs import sum_name_standardize
-from database_funcs import matches_to_db
+from database_funcs import matches_to_db, summoner_to_db_display
+from database_funcs import challenger_to_db
 from view_funcs import get_stat_comparison
 
 from riot_app import api
@@ -19,45 +20,25 @@ from .models import Player, Match, StatSet, BuildComponent, Champ
 
 
 # User Profile View
-# DEPENDENCIES: sum_name_standardize, Player, timezone, api, matches_to_db,
-#               Match, StatSet
+# DEPENDENCIES: sum_name_standardize, summoner_to_db_display
 def user_profile(request):
     # Get user's standardized summoner name from search
     std_summoner_name = sum_name_standardize(request.GET.get('userName'))
+    match_display = summoner_to_db_display(std_summoner_name)
+
+    context = {
+        'match_list':match_display, 
+        'summoner_name':std_summoner_name,
+    }
+    return render(request, 'champs/user_profile.html', context)
     
-    # First look for player in database
-    if Player.objects.filter(std_summoner_name=std_summoner_name).exists():
-        print '{name} found in database'.format(name=std_summoner_name)
-        req_player = Player.objects.get(std_summoner_name=std_summoner_name)
-        secs_since_last_update = (timezone.now() - req_player.last_update
-                                    ).total_seconds()
-        print "{secs} seconds since last update".format(secs=secs_since_last_update)
-        
-        if secs_since_last_update > 1800:
-            match_list = api.get_match_list('na', req_player.summoner_id)
-            
-            req_player.last_update = timezone.now()
-            req_player.save()
-            
-            match_id_list = [str(match['matchId']) for match in match_list['matches']]
-            matches_to_db(match_id_list)
-            match_display = Match.objects.filter(match_id__in=match_id_list)
-          
-        else:
-            # Get player's last 15 matches from DB
-            rel_statsets = StatSet.objects.filter(player=req_player)
-            match_display = [statset.match for statset in rel_statsets]
-   
-    # If player doesn't exist, make call to api
-    else:
-        print 'adding {name} to database'.format(name=std_summoner_name)
-        sum_dict = api.get_summoners_by_name('na', std_summoner_name)    
-        match_list = api.get_match_list('na', sum_dict[std_summoner_name]['id'])
-        match_id_list = [str(match['matchId']) for match in match_list['matches']]
-        matches_to_db(match_id_list)
-        match_display = Match.objects.filter(match_id__in=match_id_list)
+    
 
-
+# Match History View
+# DEPENDENCIES: summoner_to_db_display   
+def match_history(request, std_summoner_name):
+    match_display = summoner_to_db_display(std_summoner_name)
+    
     context = {
         'match_list':match_display, 
         'summoner_name':std_summoner_name,
@@ -96,6 +77,14 @@ def match_profile(request, match_id, summoner_name):
         'match_duration':match_duration,
     }
     return render(request, 'champs/match_profile.html', context)
+    
+    
+    
+# DEPENDENCIES: Player, challenger_to_db
+def challenger_index(request):
+    challenger_to_db()
+    challenger_list = Player.objects.filter(rank_num=34)
+    context = {'challenger_list':challenger_list}
     
     
     

@@ -185,6 +185,7 @@ class Build(object):
         self.build_history = []
         self.last_timestamp = -100000
         self.current_batch = 0
+        self.recent_edits = []
               
     def __str__(self):
         string = ''
@@ -223,13 +224,18 @@ class Build(object):
     def buy(self, item, timestamp):
         if timestamp - self.last_timestamp > 30000:
             self.current_batch += 1
+            self.recent_edits = []
         self.last_timestamp = timestamp
         
+        component = BuildComponent(item, self.current_batch, timestamp)
+        self.build_history.append(component)
+        last_index = self.build_history.index(component)
+        self.recent_edits.append({'last_index':last_index, 'event':'buy'})
+        
         # If item isn't basic, delete all more basic components
-        if item.depth > 1:
-            self.destroy_children(item, timestamp)
-                
-        self.build_history.append(BuildComponent(item, self.current_batch, timestamp)) 
+        # if item.depth > 1:
+            # self.destroy_children(item, timestamp)
+               
        
     # Find last time an item was purchased... Will return None if never purchased
     def find_last(self, item):
@@ -247,10 +253,30 @@ class Build(object):
                 return self.build_history.index(component)
         return None
         
-    # Can only undo last purchase -- simply pop last purchase from list
-    def undo(self):
-        self.build_history.pop()
-    
+    # Can undo purchase or sale. If purchase, reverse the effects of the last
+    # buy operation (including destroys). If sale, return sold item to 
+    # inventory
+    def undo(self, last_event):
+        event_dict = self.recent_edits.pop()
+        
+        if last_event == 'buy':
+            last_event_edited = event_dict['event']
+            
+            while last_event_edited == 'destroy':
+                last_index = event_dict['last_index']
+                self.build_history[last_index].death_time = None
+                event_dict = self.recent_edits.pop()
+                last_event_edited = event_dict['event']
+                
+            if last_event_edited == 'buy':
+                self.build_history.pop()
+
+                
+        else:
+            last_index = event_dict['last_index']
+            component = self.build_history[last_index]
+            component.death_time = None
+
     # Selling an item removes it from inventory, but is unlike "undo" in
     # that the purchase maintains relevance, and must still be noted
     def sell(self, item, timestamp):
@@ -259,8 +285,11 @@ class Build(object):
        
         self.last_timestamp = timestamp
         last_index = self.find_last_existing(item)
-        if last_index is not None:
+        
+        if not last_index is None:
             self.build_history[last_index].death_time = timestamp
+            self.recent_edits.append({'last_index':last_index, 'event':'sell'})
+
      
     # Items are destroyed when they are consumed (e.g. potions) or when a
     # parent of that item is bought (i.e. item upgrade). Functions just as
@@ -270,6 +299,8 @@ class Build(object):
         last_index = self.find_last_existing(item)
         if last_index is not None:
             self.build_history[last_index].death_time = timestamp
+            self.recent_edits.append({'last_index':last_index, 'event':'destroy'})
+
 
     # When a component is purchased, if lesser components (children) of the bought component
     # already exist in the build, they will be destroyed and replaced by the bought component.

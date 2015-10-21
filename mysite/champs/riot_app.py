@@ -28,8 +28,8 @@ URL = {
     'league_by_team_ids':'{ver}/league/by-team/{team_ids}',
     'league_entry_by_team_ids':'{ver}/league/by-team/{team_ids}/entry',
     'realm':'{ver}/realm',
-    'challenger_leagues':'{ver}/league/challenger',
-    'master_leagues':'{ver}/league/master',
+    'challenger':'{ver}/league/challenger',
+    'master':'{ver}/league/master',
     'static_champion':'{ver}/champion',
     'static_champion_by_id':'{ver}/champion/{id}',
     'static_item':'{ver}/item',
@@ -178,21 +178,33 @@ class RiotAPI:
             tries += 1
             return self._request(api_url, req_region, params=params, tries=tries)
             
-        # elif r.status_code==429:
-            # headers = r.headers
-            # retry_time = headers['Retry-After']
-            # print 'retrying after {retry_time} seconds'.format(retry_time=retry_time)
-            # start_time = time.time()
-            # while time.time() - start_time < retry_time:
-                # pass
-            # return self._request(api_url, req_region, params, tries)
+        elif r.status_code==429:
+            headers = r.headers
+            if 'Retry-After' in headers:
+                retry_time = headers['Retry-After']
+            else:
+                retry_time = 10
+            print 'retrying after {retry_time} seconds'.format(retry_time=retry_time)
+            start_time = time.time()
+            while time.time() - start_time < retry_time:
+                pass
+            return self._request(api_url, req_region, params, tries)
+ 
+        elif r.status_code==500:
+            retry_time = 60*5
+            print 'retrying after {retry_time} seconds'.format(retry_time=retry_time)
+            start_time = time.time()
+            while time.time() - start_time < retry_time:
+                print time.time() - start_time
+                pass
+            return self._request(api_url, req_region, params, tries)
  
         raise_error(r)
                         
         return r.json()
         
         
-    def _static_request(self, api_url, req_region, params={}):
+    def _static_request(self, api_url, req_region, params={}, tries=0):
         print 'making static request {url}'.format(url=api_url)
         
         args = {'api_key':self.api_key}
@@ -206,7 +218,33 @@ class RiotAPI:
                 url=api_url,
                 ),
             params=args
-            )
+            ) 
+      
+        if r.status_code==503 and tries<5:
+            print '503'
+            tries += 1
+            return self._static_request(api_url, req_region, params=params, tries=tries)
+
+        elif r.status_code==429:
+            headers = r.headers
+            if 'Retry-After' in headers:
+                retry_time = headers['Retry-After']
+            else:
+                retry_time = 5
+            print 'retrying after {retry_time} seconds'.format(retry_time=retry_time)
+            start_time = time.time()
+            while time.time() - start_time < retry_time:
+                pass
+            return self._static_request(api_url, req_region, params, tries)
+ 
+        elif r.status_code==500:
+            retry_time = 60*5
+            print 'retrying after {retry_time} seconds'.format(retry_time=retry_time)
+            start_time = time.time()
+            while time.time() - start_time < retry_time:
+                print time.time() - start_time
+                pass
+            return self._static_request(api_url, req_region, params, tries)        
         
         raise_error(r)
 
@@ -302,7 +340,7 @@ class RiotAPI:
         return champ_dict
         
         
-    def get_versions(self, region, reverse=True):
+    def get_versions(self, region='na', reverse=True):
         url = URL['static_versions'].format(
             ver=API_VERSIONS['lol-static-data']
             )
@@ -413,7 +451,7 @@ class RiotAPI:
     
     
     def get_match_list(self, region, summoner_id, begin_index=0, end_index=15,
-                        ranked_queues='RANKED_SOLO_5x5', begin_time=None, 
+                        ranked_queues='RANKED_SOLO_5x5', begin_time=1444777200, 
                         end_time=None, champion_ids=None, seasons=None):
         url = URL['match_list'].format(
             ver=API_VERSIONS['matchlist'],
@@ -434,19 +472,31 @@ class RiotAPI:
         return match_list_dict
     
     def get_match(self, region, match_id, include_timeline=True):
-        url = URL['match'].format(
-            ver=API_VERSIONS['match'],
-            matchId=match_id,
-        )
-        
-        params = {
-            'includeTimeline':include_timeline
-        }
+        url = URL['match'].format(ver=API_VERSIONS['match'],matchId=match_id)       
+        params = {'includeTimeline':include_timeline}
         
         match_dict = self._request(url, req_region=region, params=params)
 
         return match_dict
    
+    def get_challenger(self, region='na', type='RANKED_SOLO_5x5'):
+        url = URL['challenger'].format(ver=API_VERSIONS['league'])   
+        params = {'type':type}
+        
+        challenger_dict = self._request(url, req_region=region, params=params)
+        return challenger_dict['entries']
+        
+    def get_item_by_id(self, id, region='na', locale=None, 
+                       version=None, item_data='all'):
+        url = URL['static_item_id'].format(
+            ver=API_VERSIONS['lol-static-data'])
+        params = {'locale':locale, 'version':version, 'itemData':item_data}
+        
+        item_dict = self._static_request(url,
+                                         req_region=region,
+                                         params=params)
+                                         
+        return item_dict
     
 class KnownSummonerList:
     def __init__(self, summoners={}):
