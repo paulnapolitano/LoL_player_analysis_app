@@ -1,7 +1,252 @@
-.build ol{
-    list-style-type: none;
+body {
+    font-family: 'Oswald', sans-serif;
+    color: blue;
+}
+
+li {
     margin: 0;
     padding: 0;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+}
+
+img {
+    margin: 0;
+    padding: 0;
+}
+
+div {
+    margin: 0;
+    padding: 0;
+}
+
+#timeline_container {
+    position: relative;
+    height: 50px;
+    width: 1200px;
+}
+
+#play_button_container {
+    cursor: pointer;
+    height: 30px;
+    width: 30px;
+    border-radius: 15px;
+    position: relative;
+    display: inline-block;
+    float: left;
+}
+
+#play_button:focus {
+    outline: none;
+}
+
+#play img{
+    height: 30px;
+    width: 30px;
+}
+
+#pause img{
+    height: 30px;
+    width: 30px;
+}
+
+#play {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 30px;
+    width: 30px;
+}
+
+#pause {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 30px;
+    width: 30px;
+}
+
+#label_container {
+    height: 30px;
+    width: 70px;
+    line-height: 30px;
+    display: inline-block;
+    float: left;
+    color: black;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    margin-right: 10px;
+}
+
+#slider_container {
+    color: black;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    display: inline-block;
+    float: left;
+    height: 30px;
+    width: 800px;
+    margin-right: 10px;
+}
+
+#slider_container output {
+    position: absolute;
+    width: 70px;
+    height: 24px;
+    text-align: center;
+    display: inline-block;
+}
+
+#time {
+
+}
+
+/* Overwrite default Range Slider styling */
+#game_time {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 28px;
+}
+
+#game_time:focus {
+    outline: none;
+}
+
+/* ------------- Slider Thumb (Cross-Browser) ----------- */
+/* Chrome Slider Thumb */
+#game_time::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 28px;
+    width: 10px;
+    border: 1px solid #000000;
+    border-radius: 3px;
+    background: #ffffff;
+    cursor: pointer;
+    margin-top: -11px;
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+}
+
+/* Firefox Slider Thumb */
+#game_time::-moz-range-thumb {
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    border: 1px solid #000000;
+    height: 36px;
+    width: 16px;
+    border-radius: 3px;
+    background: #ffffff;
+    cursor: pointer;
+}
+
+/* IE Slider Thumb */
+#game_time::-ms-thumb {
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    border: 1px solid #000000;
+    height: 36px;
+    width: 16px;
+    border-radius: 3px;
+    background: #ffffff;
+    cursor: pointer;
+}
+/* ------------------------------------------------------ */
+
+/* ------------- Slider Track (Cross-Browser) ----------- */
+/* Chrome Slider Track */
+#game_time::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 8px;
+    cursor: pointer;
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    background: #3071a9;
+    border-radius: 4px;
+    border: 0.5px solid #010101;
+}
+
+/* Change track background while focused on it */
+#game_time:focus::-webkit-slider-runnable-track {
+    background: #367ebd;
+}
+
+/* Firefox Slider Track */
+#game_time::-moz-range-track {
+    width: 100%;
+    height: 8.4px;
+    cursor: pointer;
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    background: #3071a9;
+    border-radius: 1.3px;
+    border: 0.2px solid #010101;
+}    
+
+/* IE Slider Track */
+#game_time::-ms-track {
+    width: 100%;
+    height: 8.4px;
+    cursor: pointer;
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    background: #3071a9;
+    border-radius: 1.3px;
+    border: 0.2px solid #010101;
+}
+
+#game_time:focus::-ms-fill-lower {
+    background: #3071a9;
+}
+
+#game_time::-ms-fill-upper {
+    background: #3071a9;
+    border: 0.2px solid #010101;
+    border-radius: 2.6px;
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+}
+
+#game_time:focus::-ms-fill-upper {
+    background: #367ebd;
+}
+/* ------------------------------------------------------ */
+
+
+ 
+    
+.build_container {
+    width:1040px;
+    padding:10px;
+}
+
+.my_build {
+    width:470px;
+    float:left;
+}
+
+.other_build {
+    width:470px;
+    float:right;
+}
+
+.build_header_block {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 0;
+    height: 50px;
+    width: 100px;    
+    line-height: 50px;
+    text-align: center; 
+}
+
+.build_header {
+    display: inline-block;
+    vertical-align: middle;
+    line-height: normal
+}
+
+.mid_headers {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    float: left;
+    color: black;
+    width: 100px;
 }
 
 .build ul{
@@ -11,9 +256,109 @@
 }
 
 .build li{
-    display: inline;
+    margin: 0;
+    padding: 0;
+    display: inline-block;
 }
 
 .hide {
     opacity: 0;
+}
+
+.helper {
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+
+.time_items {
+    height: 50px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 0;
+}
+
+.final_items {
+    height: 50px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 0;
+}
+
+.time_item_slot {
+    position: relative;
+    float: left;
+    margin: 0;
+    padding: 0;
+    height: 48px;
+    width: 48px;
+    border: 1px solid black;
+    
+    text-align: center;
+}
+
+.my_build > .time_items > .time_item_slot {
+    float: right;
+}
+
+.time_item_slot img {
+    margin: 0;
+    padding: 0;
+    vertical-align: middle;
+    max-height: 48px;
+    max-width: 48px;
+}
+
+.stack_num {
+    color: white;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: 20px;
+    width: 12px;
+    margin: 0;
+    text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;  
+}
+
+.final_item_slot {
+    float: left;
+    margin: 0;
+    padding: 0;
+    height: 48px;
+    width: 48px;
+    border: 1px solid black;
+    
+    text-align: center;
+}
+
+.final_item_slot img {
+    margin: 0;
+    padding: 0;
+    vertical-align: middle;
+    max-height: 48px;
+    max-width: 48px;
+}
+
+.arrow img {
+    position: absolute;
+    top: 50%;
+    height: 20px;
+    width: 20px;
+    margin-top: -10px;
+    left: 50%;
+    margin-left: -9px;
+}
+
+.arrow {
+    float: left;
+    position: relative;
+    height: 50px;
+    width: 20px;
+    white-space: nowrap;
+    
+    text-align: center;
 }

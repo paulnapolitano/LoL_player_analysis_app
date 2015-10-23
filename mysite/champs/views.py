@@ -12,7 +12,7 @@ from database_funcs import matches_to_db, summoner_to_db_display
 from database_funcs import challenger_to_db
 from view_funcs import get_stat_comparison
 
-from riot_app import api
+from riot_app import api, RiotException
 
 from .models import Player, Match, StatSet, BuildComponent, Champ
 
@@ -67,14 +67,52 @@ def match_profile(request, match_id, summoner_name):
     match_duration = match.match_duration
     
     statset = StatSet.objects.get(statset_id=statset_id)
+    champ = statset.champ
+    champ_id = champ.champ_id
+    smart_role_name = champ.smart_role_name
+    
+    if Champ.objects.filter(champ_id=champ_id, 
+                            smart_role_name=smart_role_name, 
+                            league_name='CHALLENGER').exists():
+        challenger_champ = Champ.objects.get(champ_id=champ_id, 
+                                             smart_role_name=smart_role_name,
+                                             league_name='CHALLENGER')
+        challenger_statset = StatSet.objects.filter(champ=challenger_champ)[0]
+        challenger_build = BuildComponent.objects.filter(
+                                                   statset=challenger_statset)
+        challenger_final = challenger_build.filter(item_death = None)
+        challenger_duration = challenger_statset.match.match_duration
+    else:
+        challenger_statset = None
+        challenger_build = None
+        challenger_duration = None
+        challenger_final = None
+        
     build = BuildComponent.objects.filter(statset=statset)
+    final_build = build.filter(item_death = None)
     stat_comparison = get_stat_comparison(statset)
+    
+    consumable_list = ["Total Biscuit of Rejuvenation",
+    "Elixir of Iron",
+    "Elixir of Ruin", 
+    "Elixir of Sorcery",
+    "Elixir of Wrath",
+    "Health Potion",
+    "Mana Potion",
+    "Stealth Ward",
+    "Vision Ward"]
+    
     context = {
         'name':name,
         'build':build,
+        'final_build':final_build,
         'statset':statset,
         'stat_comparison':stat_comparison,
         'match_duration':match_duration,
+        'challenger_statset':challenger_statset,
+        'challenger_build':challenger_build,
+        'challenger_final':challenger_final,
+        'consumable_list':consumable_list
     }
     return render(request, 'champs/match_profile.html', context)
     
@@ -82,10 +120,13 @@ def match_profile(request, match_id, summoner_name):
     
 # DEPENDENCIES: Player, challenger_to_db
 def challenger_index(request):
-    challenger_to_db()
+    try:
+        challenger_to_db()
+    except RiotException:
+        print 'Failed to load all challenger players...'
     challenger_list = Player.objects.filter(rank_num=34)
     context = {'challenger_list':challenger_list}
-    
+    return render(request, 'champs/challenger_index.html', context)
     
     
 # Champ Index View

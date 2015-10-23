@@ -1,0 +1,169 @@
+body {
+    color: blue;
+}
+
+li {
+    margin: 0;
+    padding: 0;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+}
+
+img {
+    margin: 0;
+    padding: 0;
+}
+
+div {
+    margin: 0;
+    padding: 0;
+}
+
+#game_time {
+    -webkit-appearance:none;
+}
+
+.build {
+    width:1200px;
+    padding:10px;
+}
+
+.my_build {
+    width:550px;
+    float:left;
+}
+
+.other_build {
+    width:550px;
+    float:right;
+}
+
+.build_header_block {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 0;
+    height: 50px;
+    width: 100px;    
+    line-height: 50px;
+    text-align: center; 
+}
+
+.build_header {
+    display: inline-block;
+    vertical-align: middle;
+    line-height: normal
+}
+
+.mid_headers {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    float: left;
+    color: black;
+    width: 100px;
+}
+
+.build ul{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.build li{
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+}
+
+.hide {
+    opacity: 0;
+}
+
+.helper {
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+
+.time_items {
+    height: 50px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 0;
+}
+
+.final_items {
+    height: 50px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 0;
+}
+
+.time_item_slot {
+    float: left;
+    margin: 0;
+    padding: 0;
+    height: 48px;
+    width: 48px;
+    border: 1px solid black;
+    
+    text-align: center;
+}
+
+.my_build.time_items.time_item_slot {
+    float: right;
+}
+
+.time_item_slot img {
+    margin: 0;
+    padding: 0;
+    vertical-align: middle;
+    max-height: 48px;
+    max-width: 48px;
+}
+
+.final_item_slot {
+    float: left;
+    margin: 0;
+    padding: 0;
+    height: 48px;
+    width: 48px;
+    border: 1px solid black;
+    
+    text-align: center;
+}
+
+.final_item_slot img {
+    margin: 0;
+    padding: 0;
+    vertical-align: middle;
+    max-height: 48px;
+    max-width: 48px;
+}
+
+.arrow img {
+    position: absolute;
+    top: 50%;
+    height: 20px;
+    width: 20px;
+    margin-top: -10px;
+    left: 50%;
+    margin-left: -9px;
+}
+
+.arrow {
+    float: left;
+    position: relative;
+    height: 50px;
+    width: 20px;
+    white-space: nowrap;
+    
+    text-align: center;
+}
+
+.stack_num {
+    color: black;
+    position: absolute;
+}

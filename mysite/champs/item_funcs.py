@@ -13,7 +13,7 @@ from text_funcs import version_standardize
 
 # ------------------------------- FUNCTIONS ---------------------------------
 
-
+ 
 # Get full list of items belonging to player throughout match, 
 # including item 'birth time' and 'death time' 
 # DEPENDENCIES: Item, item_events_from_frames, Build
