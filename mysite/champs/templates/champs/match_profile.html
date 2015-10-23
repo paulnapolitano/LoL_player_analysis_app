@@ -1,15 +1,17 @@
 <html>
     <head>
-        {% load staticfiles %}
+        {% load static from staticfiles %}
         <link rel="stylesheet" type="text/css" href="{% static 'champs/poobygg.css' %}"/>
+        <link href='https://fonts.googleapis.com/css?family=Oswald:400,700' rel='stylesheet' type='text/css'>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="{% static 'champs/poobygg.js' %}"></script>
         <title> {{ name }}'s Match Analysis </title>
     </head>
         
     <body>
         {% if statset and stat_comparison %}
             <p>{{ statset.champ }}</p>
-            
+             
             <ul>
             {% for key, value in stat_comparison.items %}
                 {# value.avg -> avg val #}
@@ -39,32 +41,92 @@
             <p>Match not found, or missing information...</p>
         {% endif %}
 
-        <label for="game_time">Game Time</label>
-        <input id="game_time" type="range" value="30" min="0" max="{{ match_duration }}" step="10" oninput="outputUpdate(value)"/>
-        <output for="game_time" id="time">00:00:30</output>
-        <script src="{% static 'champs/poobygg.js' %}"></script>
-
-        {% if build %}
-            <div class="build">
-                <ul class="time_items">
+        <div id="timeline_container">
+            <div id="label_container">
+                <label for="game_time">Game Time</label>
+            </div>
+            <div id="slider_container">
+                <input id="game_time" type="range" value="0" min="0" max="{{ match_duration }}" step="10" oninput="outputUpdate(value)"/>
+                <output for="game_time" id="time">00:00:00</output>
+            </div>
+            <div id="play_button_container">
+                <div id="play">
+                    <img src="https://image.freepik.com/free-icon/play-button_318-42541.png"></img>
+                </div>
+                <div id="pause">
+                    <img src="http://uxrepo.com/static/icon-sets/google-material/png32/256/000000/android-pause-circle-outline-256-000000.png"></img>
+                </div>
+            </div>
+        </div>
+        
+        <div class="build_container">
+        {% if build%}
+            <div class="my_build">
+                <div class="time_items">
                 {% for component in build %}
-                    <li data-birth={{ component.item_birth }} data-death={{ component.item_death }}>
+                    <div class="time_item_slot" data-birth={{ component.item_birth }} data-death={{ component.item_death }} data-name="{{ component.item.name }}" data-stack="off">
                         <img src="{{ component.item.img }}" title="{{ component.item.name }} ({{ component.item_birth_time }}-{{ component.item_death_time }})" height="50px" width="50px"></img>
-                    </li>
+                        <div class="stack_num"></div>
+                    </div>                    
                 {% endfor %}
-                    <li></li>
-                </ul>
-            
-                <ul class="final_items">
-                {% for component in build %}
-                    {% if not component.item_death %}
-                        <li class="final_item_slot">
-                            <img src="{{ component.item.img }}" title="{{ component.item.name }} ({{ component.item_birth_time }}-{{ component.item_death_time }})" height="50px" width="50px"></img>
-                        </li>
+                </div>
+                
+                <div class="final_items">
+                {% for component in final_build %}
+                    {% if not component.item.name in consumable_list %} 
+                        {% if not forloop.first and not component.item.name in consumable_list %}
+                        <div class="arrow"> 
+                            <span class="helper"></span>
+                            <img src="http://www.glivec.com/Themes/Glivec/img/arrow_mobile.png" height="20px" width="20px"> </img> 
+                        </div> 
+                        {% endif %}
+
+                        <div class="final_item_slot" data-name="{{ component.item.name }}" data-stack="off">
+                            <img src="{{ component.item.img }}" title="{{ component.item.name }} ({{ component.item_birth_time }})" height="50px" width="50px"></img>
+                            <div class="stack_num"></div>
+                        </div>
                     {% endif %}
                 {% endfor %}
-                </ul>
+                </div>
             </div>
-        {% endif %}
+
+            <div class="other_build">
+                <div class="time_items">
+                {% for component in challenger_build %}
+                    <div class="time_item_slot" data-birth={{ component.item_birth }} data-death={{ component.item_death }} data-name="{{ component.item.name }}" data-stack="off">
+                        <img src="{{ component.item.img }}" title="{{ component.item.name }} ({{ component.item_birth_time }}-{{ component.item_death_time }})" height="50px" width="50px"></img>
+                        <div class="stack_num"></div>
+                    </div>
+                {% endfor %}
+                </div>
+                
+                <div class="final_items">
+                {% for component in challenger_final %}
+                    {% if not component.item.name in consumable_list %}                
+                        {% if not forloop.first and not component.item.name in consumable_list%}
+                        <div class="arrow">
+                            <span class="helper"></span>
+                            <img src="http://www.glivec.com/Themes/Glivec/img/arrow_mobile.png" height="20px" width="20px"> </img> 
+                        </div>
+                        {% endif %}
+                        <div class="final_item_slot" data-name="{{ component.item.name }}" data-stack="off">
+                            <img src="{{ component.item.img }}" title="{{ component.item.name }} ({{ component.item_birth_time }})" height="50px" width="50px"></img>
+                            <div class="stack_num"></div>
+                        </div>
+                    {% endif %}    
+                {% endfor %}
+                </div>
+            </div>
+            
+            <div class="mid_headers">
+                <div class="build_header_block">
+                    <p class="build_header">Timewise</p>
+                </div>
+                <div class="build_header_block">
+                    <p class="build_header">Final</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
     </body>
 </html>
