@@ -1,21 +1,6 @@
 body {
     font-family: 'Oswald', sans-serif;
-    color: blue;
-}
-
-li {
-    margin: 0;
-    padding: 0;
-}
-
-ul {
-    margin: 0;
-    padding: 0;
-}
-
-img {
-    margin: 0;
-    padding: 0;
+    color: red;
 }
 
 div {
@@ -26,94 +11,93 @@ div {
 #timeline_container {
     position: relative;
     height: 50px;
-    width: 1200px;
+    width: 720px;
+    margin-left: 140px;
+    margin-bottom: 50px;
 }
 
-#play_button_container {
-    cursor: pointer;
-    height: 30px;
-    width: 30px;
-    border-radius: 15px;
-    position: relative;
-    display: inline-block;
-    float: left;
-}
+    #label_container {
+        height: 30px;
+        width: 70px;
+        line-height: 30px;
+        display: inline-block;
+        float: left;
+        color: black;
+        font-family: 'Oswald', sans-serif;
+        font-weight: 700;
+        margin-right: 10px;
+    }
+    
+    #slider_container {
+        color: black;
+        font-family: 'Oswald', sans-serif;
+        font-weight: 700;
+        display: inline-block;
+        float: left;
+        height: 30px;
+        width: 600px;
+        margin-right: 10px;
+    }
+    
+        #game_time {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 28px;
+        }
+        
+            #game_time:focus {
+                outline: none;
+            }
+        
+        #slider_container output {
+            position: absolute;
+            width: 70px;
+            height: 24px;
+            text-align: center;
+            display: inline-block;
+        }
+    
+    #play_button_container {
+        cursor: pointer;
+        height: 30px;
+        width: 30px;
+        border-radius: 15px;
+        position: relative;
+        display: inline-block;
+        float: left;
+    }
+    
+        #play {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 30px;
+            width: 30px;
+        }
+        
+            #play img{
+                height: 30px;
+                width: 30px;
+            }
+            
+        #pause {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 30px;
+            width: 30px;
+        }
+        
+            #pause img{
+                height: 30px;
+                width: 30px;
+            }
 
-#play_button:focus {
-    outline: none;
-}
 
-#play img{
-    height: 30px;
-    width: 30px;
-}
 
-#pause img{
-    height: 30px;
-    width: 30px;
-}
 
-#play {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 30px;
-    width: 30px;
-}
 
-#pause {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 30px;
-    width: 30px;
-}
 
-#label_container {
-    height: 30px;
-    width: 70px;
-    line-height: 30px;
-    display: inline-block;
-    float: left;
-    color: black;
-    font-family: 'Oswald', sans-serif;
-    font-weight: 700;
-    margin-right: 10px;
-}
-
-#slider_container {
-    color: black;
-    font-family: 'Oswald', sans-serif;
-    font-weight: 700;
-    display: inline-block;
-    float: left;
-    height: 30px;
-    width: 800px;
-    margin-right: 10px;
-}
-
-#slider_container output {
-    position: absolute;
-    width: 70px;
-    height: 24px;
-    text-align: center;
-    display: inline-block;
-}
-
-#time {
-
-}
-
-/* Overwrite default Range Slider styling */
-#game_time {
-    -webkit-appearance: none;
-    width: 100%;
-    height: 28px;
-}
-
-#game_time:focus {
-    outline: none;
-}
 
 /* ------------- Slider Thumb (Cross-Browser) ----------- */
 /* Chrome Slider Thumb */
@@ -151,6 +135,9 @@ div {
     cursor: pointer;
 }
 /* ------------------------------------------------------ */
+
+
+
 
 /* ------------- Slider Track (Cross-Browser) ----------- */
 /* Chrome Slider Track */
@@ -208,157 +195,398 @@ div {
 /* ------------------------------------------------------ */
 
 
- 
-    
-.build_container {
+
+/* ---------------- MIRRORED COMPARISON ----------------- */
+/* .build_container {
     width:1040px;
     padding:10px;
 }
 
-.my_build {
-    width:470px;
-    float:left;
-}
-
-.other_build {
-    width:470px;
-    float:right;
-}
-
-.build_header_block {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    padding: 0;
-    height: 50px;
-    width: 100px;    
-    line-height: 50px;
-    text-align: center; 
-}
-
-.build_header {
-    display: inline-block;
-    vertical-align: middle;
-    line-height: normal
-}
-
-.mid_headers {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 700;
-    float: left;
-    color: black;
-    width: 100px;
-}
-
-.build ul{
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-}
-
-.build li{
-    margin: 0;
-    padding: 0;
-    display: inline-block;
-}
-
-.hide {
-    opacity: 0;
-}
-
-.helper {
-    display: inline-block;
-    height: 100%;
-    vertical-align: middle;
-}
-
-.time_items {
-    height: 50px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    padding: 0;
-}
-
-.final_items {
-    height: 50px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    padding: 0;
-}
-
-.time_item_slot {
-    position: relative;
-    float: left;
-    margin: 0;
-    padding: 0;
-    height: 48px;
-    width: 48px;
-    border: 1px solid black;
+    .my_build {
+        width:470px;
+        float:left;
+    }
     
-    text-align: center;
+        .time_items {
+            height: 50px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            padding: 0;
+        }
+        
+            .time_item_slot {
+                position: relative;
+                float: left;
+                margin: 0;
+                padding: 0;
+                height: 48px;
+                width: 48px;
+                border: 1px solid black;
+                
+                text-align: center;
+            }
+            
+                .stack_num {
+                    color: white;
+                    position: absolute;
+                    right: 0;
+                    bottom: 0;
+                    height: 20px;
+                    width: 12px;
+                    margin: 0;
+                    text-shadow:
+                    -1px -1px 0 #000,
+                    1px -1px 0 #000,
+                    -1px 1px 0 #000,
+                    1px 1px 0 #000;  
+                }
+                
+        .final_items {
+            height: 50px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            padding: 0;
+        }
+            .arrow {
+                float: left;
+                position: relative;
+                height: 50px;
+                width: 20px;
+                white-space: nowrap;
+                
+                text-align: center;
+            }
+            
+                .arrow img {
+                    position: absolute;
+                    top: 50%;
+                    height: 20px;
+                    width: 20px;
+                    margin-top: -10px;
+                    left: 50%;
+                    margin-left: -9px;
+                }
+        
+                .helper {
+                    display: inline-block;
+                    height: 100%;
+                    vertical-align: middle;
+                }
+        
+            .final_item_slot {
+                float: left;
+                margin: 0;
+                padding: 0;
+                height: 48px;
+                width: 48px;
+                border: 1px solid black;
+                
+                text-align: center;
+            }
+
+    .other_build {
+        width:470px;
+        float:left;
+    }
+
+    .mid_headers {
+        font-family: 'Oswald', sans-serif;
+        font-weight: 700;
+        float: left;
+        color: black;
+        width: 100px;
+    }
+
+        .build_header_container {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            padding: 0;
+            height: 50px;
+            width: 100px;    
+            line-height: 50px;
+            text-align: center; 
+        }
+
+        .build_header {
+            display: inline-block;
+            vertical-align: middle;
+            line-height: normal
+        } */
+#champ_header {
+    width: 1000px;
+    height: 100px;
 }
 
-.my_build > .time_items > .time_item_slot {
-    float: right;
-}
+    .summoner_name {
+        float: left;
+        width: 200px;
+        height: 100px;
+        line-height: 100px;
+        color: black;
+        font-size: 30px;
+        text-align: center;
+    }
 
-.time_item_slot img {
-    margin: 0;
-    padding: 0;
-    vertical-align: middle;
-    max-height: 48px;
-    max-width: 48px;
-}
+    .champ_pic {
+        border-radius: 50px;
+        width: 100px;
+        height: 100px;
+        float: left;
+    }
 
-.stack_num {
-    color: white;
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    height: 20px;
-    width: 12px;
-    margin: 0;
-    text-shadow:
-    -1px -1px 0 #000,
-    1px -1px 0 #000,
-    -1px 1px 0 #000,
-    1px 1px 0 #000;  
-}
-
-.final_item_slot {
-    float: left;
-    margin: 0;
-    padding: 0;
-    height: 48px;
-    width: 48px;
-    border: 1px solid black;
+        .champ_pic img {
+            width: 100px;
+            height: 100px;
+        }
+        
+    .champ_name {
+        margin-right: 20px;
+        width: 130px;
+        height: 100px;
+        line-height: 100px;
+        text-align: right;
+        font-size: 30px;
+        float: left;
+        color: black;
+        font-weight: 700;
+    }
     
-    text-align: center;
-}
-
-.final_item_slot img {
-    margin: 0;
-    padding: 0;
-    vertical-align: middle;
-    max-height: 48px;
-    max-width: 48px;
-}
-
-.arrow img {
-    position: absolute;
-    top: 50%;
-    height: 20px;
-    width: 20px;
-    margin-top: -10px;
-    left: 50%;
-    margin-left: -9px;
-}
-
-.arrow {
-    float: left;
-    position: relative;
-    height: 50px;
-    width: 20px;
-    white-space: nowrap;
+    .vs {
+        float: left;
+        height: 100px;
+        width: 100px;
+    }
     
-    text-align: center;
+        .vs img {
+            height: 60px;
+            width: 60px;
+            margin-right: 25px;
+            margin-left: 15px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+    
+    .enemy_champ_name {
+        margin-left: 20px;
+        width: 130px;
+        height: 100px;
+        line-height: 100px;
+        text-align: left;
+        font-size: 30px;
+        font-weight: 700;
+        float: left;
+        color: black;
+    }
+  
+#stat_comparison {
+    width: 1000px;
+    height: 400px;
+    font-size: 20px;
+    margin-top: 20px;
 }
+
+    .my_stat {
+        float: left;
+        height: 60px;
+        width: 400px;
+        text-align: right;
+        line-height: 60px;
+    }
+    
+    .stat_header {
+        color: black;
+        float: left;
+        height: 60px;
+        width: 200px;
+        text-align: center;
+        line-height: 60px;
+        font-weight: 700;
+    }
+    
+    .enemy_stat {
+        float: left;
+        height: 60px;
+        width: 400px;
+        text-align: left;
+        line-height: 60px;
+    }
+    
+.build_container {
+    width: 1040px;
+    padding: 10px;
+}
+
+    .time_build {
+        width:1100px;
+        height:230px;
+        float:left;
+    }
+    
+        .my_build {
+            border: 2px solid black;
+            position: relative;
+            width: 1100px;
+            height: 50px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            padding: 0
+        }
+    
+            .player_name {
+                color: black;
+                float: left;
+                width: 250px;
+                height: 50px;
+                padding: 0;
+                text-align: center;
+                line-height: 50px;
+            }
+            
+            .inventory {
+                float: left;
+                height: 50px;
+                width: 400px;
+            }
+            
+                .main_items {
+                    float: left;
+                    height: 50px;
+                    padding: 0;
+                }
+                
+                    .time_item_slot {
+                        position: relative;
+                        float: left;
+                        margin-right: 5px;
+                        padding: 0;
+                        height: 48px;
+                        width: 48px;
+                        border: 1px solid black;
+                        
+                        text-align: center;
+                    }
+                    
+                        .stack_num {
+                            color: white;
+                            position: absolute;
+                            right: 0;
+                            bottom: 0;
+                            height: 20px;
+                            width: 12px;
+                            margin: 0;
+                            text-shadow:
+                            -1px -1px 0 #000,
+                            1px -1px 0 #000,
+                            -1px 1px 0 #000,
+                            1px 1px 0 #000;  
+                        }
+
+                .boots {
+                    float: left;
+                    height: 50px;
+                    padding: 0;
+                }
+                
+                .consumables {
+                    float: left;
+                    height: 50px;
+                    padding: 0;
+                }
+                
+                .trinket {
+                    float: right;
+                    width: 50px;
+                    height: 50px;
+                    padding: 0;
+                } 
+                
+                .build_gold {
+                    color: orange;
+                    float: left;
+                    margin-left: 10px;
+                    width: 75px;
+                    height: 50px;
+                    line-height: 50px;
+                }
+                    .coin_img {
+                        margin-top: 15px;
+                        margin-bottom: 15px;
+                        height: 20px;
+                        width: 20px;
+                        float: left;
+                    }
+                    
+                    .gold_val {
+                        margin-left: 5px;
+                        width: 50px;
+                        height: 50px;
+                        float: right;
+                    }
+                
+                .consumable_gold {
+                    color: orange;
+                    float: left;
+                    width: 75px;
+                    height: 50px;
+                    line-height: 50px;                
+                }
+            
+         .other_build {
+            border: 2px solid black;
+            position: relative;
+            width: 1100px;
+            height: 50px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            padding: 0
+        }
+        
+    .final_build {
+        width:1040px;
+        float:left;
+    }
+    
+        .final_items {
+            width: 1040px;
+            height: 50px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            padding: 0;
+        }
+        
+            .arrow {
+                float: left;
+                position: relative;
+                height: 50px;
+                width: 20px;
+                white-space: nowrap;
+                
+                text-align: center;
+            }
+            
+                .arrow img {
+                    position: absolute;
+                    top: 50%;
+                    height: 20px;
+                    width: 20px;
+                    margin-top: -10px;
+                    left: 50%;
+                    margin-left: -9px;
+                }
+        
+                .helper {
+                    display: inline-block;
+                    height: 100%;
+                    vertical-align: middle;
+                }
+        
+            .final_item_slot {
+                float: left;
+                margin: 0;
+                padding: 0;
+                height: 48px;
+                width: 48px;
+                border: 1px solid black;
+                
+                text-align: center;
+            }

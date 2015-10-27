@@ -1,6 +1,18 @@
 # ------------------------------- FUNCTIONS ---------------------------------
 
 
+# Takes champion name and returns it with no spaces or apostrophes (Cho'Gath
+# becomes ChoGath, Lee Sin becomes LeeSin
+# DEPENDENCIES: None
+def champ_name_strip(name):
+    new_name = ''
+    for char in name:
+        if not char==" " and not char=="'":
+            new_name += char
+    return new_name
+
+    
+    
 # Converts timestamp (in milliseconds) to 'mm:ss' or 'h:mm:ss' string
 # DEPENDENCIES: None
 def timestamp_to_game_time(timestamp):

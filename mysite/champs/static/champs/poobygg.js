@@ -28,6 +28,73 @@ var showPause = function() {
     $("#pause").show();
 };
  
+var updateMyGold = function(trueMillis) {
+    var myGold = 0;
+    var myConsumableGold = 0;
+    $(".my_build").find(".time_item_slot").each( function() {
+        var slot = $(this);
+        var gold = slot.data("gold");
+        var itemName = slot.data("name");
+        var birth = slot.data("birth");
+        
+        if (itemName in myStackCounter) {
+            if (birth < trueMillis) {
+                myConsumableGold += gold;
+            };
+        }
+        else {
+            if (slot.is(":visible")) {
+                myGold += gold; 
+            };
+        };
+    });;
+    buildGold = $(".my_build").find(".build_gold").find(".gold_val");
+    if (myGold > 1000) {
+        myGold = (myGold/1000).toFixed(2).toString() + "K";
+    };
+    buildGold.text(myGold);
+    
+    consumableGold = $(".my_build").find(".consumable_gold").find(".gold_val");
+    if (myConsumableGold > 1000) {
+        myConsumableGold = (myConsumableGold/1000).toFixed(2).toString() + "K";
+    };
+    consumableGold.text(myConsumableGold);
+}
+
+var updateOtherGold = function(trueMillis) {
+    var otherGold = 0;
+    var otherConsumableGold = 0;
+    $(".other_build").find(".time_item_slot").each( function() {
+        var slot = $(this);
+        var gold = slot.data("gold");
+        var itemName = slot.data("name");
+        var birth = slot.data("birth");
+        
+        if (itemName in otherStackCounter) {
+            if (birth < trueMillis) {
+                otherConsumableGold += gold;
+            };
+        }
+        else {
+            if (slot.is(":visible")) {
+                otherGold += gold; 
+            };
+        };
+    });;
+    
+    buildGold = $(".other_build").find(".build_gold").find(".gold_val");
+    if (otherGold > 1000) {
+        otherGold = (otherGold/1000).toFixed(2).toString() + "K";
+    };
+    buildGold.text(otherGold);
+    
+    consumableGold = $(".other_build").find(".consumable_gold").find(".gold_val");
+    if (otherConsumableGold > 1000) {
+        otherConsumableGold = (otherConsumableGold/1000).toFixed(2).toString() + "K";
+    };
+    consumableGold.text(otherConsumableGold);    
+}
+ 
 var updateMyStacks = function() {
     $(".my_build").find(".time_item_slot").each( function() {
         var slot = $(this);
@@ -55,6 +122,8 @@ var myShowOrHide = function(trueMillis) {
         var death = slot.data("death");
         var itemName = slot.data("name");
         var stackState = slot.data("stack");
+        var gold = slot.data("gold");
+        
 
         // If item was born after current time or died before current time,
         // we want to hide it.
@@ -144,13 +213,16 @@ function outputUpdate(t) {
     myShowOrHide(trueMillis);
     otherShowOrHide(trueMillis);
     
+    updateMyGold(trueMillis);
+    updateOtherGold(trueMillis);
+    
     el = $("#game_time");
     el.val(t);
     
     width = el.width();
     newPoint = (el.val() - el.attr("min")) / (el.attr("max") - el.attr("min"))
     
-    offset = 3.1;
+    offset = 6.1;
     
     if (newPoint < 0) { newPlace = 0; }
     else if (newPoint > 1) { newPlace = width; }
@@ -170,8 +242,8 @@ function outputUpdate(t) {
 $(document).ready(function(){
     var slider = $("#game_time");
     var trueMillis = slider.val()*1000;
-    var t, max, interval;
-    var play;
+    var t, max;
+    var interval = null;
     
     myShowOrHide(trueMillis);
     otherShowOrHide(trueMillis);
@@ -181,30 +253,29 @@ $(document).ready(function(){
     
     $("#pause").click(function() {
         showPlay();
-        runGameTime(false);
+        stopGameTime();
     });
 
     $("#play").click(function() {
         showPause();
-        runGameTime(true);
+        playGameTime();
     });    
     
-    function runGameTime(play) {
-        if (play) {
-            console.log("playing!");
-            t = parseInt(slider.val());
-            max = parseInt(slider.attr("max"));
-            
-            interval = setInterval(increment(), 100);
-            
-            function increment() {
-                if ((t+10)<max){ t+=10;};
-                outputUpdate(t);
-            };
-        }
-        else {
-            console.log("pausing!");
-            clearInterval(interval);
-        }
+    function playGameTime() {
+        console.log("playing!");
+        t = parseInt(slider.val());
+        max = parseInt(slider.attr("max"));
+        
+        interval = setInterval(increment, 100);
+        
+        function increment() {
+            if ((t+10)<max){ t+=10;};
+            outputUpdate(t);
+        };
+    };
+    
+    function stopGameTime() {
+        console.log("pausing!");
+        clearInterval(interval);
     };
 });

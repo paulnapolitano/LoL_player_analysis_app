@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Champ, StatSet, Player, Match, Item, BuildComponent 
+from .models import Champ, StatSet, Player, Match, ItemStatic, BuildComponent 
 from .models import Patch, ChampionStatic, ChampionTag
 
 class StatSetInline(admin.TabularInline):
@@ -26,10 +26,8 @@ class MatchAdmin(admin.ModelAdmin):
     inlines = [StatSetInline]
     
 class ChampAdmin(admin.ModelAdmin):
-    fields = ['champ_name', 'champ_id', 'smart_role_name', 'league_name', 
-            'champ_pk']
-    list_display = ['champ_name', 'champ_id', 'smart_role_name', 
-            'league_name', 'champ_pk']
+    fields = ['champion', 'smart_role_name', 'league_name', 'champ_pk']
+    list_display = ['champion', 'smart_role_name', 'league_name', 'champ_pk']
     inlines = [StatSetInline]
     
 class PlayerAdmin(admin.ModelAdmin):
@@ -38,9 +36,9 @@ class PlayerAdmin(admin.ModelAdmin):
             'rank_num', 'last_update']
     inlines = [StatSetInline]
 
-class ItemAdmin(admin.ModelAdmin):
-    fields = ['id', 'name', 'depth', 'map_11']
-    list_display = ['id', 'name', 'depth', 'map_11']
+class ItemStaticAdmin(admin.ModelAdmin):
+    fields = ['item_id', 'name', 'depth', 'map_11']
+    list_display = ['item_id', 'name', 'depth', 'map_11']
 
     
 # Register your models here.
@@ -48,7 +46,7 @@ admin.site.register(Champ, ChampAdmin)
 admin.site.register(Player, PlayerAdmin)
 admin.site.register(Match, MatchAdmin)
 admin.site.register(StatSet)
-admin.site.register(Item)
+admin.site.register(ItemStatic)
 admin.site.register(BuildComponent)
 admin.site.register(Patch)
 admin.site.register(ChampionStatic)

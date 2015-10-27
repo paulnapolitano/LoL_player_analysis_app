@@ -6,17 +6,43 @@ import time
 
 from riot_app import api, URL
 
-from models import Item, Match, Champ, ChampionStatic, StatSet, Patch, Player
-from models import BuildComponent, ChampionTag
+from models import ItemStatic, Match, Champ, ChampionStatic, StatSet, Patch 
+from models import BuildComponent, ChampionTag, Player
 
 from item_funcs import get_player_items
 from text_funcs import sum_name_standardize, camelcase_to_underscore
 from text_funcs import timestamp_to_game_time, version_standardize
+from text_funcs import champ_name_strip
 from misc_funcs import millis_to_timezone
 
 from django.utils import timezone
 
 # ------------------------------- FUNCTIONS ---------------------------------
+                
+
+# Get smart role (TOP, MID, SUPPORT, ADC, or JUNGLE) from champ, lane and 
+# role information
+# DEPENDENCIES: ChampionTag
+def get_smart_role(champion, lane, role):
+    tags = [tag.tag for tag in ChampionTag.objects.filter(champion=champion)]
+    
+    if lane=='TOP' or lane=='MID' or lane=='MIDDLE' or lane=='JUNGLE':
+        smart_role = lane
+    elif role=='DUO_SUPPORT':
+        smart_role = 'SUPPORT'
+    elif role=='DUO_CARRY':
+        smart_role = 'ADC'
+    elif lane=='BOTTOM' or lane=='BOT':
+        if 'Marksman' in tags and 'Support' in tags:
+            smart_role = 'UNKNOWN'
+        elif 'Marksman' in tags:
+            smart_role = 'ADC'
+        else:
+            smart_role = 'SUPPORT'
+    else:
+        smart_role = 'UNKNOWN'
+    return smart_role
+
 
 
 # Get current patch if it exists (current patch won't have end_datetime)
@@ -59,92 +85,6 @@ def get_current_patch(region='na'):
    
    
     
-# Store static information on all items in database, if they don't exist
-# DEPENDENCIES: api, item_to_db, Item
-def items_to_db():
-    # Only get pre-beta versions
-    version_list = api.get_versions()[9:]
-    for version in version_list:
-        item_dict = api.get_all_items(version=version)['data']
-        item_insert_list = []
-       
-        for id in item_dict:
-            i = item_to_db(id, version, item_dict)
-            if not i in item_insert_list and not Item.objects.filter(id=id, version=version).exists():
-                item_insert_list.append(i)            
-
-        print 'creating item objects in bulk'    
-        Item.objects.bulk_create(item_insert_list)
-
-   
-# DEPENDENCIES: URL, Item
-def item_to_db(id, version, item_dict=None, save=False): 
-    if item_dict is None:
-        item = api.get_item_by_id(id, version=version)
-    else:
-        item = item_dict[id]
-    kwargs = {}
-    kwargs['item_id'] = id
-    kwargs['version'] = version
-    url = URL['item_img'].format(patch=version, id=id)
-    kwargs['img'] = URL['dd_base'].format(url=url)
-    if 'depth' in item:
-        kwargs['depth'] = item['depth']
-    else:
-        kwargs['depth'] = 1
-    if 'description' in item:
-        kwargs['description'] = item['description']
-    else:
-        kwargs['description'] = ''
-    kwargs['name'] = item['name']
-    if 'maps' in item:
-        if '1' in item['maps']:
-            kwargs['map_1'] = item['maps']['1']
-        else:
-            kwargs['map_1'] = False
-        
-        if '8' in item['maps']:
-            kwargs['map_8'] = item['maps']['8']
-        else:
-            kwargs['map_8'] = False 
-
-        if '10' in item['maps']:
-            kwargs['map_10'] = item['maps']['10']
-        else:
-            kwargs['map_10'] = False 
-
-        if '11' in item['maps']:
-            kwargs['map_11'] = item['maps']['11']
-        else:
-            kwargs['map_11'] = False   
-
-        if '12' in item['maps']:
-            kwargs['map_12'] = item['maps']['12']
-        else:
-            kwargs['map_12'] = False             
-
-        if '14' in item['maps']:
-            kwargs['map_14'] = item['maps']['14']
-        else:
-            kwargs['map_14'] = False               
-            
-    else:
-        kwargs['map_1'] = True
-        kwargs['map_8'] = True
-        kwargs['map_10'] = True
-        kwargs['map_11'] = True
-        kwargs['map_12'] = True
-        kwargs['map_14'] = True
-    i = Item(**kwargs)
-    print 'adding item {i}'.format(i=i)
-    
-    if save:
-        i.save()
-    
-    return i
-
-    
-    
 # Take a list of match IDs and create a match in database for each one
 # DEPENDENCIES: Match, match_to_db    
 def matches_to_db(match_id_list, region='na'):
@@ -157,17 +97,17 @@ def matches_to_db(match_id_list, region='na'):
 
     
 # Create a match in database from match dictionary obtained from api call
-# DEPENDENCIES: api, get_current_patch, Item, create_match, create_player, 
+# DEPENDENCIES: api, get_current_patch, ItemStatic, create_match, create_player, 
 #               create_champ, create_statset, get_player_items, 
-#               create_build_component, save_in_bulk
+#               create_build_component, save_in_bulk, version_standardize
 def match_to_db(match_id, region='na'): 
     match = api.get_match(region, match_id, include_timeline=True)
   
     print 'getting current patch'
-    get_current_patch()
+    patch = get_current_patch()
  
     print 'getting items from db'
-    item_list = Item.objects.filter(map_11=True)
+    item_list = ItemStatic.objects.filter(map_11=True)
  
     print 'creating match instance'
     m = create_match(match)
@@ -244,23 +184,23 @@ def create_match(match):
               
 # Create and return Champ object from match dictionary, participant dictionary
 # and name of player's league      
-# DEPENDENCIES: Champ, ChampionStatic, api
+# DEPENDENCIES: Champ, ChampionStatic, get_smart_role
 def create_champ(match, participant, league_name):
     champ_id = participant['championId']
     timeline = participant['timeline']       
     lane_name = timeline['lane']
-    role_name = timeline['role']            
-    champ = ChampionStatic.objects.get(id=champ_id)
-    champ_name = champ.name
-    smart_role_name = api.get_smart_role(
-        champ, lane_name, role_name)
-    champ_pk = champ_name + '_' + smart_role_name + '_' + league_name
+    role_name = timeline['role']    
     match_version = match['matchVersion']
+    
+    version = version_standardize(match_version)
+    champion = ChampionStatic.objects.get(champ_id=champ_id, version=version)
+    champ_name = champion.name
+    smart_role_name = get_smart_role(champion, lane_name, role_name)
+    champ_pk = champ_name + '_' + smart_role_name + '_' + league_name
 
     c = Champ(
         champ_pk=champ_pk,
-        champ_name=champ_name,
-        champ_id=champ_id,
+        champion=champion,
         smart_role_name=smart_role_name,
         league_name=league_name,
         match_version=match_version,
@@ -327,14 +267,14 @@ def create_statset(participant, champ, player, match):
     
 # Create and return BuildComponent object from non-Django BuildComponent and
 # StatSet object
-# DEPENDENCIES: Item, timestamp_to_game_time, BuildComponent
+# DEPENDENCIES: ItemStatic, timestamp_to_game_time, BuildComponent
 def create_build_component(component, statset):
     kwargs = {}
     version = version_standardize(statset.champ.match_version)
     kwargs['statset'] = statset
     item_id = component.item.item_id
-    if Item.objects.filter(item_id=item_id).exists():
-        item = Item.objects.get(item_id=item_id, version=version)
+    if ItemStatic.objects.filter(item_id=item_id).exists():
+        item = ItemStatic.objects.get(item_id=item_id, version=version)
     else:
         item = item_to_db(item_id, version=version, save=True)
     kwargs['item'] = item
@@ -362,45 +302,165 @@ def save_in_bulk(match_bulk, champ_bulk, player_bulk, statset_bulk, build_compon
 
 
     
+# Store static information on all items in database, if they don't exist
+# DEPENDENCIES: api, item_to_db, ItemStatic
+def items_to_db():
+    # Only get pre-beta versions
+    version_list = api.get_versions()[9:]
+    for version in version_list:
+        if not ItemStatic.objects.filter(version=version).exists():
+            item_dict = api.get_all_items(version=version)['data']
+            item_insert_list = []
+            
+            for id in item_dict:
+                i = item_to_db(id, version, item_dict)
+                if not i in item_insert_list:
+                    item_insert_list.append(i)            
+
+            print 'creating item objects in bulk'    
+            ItemStatic.objects.bulk_create(item_insert_list)
+
+        
+   
+# DEPENDENCIES: URL, ItemStatic
+def item_to_db(id, version, item_dict=None, save=False): 
+    if item_dict is None:
+        item = api.get_item_by_id(id, version=version)
+    else:
+        item = item_dict[id]
+    
+    kwargs = {}
+    kwargs['item_id'] = id
+    kwargs['version'] = version
+    url = URL['item_img'].format(patch=version, id=id)
+    kwargs['img'] = URL['dd_base'].format(url=url)
+    kwargs['name'] = item['name']
+   
+    if 'depth' in item:
+        kwargs['depth'] = item['depth']
+    else:
+        kwargs['depth'] = 1
+    
+    if 'description' in item:
+        kwargs['description'] = item['description']
+    else:
+        kwargs['description'] = ''
+    
+    if 'gold' in item:
+        kwargs['gold_purchasable'] = item['gold']['purchasable']
+        kwargs['gold_base'] = item['gold']['base']
+        kwargs['gold_sell'] = item['gold']['sell']
+        kwargs['gold_total'] = item['gold']['total']
+        
+    if 'maps' in item:
+        if '1' in item['maps']:
+            kwargs['map_1'] = item['maps']['1']
+        else:
+            kwargs['map_1'] = False
+        
+        if '8' in item['maps']:
+            kwargs['map_8'] = item['maps']['8']
+        else:
+            kwargs['map_8'] = False 
+
+        if '10' in item['maps']:
+            kwargs['map_10'] = item['maps']['10']
+        else:
+            kwargs['map_10'] = False 
+
+        if '11' in item['maps']:
+            kwargs['map_11'] = item['maps']['11']
+        else:
+            kwargs['map_11'] = False   
+
+        if '12' in item['maps']:
+            kwargs['map_12'] = item['maps']['12']
+        else:
+            kwargs['map_12'] = False             
+
+        if '14' in item['maps']:
+            kwargs['map_14'] = item['maps']['14']
+        else:
+            kwargs['map_14'] = False               
+            
+    else:
+        kwargs['map_1'] = True
+        kwargs['map_8'] = True
+        kwargs['map_10'] = True
+        kwargs['map_11'] = True
+        kwargs['map_12'] = True
+        kwargs['map_14'] = True
+        
+    i = ItemStatic(**kwargs)
+    print 'adding item {i}'.format(i=i)
+    
+    if save:
+        i.save()
+    
+    return i
+
+    
+       
 # Get static champion info from API, save to database if it isn't already there
-# DEPENDENCIES: api, ChampionStatic, ChampionTag
+# DEPENDENCIES: api, ChampionStatic, save_or_bulk_create
 def champions_to_db(region='na'):
-    champ_dict = api.get_all_champions(dataById=True, champData='tags')
+    # Only get pre-beta versions
+    version_list = api.get_versions()[90:]
+    
+    for version in version_list:    
+        champion_static_insert_list = []
+
+        champ_dict = api.get_all_champions(version=version, 
+                                           dataById=True, 
+                                           champData='tags')['data']
+        for id in champ_dict:
+            if not ChampionStatic.objects.filter(champ_id=id, version=version).exists():
+                cs = champion_to_db(id, version, champ_dict)    
+                champion_static_insert_list.append(cs)
+                
+        save_or_bulk_create(ChampionStatic, champion_static_insert_list)
+       
+       
+# Get static champion info from API, save to database if it isn't already there
+# DEPENDENCIES: api, ChampionStatic, ChampionTag, save_or_bulk_create        
+def champion_to_db(id, version, champ_dict, save=False):
+    if champ_dict is None:
+        champ = api.get_champion_by_id(id, version=version)
+    else:
+        champ = champ_dict[id]
 
     champion_tag_insert_list = []
-    champion_static_insert_list = []
 
-    for id in champ_dict['data']:
-        champ_data = champ_dict['data'][id]
-        name = champ_data['name']
-        tags = champ_data['tags']
-                    
+    champ_data = champ_dict[id]
+    name = champ_data['name']
+    tags = champ_data['tags']
 
-        if not ChampionStatic.objects.filter(id=id).exists():
-            kwargs = {}
-            kwargs['id'] = id
-            kwargs['name'] = name
-            # url = URL['item_img'].format(id=id)
-            # kwargs['img'] = URL['dd_base'].format(url=url)
-            cs = ChampionStatic(**kwargs)
-            print 'adding champion {cs}'.format(cs=cs)
-            cs.save()
-        else:
-            cs = ChampionStatic.objects.get(id=id)
-            print 'getting champion {cs}'.format(cs=cs)
-
-        for tag in tags:
-            # Create ChampionTag object and save to DB if it doesn't exist yet
-            if not ChampionTag.objects.filter(tag=tag).exists():
-                ct = ChampionTag(tag=tag)
-                ct.save()
-            else: 
-                ct = ChampionTag.objects.get(tag=tag)
-            # Create many-to-many relationship between tags and champions
-            cs.tags.add(ct)
+    kwargs = {}
+    kwargs['champ_id'] = id
+    kwargs['name'] = name
+    
+    url_name = champ_name_strip(name)
+    url = URL['champ_img'].format(name=url_name, patch=version)
+    kwargs['img'] = URL['dd_base'].format(url=url)
+    kwargs['version'] = version
+    cs = ChampionStatic(**kwargs)
+    print 'adding champion {cs} (patch {patch})'.format(cs=cs, patch=version)
+    
+    if save:
+        cs.save()
+    
+    for tag in tags:
+        # Create ChampionTag object and save to DB if it doesn't exist yet
+        if not ChampionTag.objects.filter(champion=cs, tag=tag).exists():
+            ct = ChampionTag(champion=cs, tag=tag)
+        else: 
+            ct = ChampionTag.objects.get(champion=cs, tag=tag)
         
-    ChampionStatic.objects.bulk_create(champion_static_insert_list)
-
+        champion_tag_insert_list.append(ct)
+    save_or_bulk_create(ChampionTag, champion_tag_insert_list)
+    
+    return cs
+    
     
     
 # Take either an object or list of objects and save (in bulk if necessary)

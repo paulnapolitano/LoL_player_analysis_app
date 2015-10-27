@@ -31,11 +31,12 @@ URL = {
     'challenger':'{ver}/league/challenger',
     'master':'{ver}/league/master',
     'static_champion':'{ver}/champion',
-    'static_champion_by_id':'{ver}/champion/{id}',
+    'static_champion_id':'{ver}/champion/{id}',
     'static_item':'{ver}/item',
     'static_item_id':'{ver}/item/{id}',
     'static_versions':'{ver}/versions',
-    'item_img':'cdn/{patch}/img/item/{id}.png'
+    'item_img':'cdn/{patch}/img/item/{id}.png',
+    'champ_img':'cdn/{patch}/img/champion/{name}.png'
 }
 
 ROLES = (
@@ -313,7 +314,25 @@ class RiotAPI:
         )
         
         return item_dict
+    
+    def get_champion_by_id(self, id, region='na', locale=None, version=None,
+                           champData='all'):
+        url = URL['static_champion_id'].format(
+            id=id,
+            ver=API_VERSIONS['lol-static-data']
+        )
+        params = {
+            'locale':locale,
+            'version':version,
+            'champData':champData
+        }
+        champ_dict = self._static_request(
+            url, 
+            req_region=region, 
+            params=params
+        )
         
+        return champ_dict
         
     def get_all_champions(
             self, 
@@ -387,27 +406,7 @@ class RiotAPI:
         league_num_total = (league_num_total+5)/len(league_dict)
         avg_league, avg_div = num_to_lp(league_num_total)
         return avg_league
-                
-                
-    def get_smart_role(self, champ, lane, role):
-        tags = [tag.tag for tag in champ.tags.all()]
-        
-        if lane=='TOP' or lane=='MID' or lane=='MIDDLE' or lane=='JUNGLE':
-            smart_role = lane
-        elif role=='DUO_SUPPORT':
-            smart_role = 'SUPPORT'
-        elif role=='DUO_CARRY':
-            smart_role = 'ADC'
-        elif lane=='BOTTOM' or lane=='BOT':
-            if 'Marksman' in tags and 'Support' in tags:
-                smart_role = 'UNKNOWN'
-            elif 'Marksman' in tags:
-                smart_role = 'ADC'
-            else:
-                smart_role = 'SUPPORT'
-        else:
-            smart_role = 'UNKNOWN'
-        return smart_role
+
  
  
     def get_summoners_by_id(self, region, summoner_ids):
