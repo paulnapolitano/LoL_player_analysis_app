@@ -67,14 +67,24 @@ def match_profile(request, match_id, summoner_name):
     match_duration = match.match_duration
     
     statset = StatSet.objects.get(statset_id=statset_id)
+    
+    
     champ = statset.champ
-    champ_id = champ.champ_id
+    static_champion = champ.champion 
+    champ_id = static_champion.champ_id
     smart_role_name = champ.smart_role_name
     
-    if Champ.objects.filter(champ_id=champ_id, 
+    enemy_statset = StatSet.objects.filter(match=match, 
+                    champ__smart_role_name=smart_role_name
+                    ).exclude(player=player)[0]
+    print enemy_statset
+    print enemy_statset.champ
+    
+    
+    if Champ.objects.filter(champion=static_champion, 
                             smart_role_name=smart_role_name, 
                             league_name='CHALLENGER').exists():
-        challenger_champ = Champ.objects.get(champ_id=champ_id, 
+        challenger_champ = Champ.objects.get(champion=static_champion, 
                                              smart_role_name=smart_role_name,
                                              league_name='CHALLENGER')
         challenger_statset = StatSet.objects.filter(champ=challenger_champ)[0]
@@ -102,17 +112,33 @@ def match_profile(request, match_id, summoner_name):
     "Stealth Ward",
     "Vision Ward"]
     
+    boots_list = ["Berzerker's Greaves",
+    "Boots of Mobility",
+    "Boots of Speed",
+    "Boots of Swiftness",
+    "Ionian Boots of Lucidity",
+    "Mercury's Treads",
+    "Ninja Tabi", 
+    "Sorcerer's Shoes",
+    "Enchantment: Homeguard",
+    "Enchantment: Alacrity",
+    "Enchantment: Captain",
+    "Enchantment: Distortion",
+    "Enchantment: Furor"]
+    
     context = {
         'name':name,
         'build':build,
         'final_build':final_build,
         'statset':statset,
+        'enemy_statset':enemy_statset,
         'stat_comparison':stat_comparison,
         'match_duration':match_duration,
         'challenger_statset':challenger_statset,
         'challenger_build':challenger_build,
         'challenger_final':challenger_final,
-        'consumable_list':consumable_list
+        'consumable_list':consumable_list,
+        'boots_list':boots_list
     }
     return render(request, 'champs/match_profile.html', context)
     
@@ -120,10 +146,10 @@ def match_profile(request, match_id, summoner_name):
     
 # DEPENDENCIES: Player, challenger_to_db
 def challenger_index(request):
-    try:
-        challenger_to_db()
-    except RiotException:
-        print 'Failed to load all challenger players...'
+    # try:
+    challenger_to_db()
+    # except RiotException:
+        # print 'Failed to load all challenger players...'
     challenger_list = Player.objects.filter(rank_num=34)
     context = {'challenger_list':challenger_list}
     return render(request, 'champs/challenger_index.html', context)

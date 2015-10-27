@@ -9,8 +9,44 @@
     </head>
         
     <body>
-        {% if statset and stat_comparison %}
-            <p>{{ statset.champ }}</p>
+        <div id="champ_header">
+            <div class="summoner_name">{{ statset.player.summoner_name }}</div>
+        
+            <div class="champ_name">{{ statset.champ.champion.name }}</div> 
+
+            <div class="champ_pic">
+                <img src="{{ statset.champ.champion.img }}"></img>
+            </div>
+            
+            <div class="vs">
+                <img src="http://www.dafont.com/forum/attach/orig/4/1/411790.png?1"></img>
+            </div>
+             
+            <div class="champ_pic">
+                <img src="{{ enemy_statset.champ.champion.img }}"></img>
+            </div>
+            
+            <div class="enemy_champ_name">{{ enemy_statset.champ.champion.name }}</div>
+            
+            <div class="summoner_name">{{ enemy_statset.player.summoner_name }}</div>
+        </div>
+        
+        <div id="stat_comparison">
+            <div class="my_stat">2</div>
+            <div class="stat_header">CS/min</div>
+            <div class="enemy_stat">6</div>
+            
+            <div class="my_stat">5432</div>
+            <div class="stat_header">XP/min</div>
+            <div class="enemy_stat">2353</div>
+            
+            <div class="my_stat">204</div>
+            <div class="stat_header">Gold/min</div>
+            <div class="enemy_stat">235</div>
+        </div>
+     
+   <!--        {% if statset and stat_comparison %}
+           <p>{{ statset.champ.champion.name }}</p>
              
             <ul>
             {% for key, value in stat_comparison.items %}
@@ -39,7 +75,7 @@
             
         {% else %}
             <p>Match not found, or missing information...</p>
-        {% endif %}
+        {% endif %} -->
 
         <div id="timeline_container">
             <div id="label_container">
@@ -61,7 +97,9 @@
         
         <div class="build_container">
         {% if build%}
-            <div class="my_build">
+        
+        <!-- MIRRORED COMPARISON -->
+<!--             <div class="my_build">
                 <div class="time_items">
                 {% for component in build %}
                     <div class="time_item_slot" data-birth={{ component.item_birth }} data-death={{ component.item_death }} data-name="{{ component.item.name }}" data-stack="off">
@@ -116,16 +154,182 @@
                     {% endif %}    
                 {% endfor %}
                 </div>
+            </div> -->
+            
+            <div class="time_build">
+                <div class="my_build">
+                    <div class="player_name">
+                        {{ statset.player.summoner_name }}
+                    </div>
+                    
+                    <div class="inventory">
+                        <div class="main_items">
+                            {% for component in build %}
+                                {% if not "Trinket" in component.item.name and not component.item.name in boots_list and not component.item.name in consumable_list %}
+                                    <div class="time_item_slot" data-birth={{ component.item_birth }} data-death={{ component.item_death }} data-name="{{ component.item.name }}" data-stack="off" data-gold="{{ component.item.gold_total }}">
+                                        <img src="{{ component.item.img }}" title="{{ component.item.name }} ({{ component.item_birth_time }}-{{ component.item_death_time }})" height="50px" width="50px"></img>
+                                        <div class="stack_num"></div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="boots">
+                            {% for component in build %}
+                                {% if component.item.name in boots_list %}
+                                    <div class="time_item_slot" data-birth={{ component.item_birth }} data-death={{ component.item_death }} data-name="{{ component.item.name }}" data-stack="off" data-gold="{{ component.item.gold_total }}">
+                                        <img src="{{ component.item.img }}" title="{{ component.item.name }} ({{ component.item_birth_time }}-{{ component.item_death_time }})" height="50px" width="50px"></img>
+                                        <div class="stack_num"></div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="consumables">
+                            {% for component in build %}
+                                {% if component.item.name in consumable_list %}
+                                    <div class="time_item_slot" data-birth={{ component.item_birth }} data-death={{ component.item_death }} data-name="{{ component.item.name }}" data-stack="off" data-gold="{{ component.item.gold_total }}">
+                                        <img src="{{ component.item.img }}" title="{{ component.item.name }} ({{ component.item_birth_time }}-{{ component.item_death_time }})" height="50px" width="50px"></img>
+                                        <div class="stack_num"></div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="trinket">
+                            {% for component in build %}
+                                {% if "Trinket" in component.item.name %}
+                                    <div class="time_item_slot" data-birth={{ component.item_birth }} data-death={{ component.item_death }} data-name="{{ component.item.name }}" data-stack="off" data-gold="{{ component.item.gold_total }}">
+                                        <img src="{{ component.item.img }}" title="{{ component.item.name }} ({{ component.item_birth_time }}-{{ component.item_death_time }})" height="50px" width="50px"></img>
+                                        <div class="stack_num"></div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="build_gold">
+                        <div class="gold_val"></div>
+                        <img class="coin_img" src="http://oyster.ignimgs.com/mediawiki/apis.ign.com/league-of-legends/b/ba/GoldCoins.png"></img>
+                    </div>
+                    
+                    <div class="consumable_gold">
+                        <div class="gold_val"></div>
+                        <img class="coin_img" src="http://oyster.ignimgs.com/mediawiki/apis.ign.com/league-of-legends/b/ba/GoldCoins.png"></img>
+                    </div>
+                </div>
+                
+                
+                <div class="other_build">
+                    <div class="player_name">
+                        {{ challenger_statset.player.summoner_name }} ({{ challenger_statset.champ.league_name }})
+                    </div>
+                    
+                    <div class="inventory">
+                        <div class="main_items">
+                            {% for component in challenger_build %}
+                                {% if not "Trinket" in component.item.name and not component.item.name in boots_list and not component.item.name in consumable_list %}
+                                    <div class="time_item_slot" data-birth={{ component.item_birth }} data-death={{ component.item_death }} data-name="{{ component.item.name }}" data-stack="off" data-gold="{{ component.item.gold_total }}">
+                                        <img src="{{ component.item.img }}" title="{{ component.item.name }} ({{ component.item_birth_time }}-{{ component.item_death_time }})" height="50px" width="50px"></img>
+                                        <div class="stack_num"></div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="boots">
+                            {% for component in challenger_build %}
+                                {% if component.item.name in boots_list %}
+                                    <div class="time_item_slot" data-birth={{ component.item_birth }} data-death={{ component.item_death }} data-name="{{ component.item.name }}" data-stack="off" data-gold="{{ component.item.gold_total }}">
+                                        <img src="{{ component.item.img }}" title="{{ component.item.name }} ({{ component.item_birth_time }}-{{ component.item_death_time }})" height="50px" width="50px"></img>
+                                        <div class="stack_num"></div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="consumables">
+                            {% for component in challenger_build %}
+                                {% if component.item.name in consumable_list %}
+                                    <div class="time_item_slot" data-birth={{ component.item_birth }} data-death={{ component.item_death }} data-name="{{ component.item.name }}" data-stack="off" data-gold="{{ component.item.gold_total }}">
+                                        <img src="{{ component.item.img }}" title="{{ component.item.name }} ({{ component.item_birth_time }}-{{ component.item_death_time }})" height="50px" width="50px"></img>
+                                        <div class="stack_num"></div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="trinket">
+                            {% for component in challenger_build %}
+                                {% if "Trinket" in component.item.name %}
+                                    <div class="time_item_slot" data-birth={{ component.item_birth }} data-death={{ component.item_death }} data-name="{{ component.item.name }}" data-stack="off" data-gold="{{ component.item.gold_total }}">
+                                        <img src="{{ component.item.img }}" title="{{ component.item.name }} ({{ component.item_birth_time }}-{{ component.item_death_time }})" height="50px" width="50px"></img>
+                                        <div class="stack_num"></div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="build_gold">
+                        <div class="gold_val"></div>
+                        <img class="coin_img" src="http://oyster.ignimgs.com/mediawiki/apis.ign.com/league-of-legends/b/ba/GoldCoins.png"></img>
+                     </div>
+                    
+                    <div class="consumable_gold">
+                        <div class="gold_val"></div>
+                        <img class="coin_img" src="http://oyster.ignimgs.com/mediawiki/apis.ign.com/league-of-legends/b/ba/GoldCoins.png"></img>
+                     </div>
+                </div>
             </div>
             
-            <div class="mid_headers">
-                <div class="build_header_block">
-                    <p class="build_header">Timewise</p>
+            <div class="final_build">      
+                <div class="final_items">
+                {% for component in final_build %}
+                    {% if not component.item.name in consumable_list %} 
+                        {% if not forloop.first and not component.item.name in consumable_list %}
+                        <div class="arrow"> 
+                            <span class="helper"></span>
+                            <img src="http://www.glivec.com/Themes/Glivec/img/arrow_mobile.png" height="20px" width="20px"> </img> 
+                        </div> 
+                        {% endif %}
+
+                        <div class="final_item_slot" data-name="{{ component.item.name }}" data-stack="off">
+                            <img src="{{ component.item.img }}" title="{{ component.item.name }} ({{ component.item_birth_time }})" height="50px" width="50px"></img>
+                            <div class="stack_num"></div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
                 </div>
-                <div class="build_header_block">
-                    <p class="build_header">Final</p>
+                
+                <div class="final_items">
+                {% for component in challenger_final %}
+                    {% if not component.item.name in consumable_list %}                
+                        {% if not forloop.first and not component.item.name in consumable_list%}
+                        <div class="arrow">
+                            <span class="helper"></span>
+                            <img src="http://www.glivec.com/Themes/Glivec/img/arrow_mobile.png" height="20px" width="20px"> </img> 
+                        </div>
+                        {% endif %}
+                        <div class="final_item_slot" data-name="{{ component.item.name }}" data-stack="off">
+                            <img src="{{ component.item.img }}" title="{{ component.item.name }} ({{ component.item_birth_time }})" height="50px" width="50px"></img>
+                            <div class="stack_num"></div>
+                        </div>
+                    {% endif %}    
+                {% endfor %}
                 </div>
             </div>
+
+                
+                            
+<!--             <div class="mid_headers">
+                <div class="build_header_container">
+                    <p class="build_header">Timewise</p>
+                </div>
+                <div class="build_header_container">
+                    <p class="build_header">Final</p>
+                </div>
+            </div> -->
             {% endif %}
         </div>
     </body>

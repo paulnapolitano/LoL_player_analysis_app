@@ -2,7 +2,7 @@ if __name__ == '__main__' and __package__ is None:
     from os import sys, path
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
     
-from models import Item, ItemParentChild
+from models import ItemStatic, ItemParentChild
 from text_funcs import timestamp_to_game_time
 
 print 'importing RiotAPI'
@@ -325,7 +325,7 @@ class Build(object):
             parent_children_pairs = ItemParentChild.objects.filter(parent_id=parent_item.id)
             children = []
             for pair in parent_children_pairs:
-                children.append(Item.objects.get(id=pair.child_id))
+                children.append(ItemStatic.objects.get(id=pair.child_id))
             for child in children:
                 existing_children = self.get_existing_children(child, existing_children)
             return existing_children

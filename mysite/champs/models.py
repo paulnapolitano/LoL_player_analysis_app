@@ -3,127 +3,8 @@ import datetime
 from django.db import models
 from django.utils import timezone
 
-class Match(models.Model):
-    match_id = models.CharField(db_index=True, max_length=20, primary_key=True)
-    match_duration = models.IntegerField(default=0)
-    match_creation = models.DateTimeField()
-    
-    def __unicode__(self):
-        return self.match_id
-       
-    def is_in_db(self):
-        return Match.objects.filter(match_id=self.match_id).exists()
-       
-class Champ(models.Model):
-    champ_pk = models.CharField(primary_key=True, max_length=30, blank=True)
-    champ_name = models.CharField(max_length=20)
-    champ_id = models.IntegerField()
-    smart_role_name = models.CharField(max_length=20)
-    league_name = models.CharField(max_length=20)
-    match_version = models.CharField(max_length=20, default='UNKNOWN')
-    
-    def __unicode__(self):
-        return '{champ} as {role} in {league}, patch {patch}'.format(
-            champ=self.champ_name,
-            role=self.smart_role_name,
-            league=self.league_name,
-            patch=self.match_version,
-        )
-        
-    def is_in_db(self):
-        return Champ.objects.filter(champ_pk=self.champ_pk).exists()      
-        
-class Player(models.Model):
-    summoner_id = models.CharField(db_index=True, max_length=20, primary_key=True)
-    summoner_name = models.CharField(max_length=20, default='UNKNOWN')
-    profile_icon_id = models.CharField(max_length=20, default='UNKNOWN', blank=True)
-    last_update = models.DateTimeField(default=timezone.now, blank=True)
-    summoner_level = models.IntegerField(default=0)
-    std_summoner_name = models.CharField(db_index=True, max_length=20, default='UNKNOWN')
-    rank_num = models.IntegerField(default=0)
-    
-    def __unicode__(self):
-        return self.summoner_id
-        
-    def is_in_db(self):
-        return Player.objects.filter(summoner_id=self.summoner_id).exists()  
-        
-class StatSet(models.Model):
-    champ = models.ForeignKey(Champ)
-    player = models.ForeignKey(Player, null=True)
-    match = models.ForeignKey(Match, null=True)
-    statset_id = models.CharField(
-        max_length=20, primary_key=True, default='UNKNOWN')
-    kills = models.IntegerField()
-    assists = models.IntegerField()
-    deaths = models.IntegerField()
-    champ_level = models.IntegerField()
-    gold_earned = models.IntegerField()
-    gold_spent = models.IntegerField()
-    item_0 = models.IntegerField()
-    item_1 = models.IntegerField()
-    item_2 = models.IntegerField()
-    item_3 = models.IntegerField()
-    item_4 = models.IntegerField()
-    item_5 = models.IntegerField()
-    item_6 = models.IntegerField()
-    largest_critical_strike = models.IntegerField()
-    killing_sprees = models.IntegerField()
-    largest_killing_spree = models.IntegerField()
-    largest_multi_kill = models.IntegerField()
-    magic_damage_dealt = models.IntegerField()
-    magic_damage_dealt_to_champions = models.IntegerField()
-    magic_damage_taken = models.IntegerField()
-    minions_killed = models.IntegerField()
-    neutral_minions_killed = models.IntegerField()
-    neutral_minions_killed_enemy_jungle = models.IntegerField()
-    neutral_minions_killed_team_jungle = models.IntegerField()
-    physical_damage_dealt = models.IntegerField()
-    physical_damage_dealt_to_champions = models.IntegerField()
-    physical_damage_taken = models.IntegerField()
-    sight_wards_bought_in_game = models.IntegerField()
-    total_damage_dealt = models.IntegerField()
-    total_damage_dealt_to_champions = models.IntegerField()
-    total_damage_taken = models.IntegerField()
-    total_heal = models.IntegerField()
-    total_time_crowd_control_dealt = models.IntegerField()
-    total_units_healed = models.IntegerField()
-    double_kills = models.IntegerField()
-    triple_kills = models.IntegerField()
-    quadra_kills = models.IntegerField()
-    penta_kills = models.IntegerField()
-    unreal_kills = models.IntegerField()
-    tower_kills = models.IntegerField()
-    inhibitor_kills = models.IntegerField()
-    first_blood_assist = models.BooleanField()
-    first_blood_kill = models.BooleanField()
-    first_inhibitor_assist = models.BooleanField()
-    first_inhibitor_kill = models.BooleanField()
-    first_tower_assist = models.BooleanField()
-    first_tower_kill = models.BooleanField()
-    true_damage_dealt = models.IntegerField()
-    true_damage_dealt_to_champions = models.IntegerField()
-    true_damage_taken = models.IntegerField()
-    vision_wards_bought_in_game = models.IntegerField()
-    wards_placed = models.IntegerField()
-    wards_killed = models.IntegerField()
-    winner = models.BooleanField() 
-
-    def __unicode__(self):
-        return self.statset_id
-        
-    def is_in_db(self):
-        return StatSet.objects.filter(statset_id=self.statset_id).exists()
-
-
-    
-# Table lists child-parent pairs for items
-class ItemParentChild(models.Model):
-    child_id = models.ForeignKey('Item', related_name='child')
-    parent_id = models.ForeignKey('Item', related_name='parent')
-
 # Table lists all items in the game, pointed to by ItemParentChild
-class Item(models.Model):
+class ItemStatic(models.Model):
     item_id = models.CharField(db_index=True, blank=True, max_length=4)
     img = models.CharField(blank=True, max_length=50)
     version = models.CharField(db_index=True, blank=True, max_length=50)
@@ -206,10 +87,10 @@ class Item(models.Model):
     # stats_r_percent_time_dead_mod = models.FloatField(blank=True)
     # stats_r_percent_time_dead_mod_per_level = models.FloatField(blank=True)
 
-    # gold_purchasable = models.BooleanField(blank=True)
-    # gold_base = models.IntegerField(blank=True)
-    # gold_sell = models.IntegerField(blank=True)
-    # gold_total = models.IntegerField(blank=True)
+    gold_purchasable = models.BooleanField(blank=True, default=False)
+    gold_base = models.IntegerField(blank=True, null=True)
+    gold_sell = models.IntegerField(blank=True, null=True)
+    gold_total = models.IntegerField(blank=True, null=True)
 
     # image_full = models.CharField(blank=True, max_length=20)
     # image_sprite = models.CharField(blank=True, max_length=20)
@@ -235,42 +116,13 @@ class Item(models.Model):
     def __unicode__(self):
         return u'{name} ({id})'.format(name=self.name, id=self.item_id)
     
-class BuildComponent(models.Model):
-    statset = models.ForeignKey(StatSet, blank=True)
-    item = models.ForeignKey(Item, blank=True)
-    item_birth = models.IntegerField(blank=True)
-    item_birth_time = models.CharField(blank=True, max_length=20)
-    item_death = models.IntegerField(blank=True, null=True)
-    item_death_time = models.CharField(blank=True, max_length=20)
-    item_batch = models.IntegerField(blank=True)
     
-    def __unicode__(self):
-        return unicode(self.item)
-        
-    def is_in_db(self):
-        return BuildComponent.objects.filter(statset=self.statset, item=self.item, item_birth=self.item_birth).exists()
-        
-class Patch(models.Model):
-    patch = models.CharField(primary_key=True, blank=True, max_length=20)
-    region = models.CharField(blank=True, max_length=20)
-    start_datetime = models.DateTimeField(default=timezone.now)
-    end_datetime = models.DateTimeField(blank=True, null=True)
-    last_check = models.DateTimeField(default=timezone.now)
     
-    def __unicode__(self):
-        return unicode(self.patch)
-  
-class ChampionTag(models.Model):
-    tag = models.CharField(db_index=True, primary_key=True, max_length=15)
-    
-    def __unicode__(self):
-        return unicode(self.tag)
-        
 class ChampionStatic(models.Model):
-    id = models.CharField(db_index=True, primary_key=True, max_length=4)
+    champ_id = models.CharField(db_index=True, blank=True, max_length=4)
     name = models.CharField(blank=True, max_length=20)
-    # img = models.CharField(blank=True, max_length=50)
-    tags = models.ManyToManyField(ChampionTag)
+    img = models.CharField(blank=True, max_length=50)
+    version = models.CharField(db_index=True, blank=True, max_length=50)
     
     # stats_attack_range = models.FloatField(blank=True)
     # stats_mp_per_level = models.FloatField(blank=True)
@@ -296,6 +148,8 @@ class ChampionStatic(models.Model):
     def __unicode__(self):
         return unicode(self.name)
     
+    
+    
 class SpellStatic(models.Model):
     champion = models.ForeignKey(ChampionStatic, blank=True)
     img = models.CharField(blank=True, max_length=50)
@@ -317,3 +171,168 @@ class SpellStatic(models.Model):
     lv3_cost = models.IntegerField(blank=True)
     lv4_cost = models.IntegerField(blank=True)
     lv5_cost = models.IntegerField(blank=True)
+    
+    
+    
+class Patch(models.Model):
+    patch = models.CharField(primary_key=True, blank=True, max_length=20)
+    region = models.CharField(blank=True, max_length=20)
+    start_datetime = models.DateTimeField(default=timezone.now)
+    end_datetime = models.DateTimeField(blank=True, null=True)
+    last_check = models.DateTimeField(default=timezone.now)
+    
+    def __unicode__(self):
+        return unicode(self.patch)  
+
+        
+        
+class Player(models.Model):
+    summoner_id = models.CharField(db_index=True, max_length=20, primary_key=True)
+    summoner_name = models.CharField(max_length=20, default='UNKNOWN')
+    profile_icon_id = models.CharField(max_length=20, default='UNKNOWN', blank=True)
+    last_update = models.DateTimeField(default=timezone.now, blank=True)
+    summoner_level = models.IntegerField(default=0)
+    std_summoner_name = models.CharField(db_index=True, max_length=20, default='UNKNOWN')
+    rank_num = models.IntegerField(default=0)
+    
+    def __unicode__(self):
+        return self.summoner_id
+        
+    def is_in_db(self):
+        return Player.objects.filter(summoner_id=self.summoner_id).exists()  
+        
+        
+        
+class Match(models.Model):
+    match_id = models.CharField(db_index=True, max_length=20, primary_key=True)
+    match_duration = models.IntegerField(default=0)
+    match_creation = models.DateTimeField()
+    
+    def __unicode__(self):
+        return self.match_id
+       
+    def is_in_db(self):
+        return Match.objects.filter(match_id=self.match_id).exists()
+       
+       
+       
+class Champ(models.Model):
+    champ_pk = models.CharField(primary_key=True, max_length=30, blank=True)
+    champion = models.ForeignKey(ChampionStatic, blank=True, null=True)
+    smart_role_name = models.CharField(max_length=20)
+    league_name = models.CharField(max_length=20)
+    match_version = models.CharField(max_length=20, default='UNKNOWN')
+    
+    def __unicode__(self):
+        return '{champ} as {role} in {league}, patch {patch}'.format(
+            champ=self.champion.name,
+            role=self.smart_role_name,
+            league=self.league_name,
+            patch=self.match_version,
+        )
+        
+    def is_in_db(self):
+        return Champ.objects.filter(champ_pk=self.champ_pk).exists()      
+          
+
+
+class StatSet(models.Model):
+    champ = models.ForeignKey(Champ)
+    player = models.ForeignKey(Player, null=True)
+    match = models.ForeignKey(Match, null=True)
+    statset_id = models.CharField(
+        max_length=20, primary_key=True, default='UNKNOWN')
+    kills = models.IntegerField()
+    assists = models.IntegerField()
+    deaths = models.IntegerField()
+    champ_level = models.IntegerField()
+    gold_earned = models.IntegerField()
+    gold_spent = models.IntegerField()
+    item_0 = models.IntegerField()
+    item_1 = models.IntegerField()
+    item_2 = models.IntegerField()
+    item_3 = models.IntegerField()
+    item_4 = models.IntegerField()
+    item_5 = models.IntegerField()
+    item_6 = models.IntegerField()
+    largest_critical_strike = models.IntegerField()
+    killing_sprees = models.IntegerField()
+    largest_killing_spree = models.IntegerField()
+    largest_multi_kill = models.IntegerField()
+    magic_damage_dealt = models.IntegerField()
+    magic_damage_dealt_to_champions = models.IntegerField()
+    magic_damage_taken = models.IntegerField()
+    minions_killed = models.IntegerField()
+    neutral_minions_killed = models.IntegerField()
+    neutral_minions_killed_enemy_jungle = models.IntegerField()
+    neutral_minions_killed_team_jungle = models.IntegerField()
+    physical_damage_dealt = models.IntegerField()
+    physical_damage_dealt_to_champions = models.IntegerField()
+    physical_damage_taken = models.IntegerField()
+    sight_wards_bought_in_game = models.IntegerField()
+    total_damage_dealt = models.IntegerField()
+    total_damage_dealt_to_champions = models.IntegerField()
+    total_damage_taken = models.IntegerField()
+    total_heal = models.IntegerField()
+    total_time_crowd_control_dealt = models.IntegerField()
+    total_units_healed = models.IntegerField()
+    double_kills = models.IntegerField()
+    triple_kills = models.IntegerField()
+    quadra_kills = models.IntegerField()
+    penta_kills = models.IntegerField()
+    unreal_kills = models.IntegerField()
+    tower_kills = models.IntegerField()
+    inhibitor_kills = models.IntegerField()
+    first_blood_assist = models.BooleanField()
+    first_blood_kill = models.BooleanField()
+    first_inhibitor_assist = models.BooleanField()
+    first_inhibitor_kill = models.BooleanField()
+    first_tower_assist = models.BooleanField()
+    first_tower_kill = models.BooleanField()
+    true_damage_dealt = models.IntegerField()
+    true_damage_dealt_to_champions = models.IntegerField()
+    true_damage_taken = models.IntegerField()
+    vision_wards_bought_in_game = models.IntegerField()
+    wards_placed = models.IntegerField()
+    wards_killed = models.IntegerField()
+    winner = models.BooleanField() 
+
+    def __unicode__(self):
+        return self.statset_id
+        
+    def is_in_db(self):
+        return StatSet.objects.filter(statset_id=self.statset_id).exists()
+ 
+ 
+ 
+# Table lists child-parent pairs for items
+class ItemParentChild(models.Model):
+    child_id = models.ForeignKey(ItemStatic, related_name='child')
+    parent_id = models.ForeignKey(ItemStatic, related_name='parent')
+
+
+    
+class BuildComponent(models.Model):
+    statset = models.ForeignKey(StatSet, blank=True)
+    item = models.ForeignKey(ItemStatic, blank=True)
+    item_birth = models.IntegerField(blank=True)
+    item_birth_time = models.CharField(blank=True, max_length=20)
+    item_death = models.IntegerField(blank=True, null=True)
+    item_death_time = models.CharField(blank=True, max_length=20)
+    item_batch = models.IntegerField(blank=True)
+    
+    def __unicode__(self):
+        return unicode(self.item)
+        
+    def is_in_db(self):
+        return BuildComponent.objects.filter(statset=self.statset, item=self.item, item_birth=self.item_birth).exists()
+     
+
+     
+class ChampionTag(models.Model):
+    id = models.AutoField(primary_key=True)
+    champion = models.ForeignKey(ChampionStatic, blank=True, null=True)
+    tag = models.CharField(db_index=True, blank=True, max_length=15)
+    
+    def __unicode__(self):
+        return unicode(self.tag)

@@ -6,7 +6,7 @@ import json
 
 import time
 
-from models import Item
+from models import ItemStatic
 from items import Build
 
 from text_funcs import version_standardize
@@ -16,11 +16,11 @@ from text_funcs import version_standardize
  
 # Get full list of items belonging to player throughout match, 
 # including item 'birth time' and 'death time' 
-# DEPENDENCIES: Item, item_events_from_frames, Build
+# DEPENDENCIES: ItemStatic, item_events_from_frames, Build
 def get_player_items(participant_id, match):
     # Get version of match
     version = version_standardize(match['matchVersion'])
-    items_this_version = Item.objects.filter(version=version)
+    items_this_version = ItemStatic.objects.filter(version=version)
     
     # Get list of timestamped events, including item purchases
     timeline = match['timeline']
