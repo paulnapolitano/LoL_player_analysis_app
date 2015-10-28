@@ -5,6 +5,13 @@
 # becomes ChoGath, Lee Sin becomes LeeSin
 # DEPENDENCIES: None
 def champ_name_strip(name):
+    if name == "Fiddlesticks":
+        return "FiddleSticks"
+    elif name == "LeBlanc":
+        return "Leblanc"
+    elif name == "Kha'Zix":
+        return "Khazix"
+    
     new_name = ''
     for char in name:
         if not char==" " and not char=="'":

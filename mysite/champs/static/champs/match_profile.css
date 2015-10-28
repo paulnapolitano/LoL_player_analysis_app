@@ -313,7 +313,7 @@ div {
             line-height: normal
         } */
 #champ_header {
-    width: 1000px;
+    width: 1140px;
     height: 100px;
 }
 
@@ -341,7 +341,7 @@ div {
         
     .champ_name {
         margin-right: 20px;
-        width: 130px;
+        width: 200px;
         height: 100px;
         line-height: 100px;
         text-align: right;
@@ -368,7 +368,7 @@ div {
     
     .enemy_champ_name {
         margin-left: 20px;
-        width: 130px;
+        width: 200px;
         height: 100px;
         line-height: 100px;
         text-align: left;
@@ -380,37 +380,60 @@ div {
   
 #stat_comparison {
     width: 1000px;
+    margin-left: 70px;
     height: 400px;
     font-size: 20px;
     margin-top: 20px;
 }
+    
+    .stat {
+        float: left;
+        height: 60px;
+        width: 1000px;
+    }
+    
+        .my_score {
+            float: left;
+            height: 60px;
+            width: 200px;
+            line-height: 60px;
+            text-align: right;
+        }
 
-    .my_stat {
-        float: left;
-        height: 60px;
-        width: 400px;
-        text-align: right;
-        line-height: 60px;
-    }
+        .my_stat {
+            float: left;
+            height: 60px;
+            width: 210px;
+            text-align: right;
+            line-height: 60px;
+        }
+        
+        .stat_header {
+            color: black;
+            float: left;
+            height: 60px;
+            width: 180px;
+            text-align: center;
+            line-height: 60px;
+            font-weight: 700;
+        }
+        
+        .enemy_stat {
+            float: left;
+            height: 60px;
+            width: 210px;
+            text-align: left;
+            line-height: 60px;
+        }
     
-    .stat_header {
-        color: black;
-        float: left;
-        height: 60px;
-        width: 200px;
-        text-align: center;
-        line-height: 60px;
-        font-weight: 700;
-    }
-    
-    .enemy_stat {
-        float: left;
-        height: 60px;
-        width: 400px;
-        text-align: left;
-        line-height: 60px;
-    }
-    
+        .enemy_score {
+            float: left;
+            height: 60px;
+            width: 200px;
+            line-height: 60px;
+            text-align: left;
+        }
+        
 .build_container {
     width: 1040px;
     padding: 10px;

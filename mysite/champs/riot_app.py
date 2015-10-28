@@ -36,7 +36,7 @@ URL = {
     'static_item_id':'{ver}/item/{id}',
     'static_versions':'{ver}/versions',
     'item_img':'cdn/{patch}/img/item/{id}.png',
-    'champ_img':'cdn/{patch}/img/champion/{name}.png'
+    'champ_img':'cdn/{patch}/img/champion/{full}'
 }
 
 ROLES = (

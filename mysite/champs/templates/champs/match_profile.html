@@ -1,10 +1,10 @@
 <html>
     <head>
         {% load static from staticfiles %}
-        <link rel="stylesheet" type="text/css" href="{% static 'champs/poobygg.css' %}"/>
+        <link rel="stylesheet" type="text/css" href="{% static 'champs/match_profile.css' %}"/>
         <link href='https://fonts.googleapis.com/css?family=Oswald:400,700' rel='stylesheet' type='text/css'>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-        <script src="{% static 'champs/poobygg.js' %}"></script>
+        <script src="{% static 'champs/match_profile.js' %}"></script>
         <title> {{ name }}'s Match Analysis </title>
     </head>
         
@@ -32,17 +32,53 @@
         </div>
         
         <div id="stat_comparison">
-            <div class="my_stat">2</div>
-            <div class="stat_header">CS/min</div>
-            <div class="enemy_stat">6</div>
+            <div class="stat">
+                <div class="my_score">{{ stat_comparison.kills.score }}</div>
+                <div class="my_stat">{{ stat_comparison.kills.local }}</div>
+                <div class="stat_header">Kills</div>
+                <div class="enemy_stat">{{ stat_comparison.kills.enemy_local }}</div>
+                <div class="enemy_score">{{ stat_comparison.kills.enemy_score }}</div>
+            </div>
+
+            <div class="stat">
+                <div class="my_score">{{ stat_comparison.assists.score }}</div>
+                <div class="my_stat">{{ stat_comparison.assists.local }}</div>
+                <div class="stat_header">Assists</div>
+                <div class="enemy_stat">{{ stat_comparison.assists.enemy_local }}</div>
+                <div class="enemy_score">{{ stat_comparison.assists.enemy_score }}</div>
+            </div>
+
+            <div class="stat">
+                <div class="my_score">{{ stat_comparison.deaths.score }}</div>
+                <div class="my_stat">{{ stat_comparison.deaths.local }}</div>
+                <div class="stat_header">Deaths</div>
+                <div class="enemy_stat">{{ stat_comparison.deaths.enemy_local }}</div>
+                <div class="enemy_score">{{ stat_comparison.deaths.enemy_score }}</div>
+            </div>
             
-            <div class="my_stat">5432</div>
-            <div class="stat_header">XP/min</div>
-            <div class="enemy_stat">2353</div>
+            <div class="stat">
+                <div class="my_score">{{ stat_comparison.cs.score }}</div>
+                <div class="my_stat">{{ stat_comparison.cs.local }} ({{ stat_comparison.cs.local_min }})</div>
+                <div class="stat_header">CS</div>
+                <div class="enemy_stat">{{ stat_comparison.cs.enemy_local }} ({{ stat_comparison.cs.enemy_local_min }})</div>
+                <div class="enemy_score">{{ stat_comparison.cs.enemy_score }}</div>
+            </div>
             
-            <div class="my_stat">204</div>
-            <div class="stat_header">Gold/min</div>
-            <div class="enemy_stat">235</div>
+            <div class="stat">
+                <div class="my_score">{{ stat_comparison.damage_to_champs.score }}</div>
+                <div class="my_stat">{{ stat_comparison.damage_to_champs.local }}</div>
+                <div class="stat_header">DMG Dealt</div>
+                <div class="enemy_stat">{{ stat_comparison.damage_to_champs.enemy_local }}</div>
+                <div class="enemy_score">{{ stat_comparison.damage_to_champs.enemy_score }}</div>
+            </div>
+
+            <div class="stat">
+                <div class="my_score">{{ stat_comparison.damage_taken.score }}</div>
+                <div class="my_stat">{{ stat_comparison.damage_taken.local }}</div>
+                <div class="stat_header">DMG Taken</div>
+                <div class="enemy_stat">{{ stat_comparison.damage_taken.enemy_local }}</div>
+                <div class="enemy_score">{{ stat_comparison.damage_taken.enemy_score }}</div>
+            </div>
         </div>
      
    <!--        {% if statset and stat_comparison %}

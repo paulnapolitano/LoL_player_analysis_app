@@ -15,51 +15,47 @@ from view_funcs import get_stat_comparison
 from riot_app import api, RiotException
 
 from .models import Player, Match, StatSet, BuildComponent, Champ
+from .forms import NameForm
 
 # ------------------------------------ VIEWS ---------------------------------
 
 
-# User Profile View
-# DEPENDENCIES: sum_name_standardize, summoner_to_db_display
-def user_profile(request):
-    # Get user's standardized summoner name from search
-    std_summoner_name = sum_name_standardize(request.GET.get('userName'))
-    match_display = summoner_to_db_display(std_summoner_name)
-
-    context = {
-        'match_list':match_display, 
-        'summoner_name':std_summoner_name,
-    }
-    return render(request, 'champs/user_profile.html', context)
-    
-    
-
 # Match History View
-# DEPENDENCIES: summoner_to_db_display   
-def match_history(request, std_summoner_name):
-    match_display = summoner_to_db_display(std_summoner_name)
-    
+# DEPENDENCIES: summoner_to_db_display, StatSet
+def user_profile(request, std_summoner_name):
+    player = Player.objects.get(std_summoner_name=std_summoner_name)
+    statset_display = summoner_to_db_display(std_summoner_name)
+
     context = {
-        'match_list':match_display, 
-        'summoner_name':std_summoner_name,
+        'statset_list':statset_display, 
+        'player':player,
     }
     return render(request, 'champs/user_profile.html', context)
-
     
     
 # User Search View
 # DEPENDENCIES: None
 def user_search(request):
-    context = None
-    return render(request, 'champs/user_search.html', context)
+    if request.method == 'POST':
+        form = NameForm(request.POST)
+        if form.is_valid():
+            summoner_name = form.cleaned_data['summoner_name']
+            std_summoner_name = sum_name_standardize(summoner_name)
+            summoner_to_db_display(std_summoner_name)
+            return HttpResponseRedirect('/champs/summoner/{}/'.format(std_summoner_name))
+            
+    else:
+        form = NameForm()
+    
+    return render(request, 'champs/user_search.html', {'form': form})
    
 
 
 # User Search View
 # DEPENDENCIES: Match, Player, StatSet, BuildComponent, get_stat_comparison   
-def match_profile(request, match_id, summoner_name):
+def match_profile(request, match_id, std_summoner_name):
     match = Match.objects.get(match_id=match_id)
-    player = Player.objects.get(std_summoner_name=summoner_name)
+    player = Player.objects.get(std_summoner_name=std_summoner_name)
     statset_id = match_id + '_' + player.summoner_id
     
     name = player.summoner_name
