@@ -412,7 +412,7 @@ def champions_to_db(region='na'):
 
         champ_dict = api.get_all_champions(version=version, 
                                            dataById=True, 
-                                           champData='tags')['data']
+                                           champData='all')['data']
         for id in champ_dict:
             if not ChampionStatic.objects.filter(champ_id=id, version=version).exists():
                 cs = champion_to_db(id, version, champ_dict)    
@@ -439,8 +439,8 @@ def champion_to_db(id, version, champ_dict, save=False):
     kwargs['champ_id'] = id
     kwargs['name'] = name
     
-    url_name = champ_name_strip(name)
-    url = URL['champ_img'].format(name=url_name, patch=version)
+    img_full = champ_data['image']['full']
+    url = URL['champ_img'].format(full=img_full, patch=version)
     kwargs['img'] = URL['dd_base'].format(url=url)
     kwargs['version'] = version
     cs = ChampionStatic(**kwargs)
@@ -508,11 +508,14 @@ def summoner_to_db_display(std_summoner_name, sum_id=None):
             match_id_list = [str(match['matchId']) for match in match_list['matches']]
             matches_to_db(match_id_list)
             match_display = Match.objects.filter(match_id__in=match_id_list)
+            statset_display = StatSet.objects.filter(match__in=match_display)
           
         else:
             # Get player's last 15 matches from DB
+            print "getting player's last 15 matches"
             rel_statsets = StatSet.objects.filter(player=req_player)
             match_display = [statset.match for statset in rel_statsets]
+            statset_display = rel_statsets
    
     # If player doesn't exist, make call to api
     else:
@@ -526,5 +529,6 @@ def summoner_to_db_display(std_summoner_name, sum_id=None):
         match_id_list = [str(match['matchId']) for match in match_list['matches']]
         matches_to_db(match_id_list)
         match_display = Match.objects.filter(match_id__in=match_id_list)
-        
-    return match_display
+        statset_display = StatSet.objects.filter(match__in=match_display)
+
+    return statset_display

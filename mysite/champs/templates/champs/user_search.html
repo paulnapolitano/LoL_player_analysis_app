@@ -6,9 +6,11 @@
     </head>
     <body>
         <div id="header">
-            <form class="SearchInput" method="get" action="/champs/home/summoner/">
-                <input type="text" class="SummonerName" name="userName" size="21" maxlength="20" placeholder="Enter Summoner Name"> 
-                <input type="submit" class="SearchButton" value="Search">
+            <form class="search_input" method="post" action="/champs/">
+                {% csrf_token %}
+                {{ form }}
+                <!-- <input class="summoner_name" type="text" name="userName" size="21" maxlength="20" placeholder="Enter Summoner Name">  -->
+                <input class="search_button" type="submit" value="Search">
             </form>
         </div>
     </body>
