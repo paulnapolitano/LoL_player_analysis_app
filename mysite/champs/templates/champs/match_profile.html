@@ -12,8 +12,18 @@
         <div id="champ_header">
             <div class="summoner_name">{{ statset.player.summoner_name }}</div>
         
-            <div class="champ_name">{{ statset.champ.champion.name }}</div> 
-
+            <div class="champ_name">{{ statset.champ.champion.name }}<br>
+                {% if statset.champ.smart_role_name == "MIDDLE" %}
+                    MID
+                {% elif statset.champ.smart_role_name == "SUPPORT" %}
+                    SUP
+                {% elif statset.champ.smart_role_name == "JUNGLE" %}
+                    JNG
+                {% else %} 
+                    {{ statset.champ.smart_role_name }}
+                {% endif %}
+            </div>
+            
             <div class="champ_pic">
                 <img src="{{ statset.champ.champion.img }}"></img>
             </div>
@@ -26,9 +36,23 @@
                 <img src="{{ enemy_statset.champ.champion.img }}"></img>
             </div>
             
-            <div class="enemy_champ_name">{{ enemy_statset.champ.champion.name }}</div>
+            <div class="enemy_champ_name">{{ enemy_statset.champ.champion.name }}<br>
+                {% if enemy_statset.champ.smart_role_name == "MIDDLE" %}
+                    MID
+                {% elif enemy_statset.champ.smart_role_name == "SUPPORT" %}
+                    SUP
+                {% elif enemy_statset.champ.smart_role_name == "JUNGLE" %}
+                    JNG
+                {% else %} 
+                    {{ enemy_statset.champ.smart_role_name }}
+                {% endif %}
+            </div>
             
             <div class="summoner_name">{{ enemy_statset.player.summoner_name }}</div>
+        </div>
+        
+        <div id="total_score">
+            <div class="score">{{ stat_comparison.total_score }}</div>
         </div>
         
         <div id="stat_comparison">
@@ -39,6 +63,14 @@
                 <div class="enemy_stat">{{ stat_comparison.kills.enemy_local }}</div>
                 <div class="enemy_score">{{ stat_comparison.kills.enemy_score }}</div>
             </div>
+            
+            <div class="stat">
+                <div class="my_score">{{ stat_comparison.deaths.score }}</div>
+                <div class="my_stat">{{ stat_comparison.deaths.local }}</div>
+                <div class="stat_header">Deaths</div>
+                <div class="enemy_stat">{{ stat_comparison.deaths.enemy_local }}</div>
+                <div class="enemy_score">{{ stat_comparison.deaths.enemy_score }}</div>
+            </div>
 
             <div class="stat">
                 <div class="my_score">{{ stat_comparison.assists.score }}</div>
@@ -48,14 +80,6 @@
                 <div class="enemy_score">{{ stat_comparison.assists.enemy_score }}</div>
             </div>
 
-            <div class="stat">
-                <div class="my_score">{{ stat_comparison.deaths.score }}</div>
-                <div class="my_stat">{{ stat_comparison.deaths.local }}</div>
-                <div class="stat_header">Deaths</div>
-                <div class="enemy_stat">{{ stat_comparison.deaths.enemy_local }}</div>
-                <div class="enemy_score">{{ stat_comparison.deaths.enemy_score }}</div>
-            </div>
-            
             <div class="stat">
                 <div class="my_score">{{ stat_comparison.cs.score }}</div>
                 <div class="my_stat">{{ stat_comparison.cs.local }} ({{ stat_comparison.cs.local_min }})</div>
@@ -80,6 +104,10 @@
                 <div class="enemy_score">{{ stat_comparison.damage_taken.enemy_score }}</div>
             </div>
         </div>
+     
+        <div id="total_enemy_score">
+            <div class="score">{{ stat_comparison.total_enemy_score }}</div>
+        </div> 
      
    <!--        {% if statset and stat_comparison %}
            <p>{{ statset.champ.champion.name }}</p>

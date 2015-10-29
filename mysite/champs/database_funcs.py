@@ -259,6 +259,10 @@ def create_statset(participant, champ, player, match):
     kwargs['match'] = match
     statset_id = str(match.match_id) + '_' + str(player.summoner_id)
     kwargs['statset_id'] = statset_id
+    if participant['teamId'] == 100:
+        kwargs['blue_team'] = True
+    else:
+        kwargs['blue_team'] = False
     ss = StatSet(**kwargs)
     
     return ss   
@@ -484,7 +488,18 @@ def challenger_to_db(region='na'):
         sum_id = challenger['playerOrTeamId']
         summoner_to_db_display(std_name, sum_id)
                 
-        
+ 
+
+# Get list of all players in Master league, save their match histories to DB
+# DEPENDENCIES: api, sum_name_standardize
+def master_to_db(region='na'):
+    master_list = api.get_master(region=region)
+    for master in master_list:
+        std_name = sum_name_standardize(master['playerOrTeamName'])
+        sum_id = master['playerOrTeamId']
+        summoner_to_db_display(std_name, sum_id)
+ 
+ 
 
 # Takes summoner name and optionally summoner ID (one less call to API if ID
 # is passed), saves their match history to database and returns match_display,
@@ -508,7 +523,7 @@ def summoner_to_db_display(std_summoner_name, sum_id=None):
             match_id_list = [str(match['matchId']) for match in match_list['matches']]
             matches_to_db(match_id_list)
             match_display = Match.objects.filter(match_id__in=match_id_list)
-            statset_display = StatSet.objects.filter(match__in=match_display)
+            statset_display = StatSet.objects.filter(player=req_player)
           
         else:
             # Get player's last 15 matches from DB
@@ -529,6 +544,8 @@ def summoner_to_db_display(std_summoner_name, sum_id=None):
         match_id_list = [str(match['matchId']) for match in match_list['matches']]
         matches_to_db(match_id_list)
         match_display = Match.objects.filter(match_id__in=match_id_list)
-        statset_display = StatSet.objects.filter(match__in=match_display)
-
+        
+        req_player = Player.objects.get(std_summoner_name=std_summoner_name)
+        statset_display = StatSet.objects.filter(player=req_player)
+        
     return statset_display

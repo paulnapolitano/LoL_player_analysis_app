@@ -1,3 +1,8 @@
+a{
+    text-decoration: none;
+    color: black;
+}
+
 body {
     font-family: 'Oswald', sans-serif;
     color: black;
@@ -11,34 +16,129 @@ body {
         line-height: 100px;
         font-size: 30px;
     }
-
-    .match {
-        border: 2px solid black;
-        border-radius: 50px;
-        margin-bottom: 10px;
-        height: 100px;
+    
+    #match_history {
         width: 500px;
-        color: black;
+        height: 1650px;
     }
-
-        .champ_pic {
-            float: left;
-            border-radius: 40px;
-            height: 100px;
-            width: 100px;
+    
+        .match {
+            border: 2px solid black;
+            border-radius: 60px;
+            margin-bottom: 10px;
+            height: 120px;
+            width: 600px;
+            color: black;
         }
-        
-            .champ_pic img {
-                border-radius: 40px;
-                height: 80px;
-                width: 80px;
-                margin: 10px 10px 10px 10px;
+
+            .win {
+                border-radius: 58px;
+                height: 120px;
+                width: 600px;
+                background: #C2E0FF;
             }
             
-        .kda {
-            float: left;
-            width: 200px;
-            text-align: center;
-            height: 100px;
-            line-height: 100px;
-        }
+                .win:hover {
+                    background: #99CCFF
+                }
+            
+            .loss {
+                border-radius: 58px;
+                height: 120px;
+                width: 600px;
+                background: #F0B6B6;
+            }
+        
+                .loss:hover {
+                    background: #E68585;
+                }
+        
+            .champ_pic {
+                float: left;
+                border-radius: 40px;
+                height: 120px;
+                width: 120px;
+            }
+            
+                .champ_pic img {
+                    border: 2px solid black;
+                    border-radius: 50px;
+                    height: 100px;
+                    width: 100px;
+                    margin: 8px 8px 8px 8px;
+                }
+                
+            .kda {
+                float: left;
+                width: 100px;
+                text-align: center;
+                height: 120px;
+                line-height: 120px;
+            }
+            
+            .blue_team {
+                float: left;
+                margin-left: 50px;
+                margin-top: 5px;
+                margin-bottom: 5px;
+                width: 120px;
+                height: 110px;
+            }
+            
+                .player {
+                    height: 20px;
+                    width: 120px;
+                    margin-bottom: 2px;
+                }    
+                    
+                    .player_pic {
+                        float: left;
+                        height: 20px;
+                        width: 20px;
+                    }
+                    
+                        .player_pic img {
+                            height: 18px;
+                            width: 18px;
+                            margin: 1px;
+                        }
+                        
+                        .player_pic img:hover {
+                            cursor: pointer;
+                            height: 20px;
+                            width: 20px;
+                            margin: 0;
+                        }
+                        
+                    .player_name {
+                        color: black;
+                        font-size: 12px;
+                        float: left;
+                        height: 20px;
+                        width: 100px;
+                        line-height: 20px;
+                    }
+                    
+                    .player_name a:hover {
+                        font-size: 14px;
+                        color: red;
+                    }
+                    
+
+                
+            .vs {
+                float: left;
+                width: 50px;
+                height: 120px;
+                line-height: 120px;
+                text-align: left;
+            }
+                
+            .red_team {
+                float: left;
+                margin-top: 5px;
+                margin-bottom: 5px;
+                width: 120px;
+                height: 110px;
+            }
+            

@@ -486,6 +486,13 @@ class RiotAPI:
         challenger_dict = self._request(url, req_region=region, params=params)
         return challenger_dict['entries']
         
+    def get_master(self, region='na', type='RANKED_SOLO_5x5'):
+        url = URL['master'].format(ver=API_VERSIONS['league'])   
+        params = {'type':type}
+        
+        master_dict = self._request(url, req_region=region, params=params)
+        return master_dict['entries']
+        
     def get_item_by_id(self, id, region='na', locale=None, 
                        version=None, item_data='all'):
         url = URL['static_item_id'].format(
