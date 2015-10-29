@@ -9,16 +9,64 @@
         <div id="player_header">
             <div id="player_name">{{ player.summoner_name }}</div>
         </div>
-    
-        {% if statset_list %}
-            {% for statset in statset_list %}
+        
+        <div id="match_history">
+        {% if player_statsets %}
+            {% for statset in player_statsets %}
                 <a href="{% url 'champs:match_profile' player.std_summoner_name statset.match.match_id %}">
                     <div class="match">
-                        <div class="champ_pic">
-                            <img src="{{ statset.champ.champion.img }}"></img>
-                        </div>
-                        <div class="kda">
-                            {{ statset.kills }} / {{ statset.assists }} / {{ statset.deaths }}
+                        {% if statset.winner %}
+                            <div class="win">
+                        {% else %}
+                            <div class="loss">
+                        {% endif %}
+                            <div class="champ_pic">
+                                <img src="{{ statset.champ.champion.img }}"></img>
+                            </div>
+                            <div class="kda">
+                                {{ statset.kills }} / {{ statset.deaths }} / {{ statset.assists }}
+                            </div>
+                            <div class="blue_team">
+                                {% for ss in all_statsets %}
+                                    {% if ss.match == statset.match and ss.blue_team %}
+                                        <div class="player">
+                                            <div class="player_pic">
+                                                <img src="{{ ss.champ.champion.img }}"></img>
+                                            </div>
+                                            
+                                            <div class="player_name">
+                                                <a href="{% url 'champs:user_profile' ss.player.std_summoner_name %}">
+                                                    {{ ss.player.summoner_name }}
+                                                </a>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="vs">
+                                VS
+                            </div>
+                            
+                            <div class="red_team">
+                                {% for ss in all_statsets %}
+                                    {% if ss.match == statset.match and not ss.blue_team %}
+                                        <div class="player">
+                                            <div class="player_pic">
+                                                <a href="{% url 'champs:match_profile' ss.player.std_summoner_name ss.match.match_id %}">
+                                                    <img src="{{ ss.champ.champion.img }}"></img>
+                                                </a>
+                                            </div>
+                                            
+                                            <div class="player_name">
+                                                <a href="{% url 'champs:user_profile' ss.player.std_summoner_name %}">
+                                                    {{ ss.player.summoner_name }}
+                                                </a>                                            
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}  
+                            </div>
                         </div>
                     </div>
                 </a>
@@ -26,5 +74,6 @@
         {% else %}
             <p>No matches are available.</p>
         {% endif %}
+        </div>
     </body>
 </html>

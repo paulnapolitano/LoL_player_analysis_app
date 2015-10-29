@@ -3,13 +3,14 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.template import RequestContext, loader
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 
 import datetime
 
 from text_funcs import sum_name_standardize
 from database_funcs import matches_to_db, summoner_to_db_display
-from database_funcs import challenger_to_db
+from database_funcs import challenger_to_db, master_to_db
 from view_funcs import get_stat_comparison
 
 from riot_app import api, RiotException
@@ -24,10 +25,14 @@ from .forms import NameForm
 # DEPENDENCIES: summoner_to_db_display, StatSet
 def user_profile(request, std_summoner_name):
     player = Player.objects.get(std_summoner_name=std_summoner_name)
-    statset_display = summoner_to_db_display(std_summoner_name)
+    player_statsets = summoner_to_db_display(std_summoner_name)
+    
+    matches = [statset.match for statset in player_statsets]
+    all_statsets = StatSet.objects.filter(match__match_id__in = matches)
 
     context = {
-        'statset_list':statset_display, 
+        'all_statsets':all_statsets,
+        'player_statsets':player_statsets, 
         'player':player,
     }
     return render(request, 'champs/user_profile.html', context)
@@ -52,7 +57,7 @@ def user_search(request):
 
 
 # User Search View
-# DEPENDENCIES: Match, Player, StatSet, BuildComponent, get_stat_comparison   
+# DEPENDENCIES: Match, Player, StatSet, BuildComponent, get_stat_comparison, Q
 def match_profile(request, match_id, std_summoner_name):
     match = Match.objects.get(match_id=match_id)
     player = Player.objects.get(std_summoner_name=std_summoner_name)
@@ -70,20 +75,23 @@ def match_profile(request, match_id, std_summoner_name):
     champ_id = static_champion.champ_id
     smart_role_name = champ.smart_role_name
     
-    enemy_statset = StatSet.objects.filter(match=match, 
-                    champ__smart_role_name=smart_role_name
-                    ).exclude(player=player)[0]
-    print enemy_statset
-    print enemy_statset.champ
+    if StatSet.objects.filter(match=match, 
+                              champ__smart_role_name=smart_role_name
+                              ).exclude(player=player).exists():
+        enemy_statset = StatSet.objects.filter(match=match, 
+                        champ__smart_role_name=smart_role_name
+                        ).exclude(player=player)[0]
+    else:
+        enemy_statset = None
     
-    
-    if Champ.objects.filter(champion=static_champion, 
-                            smart_role_name=smart_role_name, 
-                            league_name='CHALLENGER').exists():
-        challenger_champ = Champ.objects.get(champion=static_champion, 
-                                             smart_role_name=smart_role_name,
-                                             league_name='CHALLENGER')
+    if Champ.objects.filter(Q(league_name='CHALLENGER') | Q(league_name='MASTER'),
+                            champion=static_champion, 
+                            smart_role_name=smart_role_name).exists():
+        challenger_champ = Champ.objects.filter(Q(league_name='CHALLENGER') | Q(league_name='MASTER'),
+                                                champion=static_champion, 
+                                                smart_role_name=smart_role_name)[0]
         challenger_statset = StatSet.objects.filter(champ=challenger_champ)[0]
+        
         challenger_build = BuildComponent.objects.filter(
                                                    statset=challenger_statset)
         challenger_final = challenger_build.filter(item_death = None)
@@ -149,6 +157,19 @@ def challenger_index(request):
     challenger_list = Player.objects.filter(rank_num=34)
     context = {'challenger_list':challenger_list}
     return render(request, 'champs/challenger_index.html', context)
+  
+  
+
+# DEPENDENCIES: Player, master_to_db
+def master_index(request):
+    # try:
+    master_to_db()
+    # except RiotException:
+        # print 'Failed to load all challenger players...'
+    master_list = Player.objects.filter(rank_num=34)
+    context = {'master_list':master_list}
+    return render(request, 'champs/master_index.html', context)  
+    
     
     
 # Champ Index View
