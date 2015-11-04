@@ -1,0 +1,32 @@
+<html>
+
+    <head>
+        {% load static from staticfiles %}
+        <link rel="stylesheet" type="text/css" href="{% static 'champs/item_index.css' %}"/>
+        <link href='https://fonts.googleapis.com/css?family=Oswald:400,700' rel='stylesheet' type='text/css'>
+    </head>
+
+    <body>
+        <div id="item_table">
+            <div id="item_header">
+                <div class="item_id">ID</div>
+                <div class="item_image">Image</div>
+                <div class="item_name">Name</div>
+                <div class="item_version">Version</div>
+            </div>
+            <div id="item_data">
+                {% for item in item_list %}
+                    <div class="row_container">
+                        <div class="item_id">{{ item.item_id }}</div>
+                        <div class="item_image">
+                            <img src="{{ item.img }}"></img>
+                        </div>
+                        <div class="item_name">{{ item.name }}</div>
+                        <div class="item_version">{{ item.version }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </body>
+
+</html>

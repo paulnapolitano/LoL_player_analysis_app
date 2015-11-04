@@ -1,0 +1,24 @@
+<html>
+
+    <head>
+        {% load static from staticfiles %}
+        <link rel="stylesheet" type="text/css" href="{% static 'champs/champion_index.css' %}"/>
+        <link href='https://fonts.googleapis.com/css?family=Oswald:400,700' rel='stylesheet' type='text/css'>
+    </head>
+
+    <body>
+        <div id="champion_data">
+            {% for champion in champion_list %}
+                <a href="{% url 'champs:champion_profile' champion.version champion.name %}">
+                    <div class="row_container">
+                        <div class="champion_image">
+                            <img src="{{ champion.img }}"></img>
+                        </div>
+                        <div class="champion_name">{{ champion.name }}</div>
+                    </div> 
+                </a>
+            {% endfor %}
+        </div>
+    </body>
+
+</html>

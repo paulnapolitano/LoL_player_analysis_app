@@ -1,0 +1,58 @@
+body {
+    font-family: 'Oswald', sans-serif;
+    color: white;
+    font-size: 20px;
+    background: #232323;
+}
+
+input::-webkit-input-placeholder, textarea::-webkit-input-placeholder { 
+    color:    #666;
+}
+
+input:-moz-placeholder, textarea:-moz-placeholder { 
+    color:    #666;
+}
+
+input::-moz-placeholder, textarea::-moz-placeholder { 
+    color:    #666;
+}
+
+input:-ms-input-placeholder, textarea:-ms-input-placeholder { 
+    color:    #666;
+}
+
+#header {
+
+}
+
+#search {
+    width: 400px;
+    height: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 200px;
+    margin-bottom: 200px;
+}
+
+    .search_input {
+        height: 50px;
+        width: 266px;
+        margin: auto;
+    }
+
+        .search_bar {
+            float: left;
+            font-family: 'Oswald', sans-serif;
+            font-size: 15px;
+            height: 44px;
+            width: 176px;
+            padding-left: 20px;
+        }
+    
+        .search_button {
+            float: left;
+            font-family: 'Oswald', sans-serif;
+            font-size: 15px;
+            height: 50px;
+            width: 60px;
+        }

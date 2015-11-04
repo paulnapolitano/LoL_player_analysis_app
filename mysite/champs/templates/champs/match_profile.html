@@ -51,110 +51,82 @@
             <div class="summoner_name">{{ enemy_statset.player.summoner_name }}</div>
         </div>
         
-        <div id="total_score">
-            <div class="score">{{ stat_comparison.total_score }}</div>
-        </div>
-        
-        <div id="stat_comparison">
-            <div class="stat">
-                <div class="my_score">{{ stat_comparison.kills.score }}</div>
-                <div class="my_stat">{{ stat_comparison.kills.local }}</div>
-                <div class="stat_header">Kills</div>
-                <div class="enemy_stat">{{ stat_comparison.kills.enemy_local }}</div>
-                <div class="enemy_score">{{ stat_comparison.kills.enemy_score }}</div>
-            </div>
-            
-            <div class="stat">
-                <div class="my_score">{{ stat_comparison.deaths.score }}</div>
-                <div class="my_stat">{{ stat_comparison.deaths.local }}</div>
-                <div class="stat_header">Deaths</div>
-                <div class="enemy_stat">{{ stat_comparison.deaths.enemy_local }}</div>
-                <div class="enemy_score">{{ stat_comparison.deaths.enemy_score }}</div>
-            </div>
-
-            <div class="stat">
-                <div class="my_score">{{ stat_comparison.assists.score }}</div>
-                <div class="my_stat">{{ stat_comparison.assists.local }}</div>
-                <div class="stat_header">Assists</div>
-                <div class="enemy_stat">{{ stat_comparison.assists.enemy_local }}</div>
-                <div class="enemy_score">{{ stat_comparison.assists.enemy_score }}</div>
-            </div>
-
-            <div class="stat">
-                <div class="my_score">{{ stat_comparison.cs.score }}</div>
-                <div class="my_stat">{{ stat_comparison.cs.local }} ({{ stat_comparison.cs.local_min }})</div>
-                <div class="stat_header">CS</div>
-                <div class="enemy_stat">{{ stat_comparison.cs.enemy_local }} ({{ stat_comparison.cs.enemy_local_min }})</div>
-                <div class="enemy_score">{{ stat_comparison.cs.enemy_score }}</div>
-            </div>
-            
-            <div class="stat">
-                <div class="my_score">{{ stat_comparison.damage_to_champs.score }}</div>
-                <div class="my_stat">{{ stat_comparison.damage_to_champs.local }}</div>
-                <div class="stat_header">DMG Dealt</div>
-                <div class="enemy_stat">{{ stat_comparison.damage_to_champs.enemy_local }}</div>
-                <div class="enemy_score">{{ stat_comparison.damage_to_champs.enemy_score }}</div>
-            </div>
-
-            <div class="stat">
-                <div class="my_score">{{ stat_comparison.damage_taken.score }}</div>
-                <div class="my_stat">{{ stat_comparison.damage_taken.local }}</div>
-                <div class="stat_header">DMG Taken</div>
-                <div class="enemy_stat">{{ stat_comparison.damage_taken.enemy_local }}</div>
-                <div class="enemy_score">{{ stat_comparison.damage_taken.enemy_score }}</div>
-            </div>
-        </div>
-     
-        <div id="total_enemy_score">
-            <div class="score">{{ stat_comparison.total_enemy_score }}</div>
-        </div> 
-     
-   <!--        {% if statset and stat_comparison %}
-           <p>{{ statset.champ.champion.name }}</p>
-             
-            <ul>
-            {% for key, value in stat_comparison.items %}
-                {# value.avg -> avg val #}
-                {# value.local -> local val #}
-                {# value.rel_percentage -> rel percentage #}        
-                {# value.name -> un-camelcased key #}
-                {# value.win_percentage -> win percentage #}
-                
-                <li>{{ value.name }}: {{ value.local }}</li>
-                <p></p>
-                
-                {% if value.local > value.avg %}
-                    <p>Above Average in {{ value.name }}</p>
-                {% elif value.local < value.avg %}
-                    <p>Below Average in {{ value.name }}</p>
-                {% else %}
-                    <p>Average in {{ value.name }}</p>
-                {% endif %}
-                
-                <p>You did better than {{ value.rel_percentage }}% of all {{ statset.champ.smart_role_name.lower }} {{ statset.champ.champ_name }} players in {{ statset.champ.league_name }}</p>
-                <p>You did better than {{ value.win_percentage }}% of winning {{ statset.champ.smart_role_name.lower }} {{ statset.champ.champ_name }} players in {{ statset.champ.league_name }}</p>
-                
-            {% endfor %}
-            </ul>
-            
-        {% else %}
-            <p>Match not found, or missing information...</p>
-        {% endif %} -->
-
-        <div id="timeline_container">
-            <div id="label_container">
-                <label for="game_time">Game Time</label>
-            </div>
-            <div id="slider_container">
-                <input id="game_time" type="range" value="0" min="0" max="{{ match_duration }}" step="10" oninput="outputUpdate(value)"/>
-                <output for="game_time" id="time">00:00:00</output>
-            </div>
-            <div id="play_button_container">
-                <div id="play">
-                    <img src="https://image.freepik.com/free-icon/play-button_318-42541.png"></img>
+        <div id="stat_wrapper">
+            <div id="stat_container">
+                <div id="total_score">
+                    <div class="score">{{ stat_comparison.total_score }}</div>
                 </div>
-                <div id="pause">
-                    <img src="http://uxrepo.com/static/icon-sets/google-material/png32/256/000000/android-pause-circle-outline-256-000000.png"></img>
+                
+                <div id="stat_comparison">
+                    <div class="stat">
+                        <div class="my_score">{{ stat_comparison.kills.score }}</div>
+                        <div class="my_stat">{{ stat_comparison.kills.local }}</div>
+                        <div class="stat_header">Kills</div>
+                        <div class="enemy_stat">{{ stat_comparison.kills.enemy_local }}</div>
+                        <div class="enemy_score">{{ stat_comparison.kills.enemy_score }}</div>
+                    </div>
+                    
+                    <div class="stat">
+                        <div class="my_score">{{ stat_comparison.deaths.score }}</div>
+                        <div class="my_stat">{{ stat_comparison.deaths.local }}</div>
+                        <div class="stat_header">Deaths</div>
+                        <div class="enemy_stat">{{ stat_comparison.deaths.enemy_local }}</div>
+                        <div class="enemy_score">{{ stat_comparison.deaths.enemy_score }}</div>
+                    </div>
+
+                    <div class="stat">
+                        <div class="my_score">{{ stat_comparison.assists.score }}</div>
+                        <div class="my_stat">{{ stat_comparison.assists.local }}</div>
+                        <div class="stat_header">Assists</div>
+                        <div class="enemy_stat">{{ stat_comparison.assists.enemy_local }}</div>
+                        <div class="enemy_score">{{ stat_comparison.assists.enemy_score }}</div>
+                    </div>
+
+                    <div class="stat">
+                        <div class="my_score">{{ stat_comparison.cs.score }}</div>
+                        <div class="my_stat">{{ stat_comparison.cs.local }} ({{ stat_comparison.cs.local_min }})</div>
+                        <div class="stat_header">CS</div>
+                        <div class="enemy_stat">{{ stat_comparison.cs.enemy_local }} ({{ stat_comparison.cs.enemy_local_min }})</div>
+                        <div class="enemy_score">{{ stat_comparison.cs.enemy_score }}</div>
+                    </div>
+                    
+                    <div class="stat">
+                        <div class="my_score">{{ stat_comparison.damage_to_champs.score }}</div>
+                        <div class="my_stat">{{ stat_comparison.damage_to_champs.local }}</div>
+                        <div class="stat_header">DMG Dealt</div>
+                        <div class="enemy_stat">{{ stat_comparison.damage_to_champs.enemy_local }}</div>
+                        <div class="enemy_score">{{ stat_comparison.damage_to_champs.enemy_score }}</div>
+                    </div>
+
+                    <div class="stat">
+                        <div class="my_score">{{ stat_comparison.damage_taken.score }}</div>
+                        <div class="my_stat">{{ stat_comparison.damage_taken.local }}</div>
+                        <div class="stat_header">DMG Taken</div>
+                        <div class="enemy_stat">{{ stat_comparison.damage_taken.enemy_local }}</div>
+                        <div class="enemy_score">{{ stat_comparison.damage_taken.enemy_score }}</div>
+                    </div>
+                </div>
+             
+                <div id="total_enemy_score">
+                    <div class="score">{{ stat_comparison.total_enemy_score }}</div>
+                </div> 
+            </div>
+        
+            <div id="timeline_container">
+                <div id="label_container">
+                    <label for="game_time">Game Time</label>
+                </div>
+                <div id="slider_container">
+                    <input id="game_time" type="range" value="0" min="0" max="{{ match_duration }}" step="10" oninput="outputUpdate(value)"/>
+                    <output for="game_time" id="time">00:00:00</output>
+                </div>
+                <div id="play_button_container">
+                    <div id="play">
+                        <img src="https://image.freepik.com/free-icon/play-button_318-42541.png"></img>
+                    </div>
+                    <div id="pause">
+                        <img src="http://uxrepo.com/static/icon-sets/google-material/png32/256/000000/android-pause-circle-outline-256-000000.png"></img>
+                    </div>
                 </div>
             </div>
         </div>

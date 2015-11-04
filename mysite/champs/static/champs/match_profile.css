@@ -1,6 +1,7 @@
 body {
     font-family: 'Oswald', sans-serif;
     color: black;
+
 }
 
 div {
@@ -9,10 +10,11 @@ div {
 }
 
 #timeline_container {
+    margin-left: auto;
+    margin-right: auto;
     position: relative;
     height: 50px;
     width: 720px;
-    margin-left: 140px;
     margin-bottom: 50px;
 }
 
@@ -313,6 +315,8 @@ div {
             line-height: normal
         } */
 #champ_header {
+    margin-left: auto;
+    margin-right: auto;
     width: 1240px;
     height: 100px;
 }
@@ -378,88 +382,103 @@ div {
         color: black;
     }
 
-#total_score {
-    float: left;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    width: 250px;
-    height: 360px;
-    line-height: 360px;
+#stat_wrapper {
+    width: 100%;
     text-align: center;
-}
+}    
 
-    .score {
-        font-size: 30px;
-        color: black;
+    #stat_container {
+        vertical-align: middle;
+        display: inline-block;
+        width: 1240px;
+        height: 360px;
+        margin-bottom: 50px;
     }
-    
-#stat_comparison {
-    margin: 20px;
-    float: left;
-    width: 700px;
-    height: 360px;
-    font-size: 20px;
-}
-    
-    .stat {
-        float: left;
-        height: 60px;
-        width: 700px;
-    }
-    
-        .my_score {
-            float: left;
-            height: 60px;
-            width: 100px;
-            line-height: 60px;
-            text-align: right;
-        }
 
-        .my_stat {
+        #total_score {
             float: left;
-            height: 60px;
-            width: 150px;
-            text-align: right;
-            line-height: 60px;
-        }
-        
-        .stat_header {
-            color: black;
-            float: left;
-            height: 60px;
-            width: 200px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            width: 250px;
+            height: 360px;
+            line-height: 360px;
             text-align: center;
-            line-height: 60px;
-            font-weight: 700;
         }
-        
-        .enemy_stat {
+
+            .score {
+                font-size: 30px;
+                color: black;
+            }
+            
+        #stat_comparison {
+            margin: 20px;
             float: left;
-            height: 60px;
-            width: 150px;
-            text-align: left;
-            line-height: 60px;
+            width: 700px;
+            height: 360px;
+            font-size: 20px;
         }
-    
-        .enemy_score {
+            
+            .stat {
+                float: left;
+                height: 60px;
+                width: 700px;
+            }
+            
+                .my_score {
+                    float: left;
+                    height: 60px;
+                    width: 100px;
+                    line-height: 60px;
+                    text-align: right;
+                }
+
+                .my_stat {
+                    float: left;
+                    height: 60px;
+                    width: 150px;
+                    text-align: right;
+                    line-height: 60px;
+                }
+                
+                .stat_header {
+                    color: black;
+                    float: left;
+                    height: 60px;
+                    width: 200px;
+                    text-align: center;
+                    line-height: 60px;
+                    font-weight: 700;
+                }
+                
+                .enemy_stat {
+                    float: left;
+                    height: 60px;
+                    width: 150px;
+                    text-align: left;
+                    line-height: 60px;
+                }
+            
+                .enemy_score {
+                    float: left;
+                    height: 60px;
+                    width: 100px;
+                    line-height: 60px;
+                    text-align: left;
+                }
+            
+        #total_enemy_score {
             float: left;
-            height: 60px;
-            width: 100px;
-            line-height: 60px;
-            text-align: left;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            width: 250px;
+            height: 360px;
+            line-height: 360px;
+            text-align: center;
         }
-    
-#total_enemy_score {
-    float: left;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    width: 250px;
-    height: 360px;
-    line-height: 360px;
-    text-align: center;
-}
     
 .build_container {
+    margin-left: auto;
+    margin-right: auto;
     width: 1040px;
     padding: 10px;
 }

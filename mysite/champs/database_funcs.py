@@ -508,7 +508,7 @@ def master_to_db(region='na'):
 def summoner_to_db_display(std_summoner_name, sum_id=None):
     # First look for player in database
     if Player.objects.filter(std_summoner_name=std_summoner_name).exists():
-        print '{name} found in database'.format(name=std_summoner_name)
+        print u'{name} found in database'.format(name=std_summoner_name)
         req_player = Player.objects.get(std_summoner_name=std_summoner_name)
         secs_since_last_update = (timezone.now() - req_player.last_update
                                     ).total_seconds()
@@ -534,7 +534,7 @@ def summoner_to_db_display(std_summoner_name, sum_id=None):
    
     # If player doesn't exist, make call to api
     else:
-        print 'adding {name} to database'.format(name=std_summoner_name)
+        print u'adding {name} to database'.format(name=std_summoner_name)
         if sum_id is None:
             sum_dict = api.get_summoners_by_name('na', std_summoner_name)    
             match_list = api.get_match_list('na', sum_dict[std_summoner_name]['id'])
