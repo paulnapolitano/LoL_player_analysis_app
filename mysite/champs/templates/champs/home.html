@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        {% load static from staticfiles %}
+        <link rel="stylesheet" type="text/css" href="{% static 'champs/home.css' %}"></link>
+        <link href='https://fonts.googleapis.com/css?family=Oswald:400,700' rel='stylesheet' type='text/css'>
+        <title>Pooby.gg</title>
+    </head>
+    <body>
+        <div id="header">
+            
+        </div>
+    
+        <div id="search">
+            <form class="search_input" method="post" action="/champs/">
+                {% csrf_token %}
+                {{ form }}
+                <!-- <input class="summoner_name" type="text" name="userName" size="21" maxlength="20" placeholder="Enter Summoner Name"> -->
+                <input class="search_button" type="submit" value="Search">
+            </form>
+        </div>
+    </body>

@@ -15,11 +15,48 @@ from view_funcs import get_stat_comparison
 
 from riot_app import api, RiotException
 
-from .models import Player, Match, StatSet, BuildComponent, Champ
+from .models import Player, Match, StatSet, BuildComponent, Champ, ItemStatic
+from .models import ChampionStatic
 from .forms import NameForm
 
 # ------------------------------------ VIEWS ---------------------------------
 
+
+# Item Index View
+# DEPENDENCIES: ItemStatic
+def item_index(request, version):
+    item_list = ItemStatic.objects.filter(version=version)
+    context = {
+        'item_list':item_list,
+    }
+    
+    return render(request, 'champs/item_index.html', context)
+
+    
+    
+# Champion Index View
+# DEPENDENCIES: ChampionStatic
+def champion_index(request, version):
+    champion_list = ChampionStatic.objects.filter(version=version).order_by('name')
+    context = {
+        'champion_list':champion_list,
+    }
+    
+    return render(request, 'champs/champion_index.html', context)
+
+    
+    
+# Champion Index View
+# DEPENDENCIES: ChampionStatic
+def champion_profile(request, version, name):
+    champion = ChampionStatic.objects.get(version=version, name=name)
+    context = {
+        'champion':champion,
+    }
+    
+    return render(request, 'champs/champion_profile.html', context)
+    
+    
 
 # Match History View
 # DEPENDENCIES: summoner_to_db_display, StatSet
@@ -40,7 +77,7 @@ def user_profile(request, std_summoner_name):
     
 # User Search View
 # DEPENDENCIES: None
-def user_search(request):
+def home(request):
     if request.method == 'POST':
         form = NameForm(request.POST)
         if form.is_valid():
@@ -52,7 +89,7 @@ def user_search(request):
     else:
         form = NameForm()
     
-    return render(request, 'champs/user_search.html', {'form': form})
+    return render(request, 'champs/home.html', {'form': form})
    
 
 

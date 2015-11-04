@@ -1,0 +1,11 @@
+<html>
+    <head>
+        {% load static from staticfiles %}
+        <link rel="stylesheet" type="text/css" href="{% static 'champs/champion_profile.css' %}"/>
+        <link href='https://fonts.googleapis.com/css?family=Oswald:400,700' rel='stylesheet' type='text/css'>
+    </head>
+
+    <body>
+        {{ champion.name }}
+    </body>
+</html>
