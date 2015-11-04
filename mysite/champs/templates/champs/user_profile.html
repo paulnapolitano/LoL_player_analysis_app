@@ -3,6 +3,9 @@
         {% load static from staticfiles %}
         <link rel="stylesheet" type="text/css" href="{% static 'champs/user_profile.css' %}"/>
         <link href='https://fonts.googleapis.com/css?family=Oswald:400,700' rel='stylesheet' type='text/css'>
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="{% static 'champs/user_profile.js' %}"></script>
     </head>
     
     <body>
@@ -13,63 +16,74 @@
         <div id="match_history">
         {% if player_statsets %}
             {% for statset in player_statsets %}
-                <a href="{% url 'champs:match_profile' player.std_summoner_name statset.match.match_id %}">
-                    <div class="match">
-                        {% if statset.winner %}
-                            <div class="win">
-                        {% else %}
-                            <div class="loss">
-                        {% endif %}
-                            <div class="champ_pic">
-                                <img src="{{ statset.champ.champion.img }}"></img>
-                            </div>
-                            <div class="kda">
-                                {{ statset.kills }} / {{ statset.deaths }} / {{ statset.assists }}
-                            </div>
-                            <div class="blue_team">
-                                {% for ss in all_statsets %}
-                                    {% if ss.match == statset.match and ss.blue_team %}
-                                        <div class="player">
-                                            <div class="player_pic">
-                                                <img src="{{ ss.champ.champion.img }}"></img>
-                                            </div>
-                                            
-                                            <div class="player_name">
-                                                <a href="{% url 'champs:user_profile' ss.player.std_summoner_name %}">
-                                                    {{ ss.player.summoner_name }}
-                                                </a>
-                                            </div>
-                                        </div>
-                                    {% endif %}
-                                {% endfor %}
-                            </div>
-                            
-                            <div class="vs">
-                                VS
-                            </div>
-                            
-                            <div class="red_team">
-                                {% for ss in all_statsets %}
-                                    {% if ss.match == statset.match and not ss.blue_team %}
-                                        <div class="player">
-                                            <div class="player_pic">
-                                                <a href="{% url 'champs:match_profile' ss.player.std_summoner_name ss.match.match_id %}">
-                                                    <img src="{{ ss.champ.champion.img }}"></img>
-                                                </a>
-                                            </div>
-                                            
-                                            <div class="player_name">
-                                                <a href="{% url 'champs:user_profile' ss.player.std_summoner_name %}">
-                                                    {{ ss.player.summoner_name }}
-                                                </a>                                            
-                                            </div>
-                                        </div>
-                                    {% endif %}
-                                {% endfor %}  
-                            </div>
+                {% if statset.winner %} 
+                <div class="match win">
+                {% else %} 
+                <div class="match loss">
+                {% endif %}
+                    <div class="champ_pic_container">
+                        <div class="champ_pic_border">
                         </div>
+                        
+                        <a href="{% url 'champs:match_profile' player.std_summoner_name statset.match.match_id %}">
+                            <div class="champ_pic">
+                                <img src="{{ statset.champ.champion.img }}">
+                                </img>
+                            </div>
+                        </a>
                     </div>
-                </a>
+
+                    <div class="kda">
+                        {{ statset.kills }} / {{ statset.deaths }} / {{ statset.assists }}
+                    </div>
+                 
+                    {% spaceless %}
+                    <div class="blue_team">
+                         {% for ss in all_statsets %}
+                            {% if ss.match == statset.match and ss.blue_team %}
+                                <div class="player">
+                                    <div class="player_pic">
+                                        <a href="{% url 'champs:match_profile' ss.player.std_summoner_name ss.match.match_id %}">
+                                        <img src="{{ ss.champ.champion.img }}">
+                                        </img>
+                                        </a>
+                                    </div>
+                                    
+                                    <div class="player_name">
+                                        <a href="{% url 'champs:user_profile' ss.player.std_summoner_name %}">
+                                            {{ ss.player.summoner_name }}
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %} 
+                    </div>
+ 
+                    <div class="vs">
+                        VS
+                    </div>
+                    
+                    <div class="red_team">
+                        {% for ss in all_statsets %}
+                            {% if ss.match == statset.match and not ss.blue_team %}
+                                <div class="player">
+                                    <div class="player_pic">
+                                        <a href="{% url 'champs:match_profile' ss.player.std_summoner_name ss.match.match_id %}">
+                                            <img src="{{ ss.champ.champion.img }}"></img>
+                                        </a>
+                                    </div>
+                                    
+                                    <div class="player_name">
+                                        <a href="{% url 'champs:user_profile' ss.player.std_summoner_name %}">
+                                            {{ ss.player.summoner_name }}
+                                        </a>                                            
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}  
+                    </div>
+                    {% endspaceless %}
+                </div>
             {% endfor %}
         {% else %}
             <p>No matches are available.</p>
