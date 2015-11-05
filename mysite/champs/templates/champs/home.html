@@ -4,13 +4,23 @@
         {% load static from staticfiles %}
         <link rel="stylesheet" type="text/css" href="{% static 'champs/home.css' %}"></link>
         <link href='https://fonts.googleapis.com/css?family=Oswald:400,700' rel='stylesheet' type='text/css'>
+        <link rel="shortcut icon" href="{% static 'champs/Poobygg logo.png' %}"></link>
         <title>Pooby.gg</title>
     </head>
     <body>
-        <div id="header">
-            
+        <div id="navbar">
+            <ul id="nav">
+                <li class="nav_el"><a href="{% url 'champs:home' %}">Home</a></li>
+                <li class="nav_el"><a href="{% url 'champs:champion_index' %}">Champions</a></li>
+                <li class="nav_el"><a href="{% url 'champs:item_index' %}">Items</a></li>
+                <li class="nav_el"><a href="{% url 'champs:home' %}">Server</a></li>              
+            </ul>
         </div>
-    
+        
+        <div id="logo">
+            <img src="{% static 'champs/Poobygg logo.png' %}"></img>
+        </div>
+        
         <div id="search">
             <form class="search_input" method="post" action="/champs/">
                 {% csrf_token %}
