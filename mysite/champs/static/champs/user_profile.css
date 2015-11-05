@@ -3,6 +3,10 @@ a{
     color: black;
 }
 
+p {
+    margin: 0;
+}
+
 body {
     font-family: 'Oswald', sans-serif;
     color: white;
@@ -10,9 +14,13 @@ body {
     background: #232323;
 }
 
+.bold {
+    font-weight: 700;
+}
+
     #player_header {
         height: 100px;
-        width: 658px;
+        width: 720px;
         text-align: center;
         line-height: 100px;
         font-size: 30px;
@@ -23,40 +31,35 @@ body {
     #match_history {
         margin-left: auto;
         margin-right: auto;
-        width: 658px;
-        height: 1650px;
+        width: 720px;
+        border: 5px groove #3B3B3B;
     }
+    
+        #match_history h3 {
+            font-size: 28px;
+            text-align: center;
+            text-shadow: 2px 2px #6B6B6B;
+        }
     
         .match {
             border: 4px solid black;
             border-radius: 64px;
-            margin-bottom: 10px;
+            margin: 5px auto;
             height: 120px;
-            width: 650px;
+            width: 330px;
             color: black;
+            overflow: hidden;
         }
 
             .win {
-                height: 120px;
-                width: 650px;
-                background: #C2E0FF;
-                color: black;
+                background: #B9F1FF;
+                /* background: #C2E0FF; */
             }
-            
-                .win:hover {
-                    background: #99CCFF
-                }
             
             .loss {
-                height: 120px;
-                width: 650px;
-                background: #F0B6B6;
-                color: black;
+                background: #FFC8BB;
+                /* background: #F0B6B6; */
             }
-        
-                .loss:hover {
-                    background: #E68585;
-                }
         
             .champ_pic_container {
                 position: relative;
@@ -68,16 +71,16 @@ body {
             }
             
                 .champ_pic_border {
-                    -webkit-border-radius: 50%;
-                    -moz-border-radius: 50%;
-                    border-radius: 50%;
+                    -webkit-border-radius: 0%;
+                    -moz-border-radius: 0%;
+                    border-radius: 0%;
 
                     position: absolute;
-                    border: 16px solid #232323;
+                    background: #232323;
                     margin: 0px;
                     overflow: hidden;
-                    height: 88px;
-                    width: 88px;
+                    height: 100%;
+                    width: 100%;
                 }
                 
                 .champ_pic {
@@ -92,11 +95,13 @@ body {
 
                 
                     .win .champ_pic_border {
-                        border: 16px solid #62AFFF;
+                        background: #58DDFF;
+                        /* background: #62AFFF; */
                     }
                     
                     .loss .champ_pic_border {
-                        border: 16px solid #D94545;
+                        background: #FF8B6E;
+                        /* background: #D94545; */
                     }
                     
                     .champ_pic img {
@@ -104,70 +109,121 @@ body {
                         width: 90px;
                         margin: -7px;
                     }
-                
-            .kda {
-                width: 100px;
+  
+            .match_summary {
+                width: 160px;
                 height: 120px;
-
-                margin: 0 20px;
                 float: left;
-
+                margin: 0;
                 text-align: center;
-                line-height: 120px;
-                font-size: 26px;
+            }
+  
+                .match_time {
+                    width: 160px;
+                    height: 40px;
+                    line-height: 40px;
+                    font-size: 12px;
+                    opacity: 0.8;
+                }
+      
+                .kda {
+                    width: 160px;
+                    height: 40px;
+                    
+                    line-height: 40px;
+                    font-size: 26px;
+                }
+                
+               .match_champ {
+                    width: 160px;
+                    height: 40px;
+                    line-height: 40px;
+                    font-size: 12px;
+                    opacity: 0.8;
+                }  
+            
+            .arrow {
+                float: left;
+                height: 120px;
+                width: 50px;
+                line-height: 111px;
+                font-size: 40px;
+                text-align: center;
+                cursor: pointer;
+            }
+                .arrow:hover {
+                    font-size: 60px;
+                    line-height: 105px;
+                }
+            
+            .match_details {
+                float: left;
+                width: 370px;
             }
             
             .blue_team {
                 float: left;
                 margin: 5px 0;
-                width: 140px;
+                width: 165px;
                 height: 110px;
             }
             
                 .player {
                     height: 20px;
-                    width: 140px;
+                    width: 165px;
                     margin-bottom: 2px;
                 }    
                     
                     .player_pic {
                         float: left;
                         height: 20px;
-                        width: 40px;
+                        width: 25px;
                     }
                     
                         .player_pic img {
-                            height: 18px;
-                            width: 18px;
-                            margin: 1px 11px;
+                            height: 20px;
+                            width: 20px;
+                            margin: 0 2.5px;
                         }
-                        
-                    .player_name {
-                        color: black;
-                        font-size: 12px;
+                    
+                    .player_details {
                         float: left;
                         height: 20px;
-                        width: 100px;
-                        line-height: 20px;
+                        width: 140px;
+                        color: black;     
+                        background-color: rgba(0, 0, 0, 0);
                     }
+                            
+                        .player_details:hover {
+                            font-size: 14px;
+                            background-color: rgba(0, 0, 0, 0.1);
+                        }
+                        
+                        .player_name {
+                            font-size: 12px;
+                            float: left;
+                            height: 20px;
+                            width: 120px;
+                            line-height: 20px;
+                        }
+                        
+                        .player_league {
+                            float: left;
+                            height: 20px;
+                            width: 20px;
+                            line-height: 20px;
+                            font-size: 12px;
+                            opacity: 0.8;
+                        }
                     
-                    .player_name a:hover {
-                        font-size: 14px;
-                        color: red;
-                    }
-                    
-
-                
             .vs {
-                width: 50px;
+                width: 40px;
                 height: 120px;
 
                 float: left;
-                margin-right: 25px;
-                margin-left: 25px;
                 
                 line-height: 120px;
-                text-align: left;
+                text-align: center;
                 font-size: 26px;
             }
                 
@@ -175,7 +231,7 @@ body {
                 float: left;
                 margin-top: 5px;
                 margin-bottom: 5px;
-                width: 120px;
+                width: 165px;
                 height: 110px;
             }
             
