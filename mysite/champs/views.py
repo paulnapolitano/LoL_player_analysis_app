@@ -16,7 +16,7 @@ from view_funcs import get_stat_comparison
 from riot_app import api, RiotException
 
 from .models import Player, Match, StatSet, BuildComponent, Champ, ItemStatic
-from .models import ChampionStatic
+from .models import ChampionStatic, Patch
 from .forms import NameForm
 
 # ------------------------------------ VIEWS ---------------------------------
@@ -24,8 +24,8 @@ from .forms import NameForm
 
 # Item Index View
 # DEPENDENCIES: ItemStatic
-def item_index(request, version):
-    item_list = ItemStatic.objects.filter(version=version)
+def item_index(request):
+    item_list = ItemStatic.objects.order_by('name')
     context = {
         'item_list':item_list,
     }
@@ -34,15 +34,42 @@ def item_index(request, version):
 
     
     
+# Item Index Versioned View
+# DEPENDENCIES: ItemStatic
+def item_index_versioned(request, version):
+    item_list = ItemStatic.objects.filter(version=version)
+    context = {
+        'item_list':item_list,
+    }
+    
+    return render(request, 'champs/item_index_versioned.html', context)    
+    
+    
+    
 # Champion Index View
+# DEPENDENCIES: ChampionStatic, Patch
+def champion_index(request):
+    current_patch = Patch.objects.get(end_datetime__isnull=True)
+    print current_patch.patch
+    champion_list = ChampionStatic.objects.filter(version=current_patch).order_by('name')
+    context = {
+        'latest_version':current_patch,
+        'champion_list':champion_list,
+    }
+    
+    return render(request, 'champs/champion_index.html', context)
+
+    
+    
+# Champion Index Versioned View
 # DEPENDENCIES: ChampionStatic
-def champion_index(request, version):
+def champion_index_versioned(request, version):
     champion_list = ChampionStatic.objects.filter(version=version).order_by('name')
     context = {
         'champion_list':champion_list,
     }
     
-    return render(request, 'champs/champion_index.html', context)
+    return render(request, 'champs/champion_index_versioned.html', context)
 
     
     

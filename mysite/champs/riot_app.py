@@ -240,8 +240,8 @@ class RiotAPI:
             return self._static_request(api_url, req_region, params, tries)
  
         elif r.status_code==500:
-            # Try again after 5 mins
-            retry_time = 5*60
+            # Try again after 5 secs
+            retry_time = 5
             print 'retrying after {retry_time} seconds'.format(retry_time=retry_time)
             start_time = time.time()
             while time.time() - start_time < retry_time:

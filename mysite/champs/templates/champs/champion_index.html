@@ -7,7 +7,17 @@
     </head>
 
     <body>
+        <div id="navbar">
+            <ul id="nav">
+                <li class="nav_el"><a href="{% url 'champs:home' %}">Home</a></li>
+                <li class="nav_el"><a href="{% url 'champs:champion_index' %}">Champions</a></li>
+                <li class="nav_el"><a href="{% url 'champs:item_index' %}">Items</a></li>
+                <li class="nav_el"><a href="{% url 'champs:home' %}">Server</a></li>              
+            </ul>
+        </div>
+
         <div id="champion_data">
+            {{ latest_patch.patch }}
             {% for champion in champion_list %}
                 <a href="{% url 'champs:champion_profile' champion.version champion.name %}">
                     <div class="row_container">
