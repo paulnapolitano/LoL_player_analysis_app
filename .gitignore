@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 api_key.py
 mysite/champs/api_key.py
 mysite/champs/api_key.pyc
@@ -6,3 +7,10 @@ db.sqlite3
 mysite/db.sqlite3-journal
 mysite/champs/api_key.py
 mysite/champs/api_key.py
+=======
+testing/items/api_key.py
+api_key.py
+db.sqlite3
+*.pyc
+*.pyc
+>>>>>>> master
