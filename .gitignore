@@ -1,3 +1,5 @@
 testing/items/api_key.py
 api_key.py
 db.sqlite3
+*.pyc
+*.pyc
