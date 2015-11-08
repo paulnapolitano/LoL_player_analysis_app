@@ -5,3 +5,4 @@ db.sqlite3
 *.pyc
 mysite/db.sqlite3-journal
 mysite/champs/api_key.py
+mysite/champs/api_key.py

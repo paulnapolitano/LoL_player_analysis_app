@@ -51,7 +51,7 @@ def item_index_versioned(request, version):
 def champion_index(request):
     current_patch = Patch.objects.get(end_datetime__isnull=True)
     print current_patch.patch
-    champion_list = ChampionStatic.objects.order_by('name')
+    champion_list = ChampionStatic.objects.filter(version=current_patch).order_by('name')
     context = {
         'latest_version':current_patch,
         'champion_list':champion_list,
