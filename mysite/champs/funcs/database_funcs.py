@@ -158,7 +158,7 @@ def match_to_db(match_id, region='na'):
                 if not bc in build_component_insert_list:
                     build_component_insert_list.append(bc)
 
-        print '\n\t  --------------------- Creating objects --------------------'
+        print '\t  --------------------- Creating objects --------------------'
         save_in_bulk(m, champ_insert_list, player_insert_list, statset_insert_list, build_component_insert_list)
         print '\t  -----------------------------------------------------------'
         print '-------------------------------------------------------------------------------\n'
