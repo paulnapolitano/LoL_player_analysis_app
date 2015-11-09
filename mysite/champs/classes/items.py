@@ -2,11 +2,11 @@ if __name__ == '__main__' and __package__ is None:
     from os import sys, path
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
     
-from models import ItemStatic, ItemParentChild
-from text_funcs import timestamp_to_game_time
+from champs.models import ItemStatic, ItemParentChild
+from champs.funcs.text_funcs import timestamp_to_game_time
 
 print 'importing RiotAPI'
-from riot_app import api
+from champs.funcs.riot_app import api
 
 # Takes dictionary containing item data from Riot's API, constructs an 
 # ItemNode instance for each one. After constructing all ItemNode instances,

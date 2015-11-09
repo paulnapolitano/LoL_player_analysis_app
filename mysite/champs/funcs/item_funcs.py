@@ -6,10 +6,10 @@ import json
 
 import time
 
-from models import ItemStatic
-from items import Build
+from champs.models import ItemStatic
+from champs.classes.items import Build
 
-from text_funcs import version_standardize
+from champs.funcs.text_funcs import version_standardize
 
 # ------------------------------- FUNCTIONS ---------------------------------
 

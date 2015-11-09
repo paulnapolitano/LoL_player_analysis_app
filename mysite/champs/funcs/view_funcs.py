@@ -1,6 +1,6 @@
 from django.db.models import Avg, Q 
-from models import StatSet, Champ
-from text_funcs import un_camelcase
+from champs.models import StatSet, Champ
+from champs.funcs.text_funcs import un_camelcase
 
 # ------------------------------- FUNCTIONS ---------------------------------
 

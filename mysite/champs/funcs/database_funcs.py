@@ -6,14 +6,14 @@ import time
 
 from riot_app import api, URL
 
-from models import ItemStatic, Match, Champ, ChampionStatic, StatSet, Patch 
-from models import BuildComponent, ChampionTag, Player
+from champs.models import ItemStatic, Match, Champ, ChampionStatic, StatSet, Patch 
+from champs.models import BuildComponent, ChampionTag, Player
 
-from item_funcs import get_player_items
-from text_funcs import sum_name_standardize, camelcase_to_underscore
-from text_funcs import timestamp_to_game_time, version_standardize
-from text_funcs import champ_name_strip
-from misc_funcs import millis_to_timezone
+from champs.funcs.item_funcs import get_player_items
+from champs.funcs.text_funcs import sum_name_standardize, camelcase_to_underscore
+from champs.funcs.text_funcs import timestamp_to_game_time, version_standardize
+from champs.funcs.text_funcs import champ_name_strip
+from champs.funcs.misc_funcs import millis_to_timezone
 
 from django.utils import timezone
 

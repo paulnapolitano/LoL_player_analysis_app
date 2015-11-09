@@ -8,16 +8,16 @@ from django.utils import timezone
 
 import datetime
 
-from text_funcs import sum_name_standardize
-from database_funcs import matches_to_db, summoner_to_db_display
-from database_funcs import challenger_to_db, master_to_db
-from view_funcs import get_stat_comparison
+from champs.funcs.text_funcs import sum_name_standardize
+from champs.funcs.database_funcs import matches_to_db, summoner_to_db_display
+from champs.funcs.database_funcs import challenger_to_db, master_to_db
+from champs.funcs.view_funcs import get_stat_comparison
 
-from riot_app import api, RiotException
+from champs.funcs.riot_app import api, RiotException
 
-from .models import Player, Match, StatSet, BuildComponent, Champ, ItemStatic
-from .models import ChampionStatic, Patch
-from .forms import NameForm
+from champs.models import Player, Match, StatSet, BuildComponent, Champ
+from champs.models import ChampionStatic, Patch, ItemStatic
+from champs.forms import NameForm
 
 # ------------------------------------ VIEWS ---------------------------------
 
