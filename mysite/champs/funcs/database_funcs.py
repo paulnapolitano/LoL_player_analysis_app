@@ -13,6 +13,8 @@ from champs.funcs.text_funcs import camelcase_to_underscore
 from champs.funcs.text_funcs import version_standardize
 from champs.funcs.text_funcs import timestamp_to_game_time
 from champs.funcs.text_funcs import champ_name_strip
+from champs.funcs.text_funcs import sum_heading
+
 from champs.funcs.misc_funcs import millis_to_timezone
 
 from django.utils import timezone
@@ -88,11 +90,9 @@ def get_current_patch(region='na'):
 # Take a list of match IDs and create a match in database for each one
 # DEPENDENCIES: Match, match_to_db    
 def matches_to_db(match_id_list, region='na'):
-    print 'Adding matches to DB...'
     for match_id in match_id_list:
         if not Match.objects.filter(match_id=match_id).exists():
             match_to_db(match_id)
-    print 'Matches added to DB!'
     
 
     
@@ -103,18 +103,12 @@ def matches_to_db(match_id_list, region='na'):
 def match_to_db(match_id, region='na'): 
     match = api.get_match(region, match_id, include_timeline=True)
   
-    print 'getting current patch'
     patch = get_current_patch()
- 
-    print 'getting items from db'
     item_list = ItemStatic.objects.filter(map_11=True)
- 
-    print 'creating match instance'
     m = create_match(match)
 
-    print 'checking if match is in database...'
+    print '----------------------------- Match ID:{id} -----------------------------'.format(id=m.match_id)
     if not m.is_in_db():
-        print 'match {id} is not in database... Adding now'.format(id=m.match_id)
     
         # Initialize lists for adding to DB in bulk
         champ_insert_list = []
@@ -164,9 +158,11 @@ def match_to_db(match_id, region='na'):
                 if not bc in build_component_insert_list:
                     build_component_insert_list.append(bc)
 
+        print '\n\t  --------------------- Creating objects --------------------'
         save_in_bulk(m, champ_insert_list, player_insert_list, statset_insert_list, build_component_insert_list)
+        print '\t  -----------------------------------------------------------'
+        print '-------------------------------------------------------------------------------\n'
         
-     
      
 # Create and return Match object from match dictionary (data from API)  
 # DEPENDENCIES: Match, millis_to_timezone
@@ -381,7 +377,7 @@ def save_in_bulk(match_bulk, champ_bulk, player_bulk, statset_bulk, build_compon
     save_or_bulk_create(StatSet, statset_bulk)
     save_or_bulk_create(BuildComponent, build_component_bulk)
     
-    print 'Done! \t\t\t\t\ttime={time}\n'.format(time=timezone.now())
+    print '\t  Done!\t\t\ttime={time}'.format(time=timezone.now())
 
 
     
@@ -550,9 +546,9 @@ def champion_to_db(id, version, champ_dict, save=False):
 # DEPENDENCIES: time
 def save_or_bulk_create(klass, object_or_list):
     if klass==BuildComponent:
-        print 'creating {klass} table... \ttime={time}'.format(klass=klass.__name__, time=timezone.now())
+        print '\t  {klass}... \ttime={time}'.format(klass=klass.__name__, time=timezone.now())
     else:
-        print 'creating {klass} table... \t\ttime={time}'.format(klass=klass.__name__, time=timezone.now())
+        print '\t  {klass}... \t\ttime={time}'.format(klass=klass.__name__, time=timezone.now())
     if type(object_or_list) is list:
         klass.objects.bulk_create(object_or_list)
     else:
@@ -588,13 +584,15 @@ def master_to_db(region='na'):
 # a list of all matches on record for the player        
 # DEPENDENCIES: Player, timezone, api, matches_to_db, Match, StatSet
 def summoner_to_db_display(std_summoner_name, sum_id=None):
+    # Pretty print heading for summoner
+    name_heading = sum_heading(std_summoner_name)
+    print name_heading
+    
     # First look for player in database
     if Player.objects.filter(std_summoner_name=std_summoner_name).exists():
-        print u'{name} found in database'.format(name=std_summoner_name)
         req_player = Player.objects.get(std_summoner_name=std_summoner_name)
         secs_since_last_update = (timezone.now() - req_player.last_update
                                     ).total_seconds()
-        print "{secs} seconds since last update".format(secs=secs_since_last_update)
         
         if secs_since_last_update > 1800:
             match_list = api.get_match_list('na', req_player.summoner_id)
@@ -609,14 +607,12 @@ def summoner_to_db_display(std_summoner_name, sum_id=None):
           
         else:
             # Get player's last 15 matches from DB
-            print "getting player's last 15 matches"
             rel_statsets = StatSet.objects.filter(player=req_player)
             match_display = [statset.match for statset in rel_statsets]
             statset_display = rel_statsets
    
     # If player doesn't exist, make call to api
     else:
-        print u'adding {name} to database'.format(name=std_summoner_name)
         if sum_id is None:
             sum_dict = api.get_summoners_by_name('na', std_summoner_name)    
             match_list = api.get_match_list('na', sum_dict[std_summoner_name]['id'])

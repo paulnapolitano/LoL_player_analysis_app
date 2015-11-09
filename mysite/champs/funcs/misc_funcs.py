@@ -1,5 +1,6 @@
 from django.utils import timezone
-import datetime
+from datetime import datetime, timedelta
+import pytz
 
 # ------------------------------- FUNCTIONS ---------------------------------
 
@@ -8,7 +9,7 @@ import datetime
 # DEPENDENCIES: timezone, datetime
 def millis_to_timezone(millis):
     try: 
-        aware_time = timezone.make_aware(datetime.datetime.fromtimestamp(millis/1000))
+        aware_time = timezone.make_aware(datetime.fromtimestamp(millis/1000))
     except (pytz.AmbiguousTimeError, pytz.NonExistentTimeError):
-        aware_time = timezone.make_aware(datetime.datetime.fromtimestamp(millis/1000) + timedelta(hours=1))
+        aware_time = timezone.make_aware(datetime.fromtimestamp(millis/1000) + timedelta(hours=1))
     return aware_time

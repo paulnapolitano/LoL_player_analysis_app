@@ -141,7 +141,7 @@ class RiotAPI:
     ):
         self.api_key = api_key
         self.region = region
-        self.limits=limits
+        self.limits = limits
        
        
     def can_request(self):
@@ -152,7 +152,6 @@ class RiotAPI:
        
        
     def _request(self, api_url, req_region, params={}, tries=0):
-        print 'making api request {url}'.format(url=api_url)
         args = {'api_key':self.api_key}
         for key, value in params.items():
             if key not in args:

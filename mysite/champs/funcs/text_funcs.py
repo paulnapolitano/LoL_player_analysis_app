@@ -85,6 +85,7 @@ def un_camelcase(str):
     return return_str
     
 
+    
 # Converts long version into short version (as given by api.get_versions)
 # DEPENDENCIES: None    
 def version_standardize(version):
@@ -101,4 +102,22 @@ def version_standardize(version):
         std_ver += char
         if char == '.':
             dots -= 1
-       
+   
+   
+
+# Creates ============= NAME ============== heading to fit 79 chars
+# DEPENDENCIES: None   
+def sum_heading(std_summoner_name):   
+    name_len = len(std_summoner_name)
+    rem_chars = 62-name_len
+    num_eqs = rem_chars/2
+    name_heading = u''
+    for x in range(num_eqs):
+        name_heading += u'='
+    name_heading += u' Summoner Name: {name} '.format(name=std_summoner_name)
+    for x in range(num_eqs):
+        name_heading += u'='
+    if len(name_heading)==78:
+        name_heading += u'='
+    
+    return name_heading
