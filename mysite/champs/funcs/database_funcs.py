@@ -2,16 +2,16 @@ if __name__ == '__main__' and __package__ is None:
     from os import sys, path
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-import time
-
 from riot_app import api, URL
 
-from champs.models import ItemStatic, Match, Champ, ChampionStatic, StatSet, Patch 
-from champs.models import BuildComponent, ChampionTag, Player
+from champs.models import ItemStatic, Match, Champ, ChampionStatic, StatSet
+from champs.models import BuildComponent, ChampionTag, Player, Patch 
 
 from champs.funcs.item_funcs import get_player_items
-from champs.funcs.text_funcs import sum_name_standardize, camelcase_to_underscore
-from champs.funcs.text_funcs import timestamp_to_game_time, version_standardize
+from champs.funcs.text_funcs import sum_name_standardize
+from champs.funcs.text_funcs import camelcase_to_underscore
+from champs.funcs.text_funcs import version_standardize
+from champs.funcs.text_funcs import timestamp_to_game_time
 from champs.funcs.text_funcs import champ_name_strip
 from champs.funcs.misc_funcs import millis_to_timezone
 
@@ -136,6 +136,9 @@ def match_to_db(match_id, region='na'):
         # Get player information for each player in match
         sum_dict = api.get_summoners_by_id('na', player_id_list)
         
+        # Get timeline
+        timeline = match['timeline']
+        
         for participant in match['participants']:
             # Create Player instance and save to DB if it's not there yet
             p = create_player(match, participant, player_id_list, sum_dict, league_dict)
@@ -148,7 +151,7 @@ def match_to_db(match_id, region='na'):
                 champ_insert_list.append(c)
 
             # Create StatSet instance and save to DB if it's not there yet
-            ss = create_statset(participant, c, p, m)
+            ss = create_statset(participant, timeline, c, p, m)
             if not ss in statset_insert_list and not ss.is_in_db():   
                 statset_insert_list.append(ss)
                 
@@ -244,7 +247,7 @@ def create_player(match, participant, player_id_list, sum_dict, league_dict):
 # Create and return StatSet object from participant dictionary, Champ object,
 # Player object and Match object
 # DEPENDENCIES: camelcase_to_underscore, StatSet
-def create_statset(participant, champ, player, match):
+def create_statset(participant, timeline, champ, player, match):
     stats = participant['stats']
     del stats['totalScoreRank']
     del stats['totalPlayerScore']
@@ -259,14 +262,90 @@ def create_statset(participant, champ, player, match):
     kwargs['match'] = match
     statset_id = str(match.match_id) + '_' + str(player.summoner_id)
     kwargs['statset_id'] = statset_id
+    
     if participant['teamId'] == 100:
         kwargs['blue_team'] = True
     else:
         kwargs['blue_team'] = False
+        
+    kwargs['xp_at_10'] = get_timeline_attr('xp', 10, participant, timeline)
+    kwargs['xp_at_20'] = get_timeline_attr('xp', 20, participant, timeline)
+    kwargs['xp_at_30'] = get_timeline_attr('xp', 30, participant, timeline)
+    
+    kwargs['gold_at_10'] = get_timeline_attr('gold', 10, participant, timeline)
+    kwargs['gold_at_20'] = get_timeline_attr('gold', 20, participant, timeline)
+    kwargs['gold_at_30'] = get_timeline_attr('gold', 30, participant, timeline)
+    
+    kwargs['cs_at_10'] = get_timeline_attr('cs', 10, participant, timeline)
+    kwargs['cs_at_20'] = get_timeline_attr('cs', 20, participant, timeline)
+    kwargs['cs_at_30'] = get_timeline_attr('cs', 30, participant, timeline)
+    
+    kwargs['csd_at_10'] = get_timeline_attr('csd', 10, participant, timeline)
+    kwargs['csd_at_20'] = get_timeline_attr('csd', 20, participant, timeline)
+    kwargs['csd_at_30'] = get_timeline_attr('csd', 30, participant, timeline)
+    
+    kwargs['dmg_taken_at_10'] = get_timeline_attr('dmg_taken', 10, participant, timeline)
+    kwargs['dmg_taken_at_20'] = get_timeline_attr('dmg_taken', 20, participant, timeline)
+    kwargs['dmg_taken_at_30'] = get_timeline_attr('dmg_taken', 30, participant, timeline)
+    
+    kwargs['dmg_taken_diff_at_10'] = get_timeline_attr('dmg_taken_diff', 10, participant, timeline)
+    kwargs['dmg_taken_diff_at_20'] = get_timeline_attr('dmg_taken_diff', 20, participant, timeline)
+    kwargs['dmg_taken_diff_at_30'] = get_timeline_attr('dmg_taken_diff', 30, participant, timeline)
+
     ss = StatSet(**kwargs)
     
     return ss   
 
+    
+    
+def get_timeline_attr(attr, mins, participant, timeline):
+    if len(timeline['frames'])>=(mins+1):
+        participant_timeline = participant['timeline']
+        participant_id = str(participant['participantId'])
+        frame = timeline['frames'][mins]
+        participant_frame = frame['participantFrames'][participant_id]
+    else:
+        return None
+    
+    if attr=='xp':
+        return participant_frame['xp']
+        
+    elif attr=='gold':
+        return participant_frame['totalGold']
+        
+    elif attr=='cs': 
+        return participant_frame['minionsKilled'] + participant_frame['jungleMinionsKilled']   
+        
+    elif attr=='csd':
+        if 'csDiffPerMinDeltas' in participant_timeline:
+            attr_per_min = participant_timeline['csDiffPerMinDeltas']
+            return get_participant_timeline_attr(attr_per_min, mins)
+        else: 
+            return None
+            
+    elif attr=='dmg_taken':
+        attr_per_min = participant_timeline['damageTakenPerMinDeltas']
+        return get_participant_timeline_attr(attr_per_min, mins)
+
+    elif attr=='dmg_taken_diff':
+        if 'damageTakenDiffPerMinDeltas' in participant_timeline:
+            attr_per_min = participant_timeline['damageTakenDiffPerMinDeltas']
+            return get_participant_timeline_attr(attr_per_min, mins)
+        else:
+            return None
+
+    
+    
+def get_participant_timeline_attr(attr_per_min, mins):
+    if mins==10 and 'zeroToTen' in attr_per_min:
+        return attr_per_min['zeroToTen']*10
+    elif mins==20 and 'tenToTwenty' in attr_per_min:
+        return attr_per_min['tenToTwenty']*10
+    elif mins==30 and 'twentyToThirty' in attr_per_min:
+        return attr_per_min['twentyToThirty']*10
+    else: 
+        return None
+    
     
     
 # Create and return BuildComponent object from non-Django BuildComponent and
@@ -302,7 +381,7 @@ def save_in_bulk(match_bulk, champ_bulk, player_bulk, statset_bulk, build_compon
     save_or_bulk_create(StatSet, statset_bulk)
     save_or_bulk_create(BuildComponent, build_component_bulk)
     
-    print 'Done! time={time}'.format(time=time.time())
+    print 'Done! \t\t\t\t\ttime={time}\n'.format(time=timezone.now())
 
 
     
@@ -470,7 +549,10 @@ def champion_to_db(id, version, champ_dict, save=False):
 # Take either an object or list of objects and save (in bulk if necessary)
 # DEPENDENCIES: time
 def save_or_bulk_create(klass, object_or_list):
-    print 'creating {klass} table... time={time}'.format(klass=klass.__name__, time=time.time())
+    if klass==BuildComponent:
+        print 'creating {klass} table... \ttime={time}'.format(klass=klass.__name__, time=timezone.now())
+    else:
+        print 'creating {klass} table... \t\ttime={time}'.format(klass=klass.__name__, time=timezone.now())
     if type(object_or_list) is list:
         klass.objects.bulk_create(object_or_list)
     else:

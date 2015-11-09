@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
+
 from champs.funcs.riot_app import api, RiotException
 from champs.funcs.database_funcs import master_to_db, challenger_to_db
 

@@ -5,7 +5,8 @@ from champs.funcs.text_funcs import un_camelcase
 # ------------------------------- FUNCTIONS ---------------------------------
 
 class StatComparison(object):
-    def __init__(self, stat, statset, enemy_statset, challenger_statsets, enemy_challenger_statsets, invert=False):
+    def __init__(self, stat, statset, enemy_statset, challenger_statsets, 
+                 enemy_challenger_statsets, invert=False):
         self.name = stat
         self.local = statset.__dict__[stat]
         self.duration = float(statset.match.match_duration)
@@ -64,13 +65,15 @@ class StatComparison(object):
                 if self.enemy_local_min == 0:
                     self.enemy_score = 500
                 else:
-                    self.enemy_score = (self.enemy_challenger_min/self.enemy_local_min)*100
+                    self.enemy_score = (self.enemy_challenger_min/
+                                        self.enemy_local_min)*100
                 
             else: 
                 if self.enemy_challenger_min == 0:
                     self.enemy_score = 500
                 else:
-                    self.enemy_score = (self.enemy_local_min/self.enemy_challenger_min)*100
+                    self.enemy_score = (self.enemy_local_min/
+                                        self.enemy_challenger_min)*100
             
             self.enemy_challenger_min = round(self.enemy_challenger_min, 1)
             self.enemy_score = round(self.enemy_score, 1)
@@ -86,7 +89,10 @@ class StatComparison(object):
             self.enemy_local_min = round(self.enemy_local_min, 1)
 
     def __str__(self):
-        return '{name}:\n\tLocal: {local}\n\tChallenger: {challenger}\n\tScore: {score}'.format(name=self.name, local=self.local, challenger=self.challenger_avg)
+        string = '{name}:'.format(name=self.name)
+        string += '\n\tLocal: {}'.format(self.local)
+        string += '\n\tChallenger: {}'.format(self.challenger_avg)
+        return string
         
 class Comparison(object):
     def __init__(self, statset, enemy_statset, challenger_statsets, enemy_challenger_statsets):
