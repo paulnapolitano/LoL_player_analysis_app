@@ -1,131 +1,65 @@
-	def __init__(self, dict):
-		if 'FlatArmorMod' in dict:
-			self.flat_armor_mod = dict['FlatArmorMod']
-		if 'FlatAttackSpeedMod' in dict:
-			self.flat_attack_speed_mod = dict['FlatAttackSpeedMod']
-		if 'FlatBlockMod' in dict:
-			self.flat_block_mod = dict['FlatBlockMod']
-		if 'FlatCritChanceMod' in dict:
-			self.flat_crit_chance_mod = dict['FlatCritChanceMod']
-		if 'FlatCritDamageMod' in dict:
-			self.flat_crit_damage_mod = dict['FlatCritDamageMod']
-		if 'FlatEXPBonus' in dict:
-			self.flat_expbonus = dict['FlatEXPBonus']
-		if 'FlatEnergyPoolMod' in dict:
-			self.flat_energy_pool_mod = dict['FlatEnergyPoolMod']
-		if 'FlatEnergyRegenMod' in dict:
-			self.flat_energy_regen_mod = dict['FlatEnergyRegenMod']
-		if 'FlatHPPoolMod' in dict:
-			self.flat_hppool_mod = dict['FlatHPPoolMod']
-		if 'FlatHPRegenMod' in dict:
-			self.flat_hpregen_mod = dict['FlatHPRegenMod']
-		if 'FlatMPPoolMod' in dict:
-			self.flat_mppool_mod = dict['FlatMPPoolMod']
-		if 'FlatMPRegenMod' in dict:
-			self.flat_mpregen_mod = dict['FlatMPRegenMod']
-		if 'FlatMagicDamageMod' in dict:
-			self.flat_magic_damage_mod = dict['FlatMagicDamageMod']
-		if 'FlatMovementSpeedMod' in dict:
-			self.flat_movement_speed_mod = dict['FlatMovementSpeedMod']
-		if 'FlatPhysicalDamageMod' in dict:
-			self.flat_physical_damage_mod = dict['FlatPhysicalDamageMod']
-		if 'FlatSpellBlockMod' in dict:
-			self.flat_spell_block_mod = dict['FlatSpellBlockMod']
-		if 'PercentArmorMod' in dict:
-			self.percent_armor_mod = dict['PercentArmorMod']
-		if 'PercentAttackSpeedMod' in dict:
-			self.percent_attack_speed_mod = dict['PercentAttackSpeedMod']
-		if 'PercentBlockMod' in dict:
-			self.percent_block_mod = dict['PercentBlockMod']
-		if 'PercentCritChanceMod' in dict:
-			self.percent_crit_chance_mod = dict['PercentCritChanceMod']
-		if 'PercentCritDamageMod' in dict:
-			self.percent_crit_damage_mod = dict['PercentCritDamageMod']
-		if 'PercentDodgeMod' in dict:
-			self.percent_dodge_mod = dict['PercentDodgeMod']
-		if 'PercentEXPBonus' in dict:
-			self.percent_expbonus = dict['PercentEXPBonus']
-		if 'PercentHPPoolMod' in dict:
-			self.percent_hppool_mod = dict['PercentHPPoolMod']
-		if 'PercentHPRegenMod' in dict:
-			self.percent_hpregen_mod = dict['PercentHPRegenMod']
-		if 'PercentLifeStealMod' in dict:
-			self.percent_life_steal_mod = dict['PercentLifeStealMod']
-		if 'PercentMPPoolMod' in dict:
-			self.percent_mppool_mod = dict['PercentMPPoolMod']
-		if 'PercentMPRegenMod' in dict:
-			self.percent_mpregen_mod = dict['PercentMPRegenMod']
-		if 'PercentMagicDamageMod' in dict:
-			self.percent_magic_damage_mod = dict['PercentMagicDamageMod']
-		if 'PercentMovementSpeedMod' in dict:
-			self.percent_movement_speed_mod = dict['PercentMovementSpeedMod']
-		if 'PercentPhysicalDamageMod' in dict:
-			self.percent_physical_damage_mod = dict['PercentPhysicalDamageMod']
-		if 'PercentSpellBlockMod' in dict:
-			self.percent_spell_block_mod = dict['PercentSpellBlockMod']
-		if 'PercentSpellVampMod' in dict:
-			self.percent_spell_vamp_mod = dict['PercentSpellVampMod']
-		if 'rFlatArmorModPerLevel' in dict:
-			self.r_flat_armor_mod_per_level = dict['rFlatArmorModPerLevel']
-		if 'rFlatArmorPenetrationMod' in dict:
-			self.r_flat_armor_penetration_mod = dict['rFlatArmorPenetrationMod']
-		if 'rFlatArmorPenetrationModPerLevel' in dict:
-			self.r_flat_armor_penetration_mod_per_level = dict['rFlatArmorPenetrationModPerLevel']
-		if 'rFlatCritChanceModPerLevel' in dict:
-			self.r_flat_crit_chance_mod_per_level = dict['rFlatCritChanceModPerLevel']
-		if 'rFlatCritDamageModPerLevel' in dict:
-			self.r_flat_crit_damage_mod_per_level = dict['rFlatCritDamageModPerLevel']
-		if 'rFlatDodgeMod' in dict:
-			self.r_flat_dodge_mod = dict['rFlatDodgeMod']
-		if 'rFlatDodgeModPerLevel' in dict:
-			self.r_flat_dodge_mod_per_level = dict['rFlatDodgeModPerLevel']
-		if 'rFlatEnergyModPerLevel' in dict:
-			self.r_flat_energy_mod_per_level = dict['rFlatEnergyModPerLevel']
-		if 'rFlatEnergyRegenModPerLevel' in dict:
-			self.r_flat_energy_regen_mod_per_level = dict['rFlatEnergyRegenModPerLevel']
-		if 'rFlatGoldPer10Mod' in dict:
-			self.r_flat_gold_per10_mod = dict['rFlatGoldPer10Mod']
-		if 'rFlatHPModPerLevel' in dict:
-			self.r_flat_hpmod_per_level = dict['rFlatHPModPerLevel']
-		if 'rFlatHPRegenModPerLevel' in dict:
-			self.r_flat_hpregen_mod_per_level = dict['rFlatHPRegenModPerLevel']
-		if 'rFlatMPModPerLevel' in dict:
-			self.r_flat_mpmod_per_level = dict['rFlatMPModPerLevel']
-		if 'rFlatMPRegenModPerLevel' in dict:
-			self.r_flat_mpregen_mod_per_level = dict['rFlatMPRegenModPerLevel']
-		if 'rFlatMagicDamageModPerLevel' in dict:
-			self.r_flat_magic_damage_mod_per_level = dict['rFlatMagicDamageModPerLevel']
-		if 'rFlatMagicPenetrationMod' in dict:
-			self.r_flat_magic_penetration_mod = dict['rFlatMagicPenetrationMod']
-		if 'rFlatMagicPenetrationModPerLevel' in dict:
-			self.r_flat_magic_penetration_mod_per_level = dict['rFlatMagicPenetrationModPerLevel']
-		if 'rFlatMovementSpeedModPerLevel' in dict:
-			self.r_flat_movement_speed_mod_per_level = dict['rFlatMovementSpeedModPerLevel']
-		if 'rFlatPhysicalDamageModPerLevel' in dict:
-			self.r_flat_physical_damage_mod_per_level = dict['rFlatPhysicalDamageModPerLevel']
-		if 'rFlatSpellBlockModPerLevel' in dict:
-			self.r_flat_spell_block_mod_per_level = dict['rFlatSpellBlockModPerLevel']
-		if 'rFlatTimeDeadMod' in dict:
-			self.r_flat_time_dead_mod = dict['rFlatTimeDeadMod']
-		if 'rFlatTimeDeadModPerLevel' in dict:
-			self.r_flat_time_dead_mod_per_level = dict['rFlatTimeDeadModPerLevel']
-		if 'rPercentArmorPenetrationMod' in dict:
-			self.r_percent_armor_penetration_mod = dict['rPercentArmorPenetrationMod']
-		if 'rPercentArmorPenetrationModPerLevel' in dict:
-			self.r_percent_armor_penetration_mod_per_level = dict['rPercentArmorPenetrationModPerLevel']
-		if 'rPercentAttackSpeedModPerLevel' in dict:
-			self.r_percent_attack_speed_mod_per_level = dict['rPercentAttackSpeedModPerLevel']
-		if 'rPercentCooldownMod' in dict:
-			self.r_percent_cooldown_mod = dict['rPercentCooldownMod']
-		if 'rPercentCooldownModPerLevel' in dict:
-			self.r_percent_cooldown_mod_per_level = dict['rPercentCooldownModPerLevel']
-		if 'rPercentMagicPenetrationMod' in dict:
-			self.r_percent_magic_penetration_mod = dict['rPercentMagicPenetrationMod']
-		if 'rPercentMagicPenetrationModPerLevel' in dict:
-			self.r_percent_magic_penetration_mod_per_level = dict['rPercentMagicPenetrationModPerLevel']
-		if 'rPercentMovementSpeedModPerLevel' in dict:
-			self.r_percent_movement_speed_mod_per_level = dict['rPercentMovementSpeedModPerLevel']
-		if 'rPercentTimeDeadMod' in dict:
-			self.r_percent_time_dead_mod = dict['rPercentTimeDeadMod']
-		if 'rPercentTimeDeadModPerLevel' in dict:
-			self.r_percent_time_dead_mod_per_level = dict['rPercentTimeDeadModPerLevel']
+	flat_armor_mod = models.FloatField(blank=True)
+	flat_attack_speed_mod = models.FloatField(blank=True)
+	flat_block_mod = models.FloatField(blank=True)
+	flat_crit_chance_mod = models.FloatField(blank=True)
+	flat_crit_damage_mod = models.FloatField(blank=True)
+	flat_expbonus = models.FloatField(blank=True)
+	flat_energy_pool_mod = models.FloatField(blank=True)
+	flat_energy_regen_mod = models.FloatField(blank=True)
+	flat_hppool_mod = models.FloatField(blank=True)
+	flat_hpregen_mod = models.FloatField(blank=True)
+	flat_mppool_mod = models.FloatField(blank=True)
+	flat_mpregen_mod = models.FloatField(blank=True)
+	flat_magic_damage_mod = models.FloatField(blank=True)
+	flat_movement_speed_mod = models.FloatField(blank=True)
+	flat_physical_damage_mod = models.FloatField(blank=True)
+	flat_spell_block_mod = models.FloatField(blank=True)
+	percent_armor_mod = models.FloatField(blank=True)
+	percent_attack_speed_mod = models.FloatField(blank=True)
+	percent_block_mod = models.FloatField(blank=True)
+	percent_crit_chance_mod = models.FloatField(blank=True)
+	percent_crit_damage_mod = models.FloatField(blank=True)
+	percent_dodge_mod = models.FloatField(blank=True)
+	percent_expbonus = models.FloatField(blank=True)
+	percent_hppool_mod = models.FloatField(blank=True)
+	percent_hpregen_mod = models.FloatField(blank=True)
+	percent_life_steal_mod = models.FloatField(blank=True)
+	percent_mppool_mod = models.FloatField(blank=True)
+	percent_mpregen_mod = models.FloatField(blank=True)
+	percent_magic_damage_mod = models.FloatField(blank=True)
+	percent_movement_speed_mod = models.FloatField(blank=True)
+	percent_physical_damage_mod = models.FloatField(blank=True)
+	percent_spell_block_mod = models.FloatField(blank=True)
+	percent_spell_vamp_mod = models.FloatField(blank=True)
+	r_flat_armor_mod_per_level = models.FloatField(blank=True)
+	r_flat_armor_penetration_mod = models.FloatField(blank=True)
+	r_flat_armor_penetration_mod_per_level = models.FloatField(blank=True)
+	r_flat_crit_chance_mod_per_level = models.FloatField(blank=True)
+	r_flat_crit_damage_mod_per_level = models.FloatField(blank=True)
+	r_flat_dodge_mod = models.FloatField(blank=True)
+	r_flat_dodge_mod_per_level = models.FloatField(blank=True)
+	r_flat_energy_mod_per_level = models.FloatField(blank=True)
+	r_flat_energy_regen_mod_per_level = models.FloatField(blank=True)
+	r_flat_gold_per10_mod = models.FloatField(blank=True)
+	r_flat_hpmod_per_level = models.FloatField(blank=True)
+	r_flat_hpregen_mod_per_level = models.FloatField(blank=True)
+	r_flat_mpmod_per_level = models.FloatField(blank=True)
+	r_flat_mpregen_mod_per_level = models.FloatField(blank=True)
+	r_flat_magic_damage_mod_per_level = models.FloatField(blank=True)
+	r_flat_magic_penetration_mod = models.FloatField(blank=True)
+	r_flat_magic_penetration_mod_per_level = models.FloatField(blank=True)
+	r_flat_movement_speed_mod_per_level = models.FloatField(blank=True)
+	r_flat_physical_damage_mod_per_level = models.FloatField(blank=True)
+	r_flat_spell_block_mod_per_level = models.FloatField(blank=True)
+	r_flat_time_dead_mod = models.FloatField(blank=True)
+	r_flat_time_dead_mod_per_level = models.FloatField(blank=True)
+	r_percent_armor_penetration_mod = models.FloatField(blank=True)
+	r_percent_armor_penetration_mod_per_level = models.FloatField(blank=True)
+	r_percent_attack_speed_mod_per_level = models.FloatField(blank=True)
+	r_percent_cooldown_mod = models.FloatField(blank=True)
+	r_percent_cooldown_mod_per_level = models.FloatField(blank=True)
+	r_percent_magic_penetration_mod = models.FloatField(blank=True)
+	r_percent_magic_penetration_mod_per_level = models.FloatField(blank=True)
+	r_percent_movement_speed_mod_per_level = models.FloatField(blank=True)
+	r_percent_time_dead_mod = models.FloatField(blank=True)
+	r_percent_time_dead_mod_per_level = models.FloatField(blank=True)
