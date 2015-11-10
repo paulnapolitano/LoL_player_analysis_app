@@ -8,92 +8,98 @@ class StatComparison(object):
     def __init__(self, stat, statset, enemy_statset, challenger_statsets, 
                  enemy_challenger_statsets, invert=False):
         self.name = stat
-        if statset.__dict__[stat]:
+        if statset and statset.__dict__[stat]:
             self.local = statset.__dict__[stat]
             self.duration = float(statset.match.match_duration)
             self.local_min = self.local/(self.duration/60)
+            
+            if challenger_statsets:
+                num = len(challenger_statsets)        
+                sum = 0
+                sum_min = 0
+                for other_set in challenger_statsets:
+                    if other_set.__dict__[stat]:
+                        val = other_set.__dict__[stat]
+                        duration = float(other_set.match.match_duration)
+                        sum += val
+                        sum_min += (val/(duration/60))
+                
+                self.challenger = float(sum)/num
+                self.challenger_min = sum_min/num
+                # self.challenger_avg = challenger_statsets.aggregate(Avg(stat)).items()[0][1]
+                if invert:
+                    if self.local_min == 0:
+                        self.score = 500
+                    else:
+                        self.score = (self.challenger_min/self.local_min)*100
+                else:
+                    if self.challenger_min == 0:
+                        self.score = 500
+                    else:
+                        self.score = (self.local_min/self.challenger_min)*100
+                
+                self.challenger_min = round(self.challenger_min, 1)
+                self.score = round(self.score, 1)
+
+            else:
+                self.challenger = '-'
+                self.challenger_min = '-'
+                self.score = '-'
+                
         else:
             self.local = '-'
             self.duration = '-'
             self.local_min = '-'
-        
-        if enemy_statset and enemy_statset.__dict__[stat]:
-            self.enemy_local = enemy_statset.__dict__[stat]
-            self.enemy_local_min = self.enemy_local/(self.duration/60)
-        
-        else:
-            self.enemy_local = '-'
-            self.enemy_local_min = '-'
-                
-                
-        if challenger_statsets and challenger_statsets.__dict__[stat]:
-            num = len(challenger_statsets)        
-            sum = 0
-            sum_min = 0
-            for other_set in challenger_statsets:
-                val = other_set.__dict__[stat]
-                duration = float(other_set.match.match_duration)
-                sum += val
-                sum_min += (val/(duration/60))
-            
-            self.challenger = float(sum)/num
-            self.challenger_min = sum_min/num
-            # self.challenger_avg = challenger_statsets.aggregate(Avg(stat)).items()[0][1]
-            if invert:
-                if self.local_min == 0:
-                    self.score = 500
-                else:
-                    self.score = (self.challenger_min/self.local_min)*100
-            else:
-                if self.challenger_min == 0:
-                    self.score = 500
-                else:
-                    self.score = (self.local_min/self.challenger_min)*100
-            
-            self.challenger_min = round(self.challenger_min, 1)
-            self.score = round(self.score, 1)
-
-        else:
             self.challenger = '-'
             self.challenger_min = '-'
             self.score = '-'
         
-        
-        if enemy_statset and enemy_challenger_statsets and enemy_statset.__dict__[stat] and enemy_challenger_statsets[0].__dict__[stat]:
-            num = len(enemy_challenger_statsets)
-            sum = 0
-            sum_min = 0
-            for other_set in enemy_challenger_statsets:
-                if other_set.__dict__[stat]:
-                    val = other_set.__dict__[stat]
-                    duration = float(other_set.match.match_duration)
-                    sum += val
-                    sum_min += (val/(duration/60))
-                
-            self.enemy_challenger = float(sum)/num
-            self.enemy_challenger_min = sum_min/num
+        if enemy_statset and enemy_statset.__dict__[stat]:
+            self.enemy_local = enemy_statset.__dict__[stat]
+            self.enemy_local_min = self.enemy_local/(self.duration/60)
             
-            if invert:                
-                if self.enemy_local_min == 0:
-                    self.enemy_score = 500
-                else:
-                    self.enemy_score = (self.enemy_challenger_min/
-                                        self.enemy_local_min)*100
+            if enemy_challenger_statsets:
+                num = len(enemy_challenger_statsets)
+                sum = 0
+                sum_min = 0
+                for other_set in enemy_challenger_statsets:
+                    if other_set.__dict__[stat]:
+                        val = other_set.__dict__[stat]
+                        duration = float(other_set.match.match_duration)
+                        sum += val
+                        sum_min += (val/(duration/60))
+                    
+                self.enemy_challenger = float(sum)/num
+                self.enemy_challenger_min = sum_min/num
                 
-            else: 
-                if self.enemy_challenger_min == 0:
-                    self.enemy_score = 500
-                else:
-                    self.enemy_score = (self.enemy_local_min/
-                                        self.enemy_challenger_min)*100
-            
-            self.enemy_challenger_min = round(self.enemy_challenger_min, 1)
-            self.enemy_score = round(self.enemy_score, 1)
+                if invert:                
+                    if self.enemy_local_min == 0:
+                        self.enemy_score = 500
+                    else:
+                        self.enemy_score = (self.enemy_challenger_min/
+                                            self.enemy_local_min)*100
+                    
+                else: 
+                    if self.enemy_challenger_min == 0:
+                        self.enemy_score = 500
+                    else:
+                        self.enemy_score = (self.enemy_local_min/
+                                            self.enemy_challenger_min)*100
+                
+                self.enemy_challenger_min = round(self.enemy_challenger_min, 1)
+                self.enemy_score = round(self.enemy_score, 1)
 
+            else:
+                self.enemy_challenger = '-'
+                self.enemy_challenger_min = '-'
+                self.enemy_score = '-' 
+                
         else:
+            self.enemy_local = '-'
+            self.enemy_local_min = '-'
             self.enemy_challenger = '-'
             self.enemy_challenger_min = '-'
-            self.enemy_score = '-'        
+            self.enemy_score = '-'         
 
         if statset.__dict__[stat]:    
             self.local_min = round(self.local_min, 1)
@@ -116,18 +122,18 @@ class Comparison(object):
         self.stats['cs_at_10'] = StatComparison('cs_at_10', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
         self.stats['cs_at_20'] = StatComparison('cs_at_20', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
         self.stats['cs_at_30'] = StatComparison('cs_at_30', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
-        self.stats['csd_at_10'] = StatComparison('csd_at_10', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
-        self.stats['csd_at_20'] = StatComparison('csd_at_20', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
-        self.stats['csd_at_30'] = StatComparison('csd_at_30', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
+        # self.stats['csd_at_10'] = StatComparison('csd_at_10', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
+        # self.stats['csd_at_20'] = StatComparison('csd_at_20', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
+        # self.stats['csd_at_30'] = StatComparison('csd_at_30', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
         self.stats['xp_at_10'] = StatComparison('xp_at_10', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
         self.stats['xp_at_20'] = StatComparison('xp_at_20', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
         self.stats['xp_at_30'] = StatComparison('xp_at_30', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
         self.stats['dmg_taken_at_10'] = StatComparison('dmg_taken_at_10', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets, invert=True)
         self.stats['dmg_taken_at_20'] = StatComparison('dmg_taken_at_20', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets, invert=True)
         self.stats['dmg_taken_at_30'] = StatComparison('dmg_taken_at_30', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets, invert=True)
-        self.stats['dmg_taken_diff_at_10'] = StatComparison('dmg_taken_diff_at_10', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets, invert=True)
-        self.stats['dmg_taken_diff_at_20'] = StatComparison('dmg_taken_diff_at_20', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets, invert=True)
-        self.stats['dmg_taken_diff_at_30'] = StatComparison('dmg_taken_diff_at_30', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets, invert=True)
+        # self.stats['dmg_taken_diff_at_10'] = StatComparison('dmg_taken_diff_at_10', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets, invert=True)
+        # self.stats['dmg_taken_diff_at_20'] = StatComparison('dmg_taken_diff_at_20', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets, invert=True)
+        # self.stats['dmg_taken_diff_at_30'] = StatComparison('dmg_taken_diff_at_30', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets, invert=True)
         
         self.total_score = 0
         self.total_enemy_score = 0 
