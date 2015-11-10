@@ -391,7 +391,7 @@ div {
         vertical-align: middle;
         display: inline-block;
         width: 1240px;
-        height: 360px;
+        height: 600px;
         margin-bottom: 50px;
     }
 
@@ -414,57 +414,78 @@ div {
             margin: 20px;
             float: left;
             width: 700px;
-            height: 360px;
+            height: 100%;
             font-size: 20px;
         }
-            
-            .stat {
+        
+            #early_game {
                 float: left;
-                height: 60px;
                 width: 700px;
+                height: 150px;
+                margin: 20px 0;
             }
             
-                .my_score {
-                    float: left;
-                    height: 60px;
-                    width: 100px;
-                    line-height: 60px;
-                    text-align: right;
-                }
-
-                .my_stat {
-                    float: left;
-                    height: 60px;
-                    width: 150px;
-                    text-align: right;
-                    line-height: 60px;
-                }
-                
-                .stat_header {
-                    color: black;
-                    float: left;
-                    height: 60px;
-                    width: 200px;
-                    text-align: center;
-                    line-height: 60px;
-                    font-weight: 700;
-                }
-                
-                .enemy_stat {
-                    float: left;
-                    height: 60px;
-                    width: 150px;
-                    text-align: left;
-                    line-height: 60px;
-                }
+            #mid_game {
+                float: left;
+                width: 700px;
+                height: 150px;
+                margin: 20px 0;
+            }
             
-                .enemy_score {
+            #late_game {
+                float: left;
+                width: 700px;
+                height: 150px;
+                margin: 20px 0;
+            }
+            
+            .transparent {
+                opacity: 0.5;
+            }
+            
+                .stat {
                     float: left;
-                    height: 60px;
-                    width: 100px;
+                    height: 50px;
                     line-height: 60px;
-                    text-align: left;
+                    width: 700px;
                 }
+                
+                    .my_score {
+                        float: left;
+                        height: 100%;
+                        width: 100px;
+                        text-align: right;
+                    }
+
+                    .my_stat {
+                        float: left;
+                        height: 100%;
+                        width: 150px;
+                        text-align: right;
+                    }
+                    
+                    .stat_header {
+                        color: black;
+                        float: left;
+                        height: 100%;
+                        width: 200px;
+                        text-align: center;
+                        font-weight: 700;
+                    }
+                    
+                    .enemy_stat {
+                        float: left;
+                        height: 100%;
+                        width: 150px;
+                        text-align: left;
+                    }
+                
+                    .enemy_score {
+                        float: left;
+                        height: 100%;
+                        width: 100px;
+                        text-align: left;
+                    }
             
         #total_enemy_score {
             float: left;

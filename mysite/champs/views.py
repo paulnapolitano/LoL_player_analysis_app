@@ -102,6 +102,7 @@ def user_profile(request, std_summoner_name):
     return render(request, 'champs/user_profile.html', context)
     
     
+    
 # User Search View
 # DEPENDENCIES: None
 def home(request):

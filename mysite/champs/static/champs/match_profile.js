@@ -242,9 +242,27 @@ function outputUpdate(t) {
 $(document).ready(function(){
     var slider = $("#game_time");
     var trueMillis = slider.val()*1000;
-    var t, max;
+    var t;
     var interval = null;
+    var max = parseInt(slider.attr("max"));
     
+    // If game duration < 10 mins
+    if (max<600) {
+        $("#early_game").addClass("transparent");
+        $("#mid_game").addClass("transparent");
+        $("#late_game").addClass("transparent");
+    }
+    // If game duration between 10 and 20 mins
+    else if (max<1200) {
+        $("#mid_game").addClass("transparent");
+        $("#late_game").addClass("transparent");
+    }
+    // If game duration between 20 and 30 mins
+    else if (max<1800) {
+        $("#late_game").addClass("transparent");
+    };
+        
+        
     myShowOrHide(trueMillis);
     otherShowOrHide(trueMillis);
     
@@ -264,7 +282,6 @@ $(document).ready(function(){
     function playGameTime() {
         console.log("playing!");
         t = parseInt(slider.val());
-        max = parseInt(slider.attr("max"));
         
         interval = setInterval(increment, 100);
         

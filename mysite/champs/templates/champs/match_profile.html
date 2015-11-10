@@ -58,52 +58,82 @@
                 </div>
                 
                 <div id="stat_comparison">
-                    <div class="stat">
-                        <div class="my_score">{{ stat_comparison.kills.score }}</div>
-                        <div class="my_stat">{{ stat_comparison.kills.local }}</div>
-                        <div class="stat_header">Kills</div>
-                        <div class="enemy_stat">{{ stat_comparison.kills.enemy_local }}</div>
-                        <div class="enemy_score">{{ stat_comparison.kills.enemy_score }}</div>
+                    <div id="early_game">
+                        <div class="stat">
+                            <div class="my_score">{{ stat_comparison.stats.cs_at_10.score }}</div>
+                            <div class="my_stat">{{ stat_comparison.stats.cs_at_10.local }}</div>
+                            <div class="stat_header">CS at 10</div>
+                            <div class="enemy_stat">{{ stat_comparison.stats.cs_at_10.enemy_local }}</div>
+                            <div class="enemy_score">{{ stat_comparison.stats.cs_at_10.enemy_score }}</div>
+                        </div>
+
+                        <div class="stat">
+                            <div class="my_score">{{ stat_comparison.stats.xp_at_10.score }}</div>
+                            <div class="my_stat">{{ stat_comparison.stats.xp_at_10.local }}</div>
+                            <div class="stat_header">XP at 10</div>
+                            <div class="enemy_stat">{{ stat_comparison.stats.xp_at_10.enemy_local }}</div>
+                            <div class="enemy_score">{{ stat_comparison.stats.xp_at_10.enemy_score }}</div>
+                        </div>
+
+                        <div class="stat">
+                            <div class="my_score">{{ stat_comparison.stats.dmg_taken_at_10.score }}</div>
+                            <div class="my_stat">{{ stat_comparison.stats.dmg_taken_at_10.local }}</div>
+                            <div class="stat_header">DMG Taken at 10</div>
+                            <div class="enemy_stat">{{ stat_comparison.stats.dmg_taken_at_10.enemy_local }}</div>
+                            <div class="enemy_score">{{ stat_comparison.stats.dmg_taken_at_10.enemy_score }}</div>
+                        </div>
                     </div>
                     
-                    <div class="stat">
-                        <div class="my_score">{{ stat_comparison.deaths.score }}</div>
-                        <div class="my_stat">{{ stat_comparison.deaths.local }}</div>
-                        <div class="stat_header">Deaths</div>
-                        <div class="enemy_stat">{{ stat_comparison.deaths.enemy_local }}</div>
-                        <div class="enemy_score">{{ stat_comparison.deaths.enemy_score }}</div>
-                    </div>
+                    <div id="mid_game">
+                        <div class="stat">
+                            <div class="my_score">{{ stat_comparison.stats.cs_at_20.score }}</div>
+                            <div class="my_stat">{{ stat_comparison.stats.cs_at_20.local }}</div>
+                            <div class="stat_header">CS at 20</div>
+                            <div class="enemy_stat">{{ stat_comparison.stats.cs_at_20.enemy_local }}</div>
+                            <div class="enemy_score">{{ stat_comparison.stats.cs_at_20.enemy_score }}</div>
+                        </div>
+                        
+                        <div class="stat">
+                            <div class="my_score">{{ stat_comparison.stats.xp_at_20.score }}</div>
+                            <div class="my_stat">{{ stat_comparison.stats.xp_at_20.local }}</div>
+                            <div class="stat_header">XP at 20</div>
+                            <div class="enemy_stat">{{ stat_comparison.stats.xp_at_20.enemy_local }}</div>
+                            <div class="enemy_score">{{ stat_comparison.stats.xp_at_20.enemy_score }}</div>
+                        </div>
 
-                    <div class="stat">
-                        <div class="my_score">{{ stat_comparison.assists.score }}</div>
-                        <div class="my_stat">{{ stat_comparison.assists.local }}</div>
-                        <div class="stat_header">Assists</div>
-                        <div class="enemy_stat">{{ stat_comparison.assists.enemy_local }}</div>
-                        <div class="enemy_score">{{ stat_comparison.assists.enemy_score }}</div>
-                    </div>
-
-                    <div class="stat">
-                        <div class="my_score">{{ stat_comparison.cs.score }}</div>
-                        <div class="my_stat">{{ stat_comparison.cs.local }} ({{ stat_comparison.cs.local_min }})</div>
-                        <div class="stat_header">CS</div>
-                        <div class="enemy_stat">{{ stat_comparison.cs.enemy_local }} ({{ stat_comparison.cs.enemy_local_min }})</div>
-                        <div class="enemy_score">{{ stat_comparison.cs.enemy_score }}</div>
+                        <div class="stat">
+                            <div class="my_score">{{ stat_comparison.stats.dmg_taken_at_20.score }}</div>
+                            <div class="my_stat">{{ stat_comparison.stats.dmg_taken_at_20.local }}</div>
+                            <div class="stat_header">DMG Taken at 20</div>
+                            <div class="enemy_stat">{{ stat_comparison.stats.dmg_taken_at_20.enemy_local }}</div>
+                            <div class="enemy_score">{{ stat_comparison.stats.dmg_taken_at_20.enemy_score }}</div>
+                        </div>
                     </div>
                     
-                    <div class="stat">
-                        <div class="my_score">{{ stat_comparison.damage_to_champs.score }}</div>
-                        <div class="my_stat">{{ stat_comparison.damage_to_champs.local }}</div>
-                        <div class="stat_header">DMG Dealt</div>
-                        <div class="enemy_stat">{{ stat_comparison.damage_to_champs.enemy_local }}</div>
-                        <div class="enemy_score">{{ stat_comparison.damage_to_champs.enemy_score }}</div>
-                    </div>
+                    <div id="late_game">
+                        <div class="stat">
+                            <div class="my_score">{{ stat_comparison.stats.cs_at_30.score }}</div>
+                            <div class="my_stat">{{ stat_comparison.stats.cs_at_30.local }}</div>
+                            <div class="stat_header">CS at 30</div>
+                            <div class="enemy_stat">{{ stat_comparison.stats.cs_at_30.enemy_local }}</div>
+                            <div class="enemy_score">{{ stat_comparison.stats.cs_at_30.enemy_score }}</div>
+                        </div>
+                        
+                        <div class="stat">
+                            <div class="my_score">{{ stat_comparison.stats.xp_at_30.score }}</div>
+                            <div class="my_stat">{{ stat_comparison.stats.xp_at_30.local }}</div>
+                            <div class="stat_header">XP at 30</div>
+                            <div class="enemy_stat">{{ stat_comparison.stats.xp_at_30.enemy_local }}</div>
+                            <div class="enemy_score">{{ stat_comparison.stats.xp_at_30.enemy_score }}</div>
+                        </div>
 
-                    <div class="stat">
-                        <div class="my_score">{{ stat_comparison.damage_taken.score }}</div>
-                        <div class="my_stat">{{ stat_comparison.damage_taken.local }}</div>
-                        <div class="stat_header">DMG Taken</div>
-                        <div class="enemy_stat">{{ stat_comparison.damage_taken.enemy_local }}</div>
-                        <div class="enemy_score">{{ stat_comparison.damage_taken.enemy_score }}</div>
+                        <div class="stat">
+                            <div class="my_score">{{ stat_comparison.stats.dmg_taken_at_30.score }}</div>
+                            <div class="my_stat">{{ stat_comparison.stats.dmg_taken_at_30.local }}</div>
+                            <div class="stat_header">DMG Taken at 30</div>
+                            <div class="enemy_stat">{{ stat_comparison.stats.dmg_taken_at_30.enemy_local }}</div>
+                            <div class="enemy_score">{{ stat_comparison.stats.dmg_taken_at_30.enemy_score }}</div>
+                        </div>
                     </div>
                 </div>
              

@@ -8,15 +8,25 @@ class StatComparison(object):
     def __init__(self, stat, statset, enemy_statset, challenger_statsets, 
                  enemy_challenger_statsets, invert=False):
         self.name = stat
-        self.local = statset.__dict__[stat]
-        self.duration = float(statset.match.match_duration)
-        self.local_min = self.local/(self.duration/60)
+        if statset.__dict__[stat]:
+            self.local = statset.__dict__[stat]
+            self.duration = float(statset.match.match_duration)
+            self.local_min = self.local/(self.duration/60)
+        else:
+            self.local = '-'
+            self.duration = '-'
+            self.local_min = '-'
         
-        if enemy_statset:
+        if enemy_statset and enemy_statset.__dict__[stat]:
             self.enemy_local = enemy_statset.__dict__[stat]
             self.enemy_local_min = self.enemy_local/(self.duration/60)
+        
+        else:
+            self.enemy_local = '-'
+            self.enemy_local_min = '-'
                 
-        if challenger_statsets:
+                
+        if challenger_statsets and challenger_statsets.__dict__[stat]:
             num = len(challenger_statsets)        
             sum = 0
             sum_min = 0
@@ -48,15 +58,17 @@ class StatComparison(object):
             self.challenger_min = '-'
             self.score = '-'
         
-        if enemy_statset and enemy_challenger_statsets:
+        
+        if enemy_statset and enemy_challenger_statsets and enemy_statset.__dict__[stat] and enemy_challenger_statsets[0].__dict__[stat]:
             num = len(enemy_challenger_statsets)
             sum = 0
             sum_min = 0
             for other_set in enemy_challenger_statsets:
-                val = other_set.__dict__[stat]
-                duration = float(other_set.match.match_duration)
-                sum += val
-                sum_min += (val/(duration/60))
+                if other_set.__dict__[stat]:
+                    val = other_set.__dict__[stat]
+                    duration = float(other_set.match.match_duration)
+                    sum += val
+                    sum_min += (val/(duration/60))
                 
             self.enemy_challenger = float(sum)/num
             self.enemy_challenger_min = sum_min/num
@@ -83,9 +95,10 @@ class StatComparison(object):
             self.enemy_challenger_min = '-'
             self.enemy_score = '-'        
 
-        self.local_min = round(self.local_min, 1)
+        if statset.__dict__[stat]:    
+            self.local_min = round(self.local_min, 1)
         
-        if enemy_statset:
+        if enemy_statset and enemy_statset.__dict__[stat]:
             self.enemy_local_min = round(self.enemy_local_min, 1)
 
     def __str__(self):
@@ -96,33 +109,48 @@ class StatComparison(object):
         
 class Comparison(object):
     def __init__(self, statset, enemy_statset, challenger_statsets, enemy_challenger_statsets):
-        self.kills = StatComparison('kills', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
-        self.assists = StatComparison('assists', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
-        self.deaths = StatComparison('deaths', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets, invert=True)
-        self.cs_at_10 = StatComparison('cs_at_10', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
-        self.cs_at_20 = StatComparison('cs_at_20', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
-        self.cs_at_30 = StatComparison('cs_at_30', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
-        self.csd_at_10 = StatComparison('csd_at_10', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
-        self.csd_at_20 = StatComparison('csd_at_20', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
-        self.csd_at_30 = StatComparison('csd_at_30', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
-        self.xp_at_10 = StatComparison('xp_at_10', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
-        self.xp_at_20 = StatComparison('xp_at_20', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
-        self.xp_at_30 = StatComparison('xp_at_30', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
-        self.dmg_taken_at_10 = StatComparison('dmg_taken_at_10', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets, invert=True)
-        self.dmg_taken_at_20 = StatComparison('dmg_taken_at_20', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets, invert=True)
-        self.dmg_taken_at_30 = StatComparison('dmg_taken_at_30', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets, invert=True)
-        self.dmg_taken_diff_at_10 = StatComparison('dmg_taken_diff_at_10', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets, invert=True)
-        self.dmg_taken_diff_at_20 = StatComparison('dmg_taken_diff_at_20', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets, invert=True)
-        self.dmg_taken_diff_at_30 = StatComparison('dmg_taken_diff_at_30', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets, invert=True)
-            
-        if not self.kills.score == '-':
-            self.total_score = (self.kills.score + self.assists.score + self.deaths.score + self.cs.score + self.damage_to_champs.score + self.damage_taken.score)/6
+        self.stats = {}
+        self.stats['kills'] = StatComparison('kills', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
+        self.stats['assists'] = StatComparison('assists', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
+        self.stats['deaths'] = StatComparison('deaths', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets, invert=True)
+        self.stats['cs_at_10'] = StatComparison('cs_at_10', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
+        self.stats['cs_at_20'] = StatComparison('cs_at_20', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
+        self.stats['cs_at_30'] = StatComparison('cs_at_30', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
+        self.stats['csd_at_10'] = StatComparison('csd_at_10', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
+        self.stats['csd_at_20'] = StatComparison('csd_at_20', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
+        self.stats['csd_at_30'] = StatComparison('csd_at_30', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
+        self.stats['xp_at_10'] = StatComparison('xp_at_10', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
+        self.stats['xp_at_20'] = StatComparison('xp_at_20', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
+        self.stats['xp_at_30'] = StatComparison('xp_at_30', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets)
+        self.stats['dmg_taken_at_10'] = StatComparison('dmg_taken_at_10', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets, invert=True)
+        self.stats['dmg_taken_at_20'] = StatComparison('dmg_taken_at_20', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets, invert=True)
+        self.stats['dmg_taken_at_30'] = StatComparison('dmg_taken_at_30', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets, invert=True)
+        self.stats['dmg_taken_diff_at_10'] = StatComparison('dmg_taken_diff_at_10', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets, invert=True)
+        self.stats['dmg_taken_diff_at_20'] = StatComparison('dmg_taken_diff_at_20', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets, invert=True)
+        self.stats['dmg_taken_diff_at_30'] = StatComparison('dmg_taken_diff_at_30', statset, enemy_statset, challenger_statsets, enemy_challenger_statsets, invert=True)
+        
+        self.total_score = 0
+        self.total_enemy_score = 0 
+        
+        count = 0
+        enemy_count = 0
+        for stat in self.stats:
+            comparison = self.stats[stat]
+            if not comparison.score == '-':
+                count += 1
+                self.total_score += comparison.score
+            if not comparison.enemy_score == '-':
+                enemy_count += 1
+                self.total_enemy_score += comparison.enemy_score
+                
+        if count:
+            self.total_score /= count
             self.total_score = round(self.total_score, 1)
         else: 
             self.total_score = 'N/A'
             
-        if not self.kills.enemy_score == '-':
-            self.total_enemy_score = (self.kills.enemy_score + self.assists.enemy_score + self.deaths.enemy_score + self.cs.enemy_score + self.damage_to_champs.enemy_score + self.damage_taken.enemy_score)/6
+        if enemy_count:
+            self.total_enemy_score /= enemy_count
             self.total_enemy_score = round(self.total_enemy_score, 1)
         else: 
             self.total_enemy_score = 'N/A'
