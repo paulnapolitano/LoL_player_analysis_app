@@ -320,9 +320,12 @@ def get_timeline_attr(attr, mins, participant, timeline):
             return None
             
     elif attr=='dmg_taken':
-        attr_per_min = participant_timeline['damageTakenPerMinDeltas']
-        return get_participant_timeline_attr(attr_per_min, mins)
-
+        if 'damageTakenPerMinDeltas' in participant_timeline:
+            attr_per_min = participant_timeline['damageTakenPerMinDeltas']
+            return get_participant_timeline_attr(attr_per_min, mins)
+        else:
+            return None
+            
     elif attr=='dmg_taken_diff':
         if 'damageTakenDiffPerMinDeltas' in participant_timeline:
             attr_per_min = participant_timeline['damageTakenDiffPerMinDeltas']

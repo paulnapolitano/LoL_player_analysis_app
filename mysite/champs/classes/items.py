@@ -5,8 +5,9 @@ if __name__ == '__main__' and __package__ is None:
 from champs.models import ItemStatic, ItemParentChild
 from champs.funcs.text_funcs import timestamp_to_game_time
 
-print 'importing RiotAPI'
 from champs.funcs.riot_app import api
+
+from champs.classes.data_structures import Stack
 
 # Takes dictionary containing item data from Riot's API, constructs an 
 # ItemNode instance for each one. After constructing all ItemNode instances,
@@ -171,7 +172,8 @@ class ItemNode(object):
     def is_final(self):
         return not self.parents and self.depth>1
 
- 
+
+  
 # Player inventory modeled as an object containing an ordered list of 
 # components with functionality for buying, selling, undoing and destroying 
 # purchases. All purchases are timestamped, as are all occasions where items 
@@ -185,7 +187,7 @@ class Build(object):
         self.build_history = []
         self.last_timestamp = -100000
         self.current_batch = 0
-        self.recent_edits = []
+        self.edit_history = []
               
     def __str__(self):
         string = ''
@@ -224,13 +226,12 @@ class Build(object):
     def buy(self, item, timestamp):
         if timestamp - self.last_timestamp > 30000:
             self.current_batch += 1
-            self.recent_edits = []
         self.last_timestamp = timestamp
         
         component = BuildComponent(item, self.current_batch, timestamp)
         self.build_history.append(component)
         last_index = self.build_history.index(component)
-        self.recent_edits.append({'last_index':last_index, 'event':'buy'})
+        self.edit_history.append({'last_index':last_index, 'event':'buy'})
         
         # If item isn't basic, delete all more basic components
         # if item.depth > 1:
@@ -257,19 +258,18 @@ class Build(object):
     # buy operation (including destroys). If sale, return sold item to 
     # inventory
     def undo(self, last_event):
-        event_dict = self.recent_edits.pop()
+        event_dict = self.edit_history.pop()
         
         if last_event == 'buy':
             last_event_edited = event_dict['event']
             
-            while last_event_edited == 'destroy':
+            if last_event_edited == 'destroy':
                 last_index = event_dict['last_index']
                 self.build_history[last_index].death_time = None
-                event_dict = self.recent_edits.pop()
-                last_event_edited = event_dict['event']
+                self.undo(last_event)
                 
-            if last_event_edited == 'buy':
-                self.build_history.pop()
+            elif last_event_edited == 'buy':
+                return None
 
                 
         else:
@@ -288,7 +288,7 @@ class Build(object):
         
         if not last_index is None:
             self.build_history[last_index].death_time = timestamp
-            self.recent_edits.append({'last_index':last_index, 'event':'sell'})
+            self.edit_history.append({'last_index':last_index, 'event':'sell'})
 
      
     # Items are destroyed when they are consumed (e.g. potions) or when a
@@ -299,7 +299,7 @@ class Build(object):
         last_index = self.find_last_existing(item)
         if last_index is not None:
             self.build_history[last_index].death_time = timestamp
-            self.recent_edits.append({'last_index':last_index, 'event':'destroy'})
+            self.edit_history.append({'last_index':last_index, 'event':'destroy'})
 
 
     # When a component is purchased, if lesser components (children) of the bought component
