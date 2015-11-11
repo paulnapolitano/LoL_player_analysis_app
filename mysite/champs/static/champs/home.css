@@ -31,6 +31,7 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
     width: 100%;
     background: #151515;
     color: white;
+    font-size: 20px;
 }
 
     #nav {

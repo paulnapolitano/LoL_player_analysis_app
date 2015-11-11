@@ -256,16 +256,16 @@ $(document).ready(function(){
     else if (max<1200) {
         $("#mid_game").addClass("transparent");
         $("#late_game").addClass("transparent");
-        $(".score").css({"line-height":"200px"});
+        $(".score").css({"line-height":"220px"});
     }
     // If game duration between 20 and 30 mins
     else if (max<1800) {
         $("#late_game").addClass("transparent");
-        $(".score").css({"line-height":"400px"});
+        $(".score").css({"line-height":"440px"});
     }
     // If game duration over 30 mins
     else {
-        $(".score").css({"line-height":"580px"});
+        $(".score").css({"line-height":"660px"});
     }
         
         

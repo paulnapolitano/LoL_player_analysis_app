@@ -1,7 +1,8 @@
 body {
     font-family: 'Oswald', sans-serif;
     color: black;
-
+    margin: 0;
+    padding: 0;
 }
 
 div {
@@ -9,6 +10,251 @@ div {
     padding: 0;
 }
 
+h3 {
+    margin: 0;
+    padding: 0;
+}
+
+
+#navbar {
+    position: fixed;
+    top: 0px;
+    height: 50px;
+    width: 100%;
+    background: #151515;
+    color: white;
+    font-size: 20px;
+    z-index: 999;
+}
+
+    #nav {
+        width: 800px; 
+        list-style-type: none;
+        margin: 0 auto;
+        padding: 0;
+    }
+
+        .nav_el{
+            float: left;
+        }
+
+            .nav_el a {
+                color: white;
+                text-decoration: none;
+                text-align: center;
+                display: block;
+                height: 50px;
+                line-height: 50px;
+                width: 200px;
+            }
+            
+            .nav_el a:hover {
+                background: #1d1d1d;
+            }
+
+#page  {
+    width: 100%;
+    margin-top: 100px;
+}        
+
+        
+#champ_header {
+    margin-left: auto;
+    margin-right: auto;
+    width: 1000px;
+    height: 100px;
+}
+
+    .summoner_name {
+        width: 20%;
+        height: 100%;
+    
+        float: left;
+        line-height: 100px;
+        color: black;
+        font-size: 24px;
+        text-align: center;
+    }
+
+    .champ_name {
+        width: 13%;
+        height: 100%;
+        
+        padding-right: 20px;
+        line-height: 50px;
+        text-align: right;
+        font-size: 26px;
+        float: left;
+        color: black;
+        font-weight: 700;
+    }
+    
+    .champ_pic {
+        border-radius: 50px;
+        width: 100px;
+        height: 100px;
+        float: left;
+    }
+
+        .champ_pic img {
+            width: 100px;
+            height: 100px;
+        } 
+        
+    .vs {
+        float: left;
+        height: 100px;
+        width: 100px;
+    }
+    
+        .vs img {
+            height: 60px;
+            width: 60px;
+            margin-right: 25px;
+            margin-left: 15px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+    
+    .enemy_champ_name {
+        width: 13%;
+        padding-left: 20px;
+        height: 100px;
+        line-height: 50px;
+        text-align: left;
+        font-size: 26px;
+        font-weight: 700;
+        float: left;
+        color: black;
+    }
+
+#stat_wrapper {
+    width: 1000px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}    
+
+    #stat_container {
+        vertical-align: middle;
+        display: inline-block;
+        width: 100%;
+        height: 650px;
+        margin-bottom: 50px;
+    }
+
+        #total_score {
+            width: 20%;
+            float: left;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            height: 100%;
+            text-align: center;
+        }
+
+            .score {
+                text-align: center;
+                font-size: 30px;
+                color: black;
+            }
+            
+        #stat_comparison {
+            width: 60%;
+            margin: 20px 0;
+            float: left;
+            height: 100%;
+            font-size: 20px;
+        }
+        
+            .minute_header {
+                width: 100%;
+                float: left;
+                display: block;
+                height: 45px;
+                line-height: 45px;
+                border-top: 2.5px solid black;
+                border-bottom: 2.5px solid black;
+            }
+        
+            #early_game {
+                width: 100%;
+                float: left;
+                height: 200px;
+                margin-bottom: 20px;
+            }
+            
+            #mid_game {
+                width: 100%;
+                float: left;
+                height: 200px;
+                margin-bottom: 20px;
+            }
+            
+            #late_game {
+                width: 100%;
+                float: left;
+                height: 200px;
+                margin-bottom: 20px;
+            }
+            
+            .transparent {
+                opacity: 0.5;
+            }
+            
+                .stat {
+                    width: 100%;
+                    float: left;
+                    height: 50px;
+                    line-height: 60px;
+                }
+                
+                    .my_score {
+                        width: 10%;
+                        float: left;
+                        height: 100%;
+                        text-align: center;
+                    }
+
+                    .my_stat {
+                        width: 20%;
+                        float: left;
+                        height: 100%;
+                        text-align: right;
+                    }
+                    
+                    .stat_header {
+                        width: 40%;
+                        color: black;
+                        float: left;
+                        height: 100%;
+                        text-align: center;
+                        font-weight: 700;
+                    }
+                    
+                    .enemy_stat {
+                        width: 20%;
+                        float: left;
+                        height: 100%;
+                        text-align: left;
+                    }
+                
+                    .enemy_score {
+                        width: 10%;
+                        float: left;
+                        height: 100%;
+                        text-align: center;
+                    }
+            
+        #total_enemy_score {
+            float: left;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            width: 20%;
+            height: 360px;
+            line-height: 360px;
+            text-align: center;
+        }
+    
 #timeline_container {
     margin-left: auto;
     margin-right: auto;
@@ -16,6 +262,7 @@ div {
     height: 50px;
     width: 720px;
     margin-bottom: 50px;
+    z-index: 1;
 }
 
     #label_container {
@@ -195,306 +442,7 @@ div {
     background: #367ebd;
 }
 /* ------------------------------------------------------ */
-
-
-
-/* ---------------- MIRRORED COMPARISON ----------------- */
-/* .build_container {
-    width:1040px;
-    padding:10px;
-}
-
-    .my_build {
-        width:470px;
-        float:left;
-    }
     
-        .time_items {
-            height: 50px;
-            margin-top: 10px;
-            margin-bottom: 10px;
-            padding: 0;
-        }
-        
-            .time_item_slot {
-                position: relative;
-                float: left;
-                margin: 0;
-                padding: 0;
-                height: 48px;
-                width: 48px;
-                border: 1px solid black;
-                
-                text-align: center;
-            }
-            
-                .stack_num {
-                    color: white;
-                    position: absolute;
-                    right: 0;
-                    bottom: 0;
-                    height: 20px;
-                    width: 12px;
-                    margin: 0;
-                    text-shadow:
-                    -1px -1px 0 #000,
-                    1px -1px 0 #000,
-                    -1px 1px 0 #000,
-                    1px 1px 0 #000;  
-                }
-                
-        .final_items {
-            height: 50px;
-            margin-top: 10px;
-            margin-bottom: 10px;
-            padding: 0;
-        }
-            .arrow {
-                float: left;
-                position: relative;
-                height: 50px;
-                width: 20px;
-                white-space: nowrap;
-                
-                text-align: center;
-            }
-            
-                .arrow img {
-                    position: absolute;
-                    top: 50%;
-                    height: 20px;
-                    width: 20px;
-                    margin-top: -10px;
-                    left: 50%;
-                    margin-left: -9px;
-                }
-        
-                .helper {
-                    display: inline-block;
-                    height: 100%;
-                    vertical-align: middle;
-                }
-        
-            .final_item_slot {
-                float: left;
-                margin: 0;
-                padding: 0;
-                height: 48px;
-                width: 48px;
-                border: 1px solid black;
-                
-                text-align: center;
-            }
-
-    .other_build {
-        width:470px;
-        float:left;
-    }
-
-    .mid_headers {
-        font-family: 'Oswald', sans-serif;
-        font-weight: 700;
-        float: left;
-        color: black;
-        width: 100px;
-    }
-
-        .build_header_container {
-            margin-top: 10px;
-            margin-bottom: 10px;
-            padding: 0;
-            height: 50px;
-            width: 100px;    
-            line-height: 50px;
-            text-align: center; 
-        }
-
-        .build_header {
-            display: inline-block;
-            vertical-align: middle;
-            line-height: normal
-        } */
-#champ_header {
-    margin-left: auto;
-    margin-right: auto;
-    width: 1240px;
-    height: 100px;
-}
-
-    .summoner_name {
-        float: left;
-        width: 250px;
-        height: 100px;
-        line-height: 100px;
-        color: black;
-        font-size: 30px;
-        text-align: center;
-    }
-
-    .champ_pic {
-        border-radius: 50px;
-        width: 100px;
-        height: 100px;
-        float: left;
-    }
-
-        .champ_pic img {
-            width: 100px;
-            height: 100px;
-        }
-        
-    .champ_name {
-        margin-right: 20px;
-        width: 200px;
-        height: 100px;
-        line-height: 50px;
-        text-align: right;
-        font-size: 30px;
-        float: left;
-        color: black;
-        font-weight: 700;
-    }
-    
-    .vs {
-        float: left;
-        height: 100px;
-        width: 100px;
-    }
-    
-        .vs img {
-            height: 60px;
-            width: 60px;
-            margin-right: 25px;
-            margin-left: 15px;
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-    
-    .enemy_champ_name {
-        margin-left: 20px;
-        width: 200px;
-        height: 100px;
-        line-height: 50px;
-        text-align: left;
-        font-size: 30px;
-        font-weight: 700;
-        float: left;
-        color: black;
-    }
-
-#stat_wrapper {
-    width: 100%;
-    text-align: center;
-}    
-
-    #stat_container {
-        vertical-align: middle;
-        display: inline-block;
-        width: 1240px;
-        height: 600px;
-        margin-bottom: 50px;
-    }
-
-        #total_score {
-            float: left;
-            margin-top: 20px;
-            margin-bottom: 20px;
-            width: 250px;
-            height: 100%;
-            text-align: center;
-        }
-
-            .score {
-                font-size: 30px;
-                color: black;
-            }
-            
-        #stat_comparison {
-            margin: 20px;
-            float: left;
-            width: 700px;
-            height: 100%;
-            font-size: 20px;
-        }
-        
-            #early_game {
-                float: left;
-                width: 700px;
-                height: 150px;
-                margin: 20px 0;
-            }
-            
-            #mid_game {
-                float: left;
-                width: 700px;
-                height: 150px;
-                margin: 20px 0;
-            }
-            
-            #late_game {
-                float: left;
-                width: 700px;
-                height: 150px;
-                margin: 20px 0;
-            }
-            
-            .transparent {
-                opacity: 0.5;
-            }
-            
-                .stat {
-                    float: left;
-                    height: 50px;
-                    line-height: 60px;
-                    width: 700px;
-                }
-                
-                    .my_score {
-                        float: left;
-                        height: 100%;
-                        width: 100px;
-                        text-align: right;
-                    }
-
-                    .my_stat {
-                        float: left;
-                        height: 100%;
-                        width: 150px;
-                        text-align: right;
-                    }
-                    
-                    .stat_header {
-                        color: black;
-                        float: left;
-                        height: 100%;
-                        width: 200px;
-                        text-align: center;
-                        font-weight: 700;
-                    }
-                    
-                    .enemy_stat {
-                        float: left;
-                        height: 100%;
-                        width: 150px;
-                        text-align: left;
-                    }
-                
-                    .enemy_score {
-                        float: left;
-                        height: 100%;
-                        width: 100px;
-                        text-align: left;
-                    }
-            
-        #total_enemy_score {
-            float: left;
-            margin-top: 20px;
-            margin-bottom: 20px;
-            width: 250px;
-            height: 360px;
-            line-height: 360px;
-            text-align: center;
-        }
     
 .build_container {
     margin-left: auto;
@@ -677,3 +625,122 @@ div {
                 
                 text-align: center;
             }
+            
+
+
+/* ---------------- MIRRORED COMPARISON ----------------- */
+/* .build_container {
+    width:1040px;
+    padding:10px;
+}
+
+    .my_build {
+        width:470px;
+        float:left;
+    }
+    
+        .time_items {
+            height: 50px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            padding: 0;
+        }
+        
+            .time_item_slot {
+                position: relative;
+                float: left;
+                margin: 0;
+                padding: 0;
+                height: 48px;
+                width: 48px;
+                border: 1px solid black;
+                
+                text-align: center;
+            }
+            
+                .stack_num {
+                    color: white;
+                    position: absolute;
+                    right: 0;
+                    bottom: 0;
+                    height: 20px;
+                    width: 12px;
+                    margin: 0;
+                    text-shadow:
+                    -1px -1px 0 #000,
+                    1px -1px 0 #000,
+                    -1px 1px 0 #000,
+                    1px 1px 0 #000;  
+                }
+                
+        .final_items {
+            height: 50px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            padding: 0;
+        }
+            .arrow {
+                float: left;
+                position: relative;
+                height: 50px;
+                width: 20px;
+                white-space: nowrap;
+                
+                text-align: center;
+            }
+            
+                .arrow img {
+                    position: absolute;
+                    top: 50%;
+                    height: 20px;
+                    width: 20px;
+                    margin-top: -10px;
+                    left: 50%;
+                    margin-left: -9px;
+                }
+        
+                .helper {
+                    display: inline-block;
+                    height: 100%;
+                    vertical-align: middle;
+                }
+        
+            .final_item_slot {
+                float: left;
+                margin: 0;
+                padding: 0;
+                height: 48px;
+                width: 48px;
+                border: 1px solid black;
+                
+                text-align: center;
+            }
+
+    .other_build {
+        width:470px;
+        float:left;
+    }
+
+    .mid_headers {
+        font-family: 'Oswald', sans-serif;
+        font-weight: 700;
+        float: left;
+        color: black;
+        width: 100px;
+    }
+
+        .build_header_container {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            padding: 0;
+            height: 50px;
+            width: 100px;    
+            line-height: 50px;
+            text-align: center; 
+        }
+
+        .build_header {
+            display: inline-block;
+            vertical-align: middle;
+            line-height: normal
+        } */
