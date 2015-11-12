@@ -188,10 +188,19 @@ class Patch(models.Model):
 class Player(models.Model):
     summoner_id = models.CharField(db_index=True, max_length=20, primary_key=True)
     summoner_name = models.CharField(max_length=20, default='UNKNOWN')
-    profile_icon_id = models.CharField(max_length=20, default='UNKNOWN', blank=True)
-    last_update = models.DateTimeField(default=timezone.now, blank=True)
-    summoner_level = models.IntegerField(default=0)
+    profile_icon_id = models.IntegerField(blank=True, null=True)
+    last_revision = models.IntegerField(blank=True, null=True)
+    summoner_level = models.IntegerField(blank=True, null=True)    
+    
     std_summoner_name = models.CharField(db_index=True, max_length=20, default='UNKNOWN')
+    last_update = models.DateTimeField(default=timezone.now, blank=True)
+
+    tier = models.CharField(max_length=10, default='UNKNOWN')
+    division = models.CharField(max_length=3, default='UNKNOWN')
+    lp = models.IntegerField(blank=True, null=True)
+    wins = models.IntegerField(blank=True, null=True)
+    losses = models.IntegerField(blank=True, null=True)
+    
     rank_num = models.IntegerField(default=0)
     
     def __unicode__(self):

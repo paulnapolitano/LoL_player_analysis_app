@@ -4,6 +4,8 @@ if __name__ == '__main__' and __package__ is None:
 
 from riot_app import api, URL
 
+from champs.constants import TIERS, DIVS
+
 from champs.models import ItemStatic, Match, Champ, ChampionStatic, StatSet
 from champs.models import BuildComponent, ChampionTag, Player, Patch 
 
@@ -125,7 +127,8 @@ def match_to_db(match_id, region='na'):
         league_dict = api.get_solo_leagues(
             region=match['region'].lower(),
             summoner_ids=str(player_id_list)[1:-1])
-        league_name = api.get_avg_solo_league(league_dict)
+        league_name = get_avg_solo_league(league_dict, player_id_list)[0]
+        print league_name
         
         # Get player information for each player in match
         sum_dict = api.get_summoners_by_id('na', player_id_list)
@@ -214,27 +217,32 @@ def create_champ(match, participant, league_name):
 # and league dictionary
 # DEPENDENCIES: sum_name_standardize, Player
 def create_player(match, participant, player_id_list, sum_dict, league_dict):
-    # summoner_id = match['participantIdentities'][
-        # participant['participantId']-1]['player']['summonerId']
+    kwargs = {}
+    
     summoner_id = str(player_id_list[participant['participantId']-1])  
-
     summoner_name = sum_dict[summoner_id]['name']
-    std_summoner_name = sum_name_standardize(summoner_name)
-    profile_icon_id = sum_dict[summoner_id]['profileIconId']
-    summoner_level = sum_dict[summoner_id]['summonerLevel']
+    
+    kwargs['summoner_id'] = summoner_id
+    kwargs['summoner_name'] = summoner_name
+    kwargs['profile_icon_id'] = sum_dict[summoner_id]['profileIconId']
+    kwargs['last_revision'] = sum_dict[summoner_id]['revisionDate']
+    kwargs['summoner_level'] = sum_dict[summoner_id]['summonerLevel']
+    
+    kwargs['std_summoner_name'] = sum_name_standardize(summoner_name)
     
     # If player is unranked, their key won't exist in league_dict
-    if str(summoner_id) in league_dict:
-        rank_num = league_dict[str(summoner_id)]
-    else:
-        rank_num = 0
+    player_dict = get_player_from_league(summoner_id, league_dict)
+    tier = player_dict['tier']
+    division = player_dict['entries'][0]['division']
     
-    p = Player(
-        summoner_id=summoner_id,
-        std_summoner_name=sum_name_standardize(summoner_name),
-        summoner_name=summoner_name,
-        rank_num=rank_num,
-    )    
+    kwargs['tier'] = tier
+    kwargs['division'] = division
+    kwargs['rank_num'] = rank_to_num(tier, division)
+    kwargs['lp'] = player_dict['entries'][0]['leaguePoints']
+    kwargs['wins'] = player_dict['entries'][0]['wins']
+    kwargs['losses'] = player_dict['entries'][0]['losses']
+    
+    p = Player(**kwargs)    
     
     return p 
     
@@ -630,3 +638,53 @@ def summoner_to_db_display(std_summoner_name, sum_id=None):
         statset_display = StatSet.objects.filter(player=req_player)
         
     return statset_display
+    
+    
+    
+# Return dictionary containing division, LP from league dictionary
+# DEPENDENCIES: None
+def get_player_from_league(id, league_dict):
+    for player_dict in league_dict[str(id)]:
+        if player_dict['queue'] == 'RANKED_SOLO_5x5':
+            return player_dict
+        
+    player_dict = {}
+    player_dict['entries'] = {}
+    player_dict['entries']['leaguePoints'] = None
+    player_dict['entries']['division'] = None
+    player_dict['tier'] = None
+    player_dict['entries']['wins'] = None
+    player_dict['entries']['losses'] = None
+    return player_dict
+            
+    
+
+# Return tier, division as number (BRONZE V -> 0, BRONZE I -> 4, SILVER V -> 5
+# GOLD V -> 10, DIAMOND I -> 24, MASTER I -> 29, CHALLENGER I -> 34)
+# DEPENDENCIES: None
+def rank_to_num(tier, div):
+    rank_num = TIERS.index(tier)*5 + DIVS.index(div)
+    
+    return rank_num
+    
+    
+
+def get_avg_solo_league(league_dict, player_id_list):
+    rank_num = 0
+    count = 0
+    
+    for player_id in player_id_list:
+        player_dicts = league_dict[str(player_id)]
+        for player_dict in player_dicts:
+            if player_dict['queue'] == 'RANKED_SOLO_5x5':
+                tier = player_dict['tier']
+                division = player_dict['entries'][0]['division']
+                rank_num += TIERS.index(tier)*5
+                rank_num += DIVS.index(division)
+                count += 1
+                
+    return num_to_rank(rank_num/count)
+    
+def num_to_rank(num):
+    return TIERS[num/5], DIVS[num%5] 
+            

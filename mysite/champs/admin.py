@@ -31,9 +31,12 @@ class ChampAdmin(admin.ModelAdmin):
     inlines = [StatSetInline]
     
 class PlayerAdmin(admin.ModelAdmin):
-    fields = ['std_summoner_name', 'summoner_name', 'summoner_id', 'rank_num']
+    fields = ['std_summoner_name', 'summoner_name', 'summoner_id', 'rank_num',
+              'last_update', 'last_revision', 'tier', 'division', 'lp',
+              'wins', 'losses']
     list_display = ['std_summoner_name', 'summoner_name', 'summoner_id', 
-            'rank_num', 'last_update']
+                    'rank_num', 'last_update', 'last_revision', 'tier', 
+                    'division', 'lp', 'wins', 'losses']
     inlines = [StatSetInline]
 
 class ItemStaticAdmin(admin.ModelAdmin):

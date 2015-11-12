@@ -386,26 +386,8 @@ class RiotAPI:
         )
         params = {}
         league_dict = self._request(url, req_region=region, params=params)
-        league_num_total = 0
         
-        for id in league_dict:
-            division = league_dict[id][0]['entries'][0]['division']
-            tier = league_dict[id][0]['tier']
-            player_league_dict[str(id)] = lp_to_num(tier, division)
-            
-        return player_league_dict
-    
-    
-    def get_avg_solo_league(self, league_dict):
-        league_num_total = 0
-        
-        for id in league_dict:
-            league_num_total += league_dict[id]
-            
-        league_num_total = (league_num_total+5)/len(league_dict)
-        avg_league, avg_div = num_to_lp(league_num_total)
-        return avg_league
-
+        return league_dict
  
  
     def get_summoners_by_id(self, region, summoner_ids):
