@@ -46,22 +46,25 @@ def get_player_items(participant_id, match):
             
         item = items_this_version.get(item_id=item_id) 
         
-        type = event['eventType']
+        event_type = event['eventType']
         
-        if type == 'ITEM_PURCHASED':
+        if event_type == 'ITEM_PURCHASED':
+            print 'Buying {}'.format(item)
             build.buy(item, timestamp)
             last_event = 'buy'
 
-        elif type == 'ITEM_UNDO': 
+        elif event_type == 'ITEM_UNDO': 
+            print 'Undoing {}'.format(last_event)
             build.undo(last_event)
                     
-        elif type == 'ITEM_SOLD':
+        elif event_type == 'ITEM_SOLD':
+            print 'Selling {}'.format(item)
             build.sell(item, timestamp)
             last_event = 'sell'
             
         else:
+            print 'Destroying {}'.format(item)
             build.destroy(item, timestamp) 
-            last_event = 'destroy'
     
     return build
         
@@ -75,9 +78,9 @@ def item_events_from_frames(frames, participant_id):
         if 'events' in frame:
             events = frame['events']
             for event in events:
-                type = event['eventType']
-                if (type=='ITEM_PURCHASED' or type=='ITEM_UNDO' or 
-                            type=='ITEM_SOLD' or type=='ITEM_DESTROYED'
+                event_type = event['eventType']
+                if (event_type=='ITEM_PURCHASED' or event_type=='ITEM_UNDO' or 
+                            event_type=='ITEM_SOLD' or event_type=='ITEM_DESTROYED'
                             ) and event['participantId']==participant_id:
                     player_item_events.append(event)
     

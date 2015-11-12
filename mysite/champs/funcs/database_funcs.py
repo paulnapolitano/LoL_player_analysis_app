@@ -22,7 +22,35 @@ from champs.funcs.misc_funcs import millis_to_timezone
 from django.utils import timezone
 
 # ------------------------------- FUNCTIONS ---------------------------------
-                
+#                   ---------------- ToC ----------------
+# get_smart_role(champion, lane, role)
+# get_current_patch(region='na')
+# matches_to_db(match_id_list, region='na')
+# match_to_db(match_id, region='na')       
+# create_match(match)
+# create_champ(match, participant, league_name)
+# create_player(match, participant, player_id_list, sum_dict, league_dict)
+# create_statset(participant, timeline, champ, player, match)
+# get_timeline_attr(attr, mins, participant, timeline)
+# get_participant_timeline_attr(attr_per_min, mins)
+# create_build_component(component, statset)
+# save_in_bulk(match_bulk, champ_bulk, player_bulk, statset_bulk, build_component_bulk)
+# items_to_db()
+# item_to_db(id, version, item_dict=None, save=False)
+# champions_to_db(region='na')
+# champion_to_db(id, version, champ_dict, save=False)
+# save_or_bulk_create(klass, object_or_list)
+# challenger_to_db(region='na')
+# master_to_db(region='na')
+# summoner_to_db_display(std_summoner_name, sum_id=None)
+# get_player_from_league(id, league_dict)
+# rank_to_num(tier, div)
+# get_avg_solo_league(league_dict, player_id_list)
+# num_to_rank(num)
+#                   -------------------------------------
+
+
+
 
 # Get smart role (TOP, MID, SUPPORT, ADC, or JUNGLE) from champ, lane and 
 # role information

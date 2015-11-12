@@ -168,7 +168,12 @@ class RiotAPI:
             ),
             params=args
         )
-            
+        
+        # print 'making api request: {}'.format(URL['base'].format(
+                                                        # server=self.region,
+                                                        # region=req_region,
+                                                        # url=api_url))
+        
         for limit in self.limits:
             limit.add_request()
 
