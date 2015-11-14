@@ -245,7 +245,10 @@ $(document).ready(function(){
     var t;
     var interval = null;
     var max = parseInt(slider.attr("max"));
+    var el, activeBorder, circle, score, degs, scoreVal, i=0;
+    var circleInterval = null;
     
+    // --------------- Stats Table ---------------
     // If game duration < 10 mins
     if (max<600) {
         $("#early_game").addClass("transparent");
@@ -256,19 +259,110 @@ $(document).ready(function(){
     else if (max<1200) {
         $("#mid_game").addClass("transparent");
         $("#late_game").addClass("transparent");
-        $(".score").css({"line-height":"220px"});
     }
     // If game duration between 20 and 30 mins
     else if (max<1800) {
         $("#late_game").addClass("transparent");
-        $(".score").css({"line-height":"440px"});
     }
     // If game duration over 30 mins
     else {
-        $(".score").css({"line-height":"660px"});
+        // $(".score").css({"line-height":"660px"});
     }
+    // ---------------------------------------------
+
+    
+    // --------------- Score Circles ---------------
+    circleInterval = setInterval(incrementCircles, 5);
+    // 
+    
+    function incrementCircles() {
+        flag = true;
+        i++;
+        $(".loading").each( function() {
+            flag = false;
+            
+            el = $(this);
+            activeBorder = el.children(".active_border");
+            circle = activeBorder.children(".circle");
+            score = circle.children(".score");
+            scoreVal = score.data("score");        
+            
+            if (scoreVal==="N/A"){
+                return;
+            }
+            else {
+                degs = (scoreVal/100)*360;
+            }
+            
+            if (i>=degs) { 
+                el.removeClass("loading");
+                el.addClass("loaded"); 
+                console.log("cleared");
+            }
+            else { updateCircle(i); };
+        });
         
+        if (flag) {
+            clearInterval(circleInterval);
+        }
+    };
+    
+    function updateCircle(i) {
+        if (el.parents('.left').length) {
+            if (i<=180){
+                activeBorder.css('background-image','linear-gradient(' + (90+i) + 'deg, transparent 50%, #A2ECFB 50%),linear-gradient(90deg, #A2ECFB 50%, transparent 50%)');
+            }
+            else{
+                activeBorder.css('background-image','linear-gradient(' + (i-90) + 'deg, transparent 50%, #39B4CC 50%),linear-gradient(90deg, #A2ECFB 50%, transparent 50%)');
+            }    
+        }
         
+        else if (el.parents('.right').length) {
+            if (i<=180){
+                activeBorder.css('background-image','linear-gradient(' + (90+i) + 'deg, transparent 50%, #FBB1A2 50%),linear-gradient(90deg, #FBB1A2 50%, transparent 50%)');
+            }
+            else{
+                activeBorder.css('background-image','linear-gradient(' + (i-90) + 'deg, transparent 50%, #f64623 50%),linear-gradient(90deg, #FBB1A2 50%, transparent 50%)');
+            }            
+        };
+    };
+    // ---------------------------------------------
+    
+    // ------------------- Scores ------------------
+    $(".stat").each(function() {
+        el = $(this);
+        myScore = el.find('.my_score');
+        myStat = el.find('.my_stat');
+        statName = el.find('.stat_header').text();
+        enemyScore = el.find('.enemy_score');
+        enemyStat = el.find('.enemy_stat');
+        
+        console.log(myScore.text());
+        if (myScore.text() === '-') { }
+        else if (myScore.text()>enemyScore.text()) {
+            myScore.css('color','#A2ECFB');
+            enemyScore.css('color','#FBB1A2');
+        }
+        else {
+            myScore.css('color','#FBB1A2');
+            enemyScore.css('color','#A2ECFB');        
+        };
+        
+        if (myStat.text()>enemyStat.text()) {
+            myStat.css('color','#A2ECFB');
+            enemyStat.css('color','#FBB1A2');            
+        }
+        else {
+            myStat.css('color','#FBB1A2');
+            enemyStat.css('color','#A2ECFB');            
+        };
+    });
+    
+    $(".enemy_score").each(function() {
+        el = $(this);
+        el.css('color','#FBB1A2');
+    });
+    
     myShowOrHide(trueMillis);
     otherShowOrHide(trueMillis);
     

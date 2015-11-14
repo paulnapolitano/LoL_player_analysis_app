@@ -49,21 +49,17 @@ def get_player_items(participant_id, match):
         event_type = event['eventType']
         
         if event_type == 'ITEM_PURCHASED':
-            print 'Buying {}'.format(item)
             build.buy(item, timestamp)
             last_event = 'buy'
 
         elif event_type == 'ITEM_UNDO': 
-            print 'Undoing {}'.format(last_event)
             build.undo(last_event)
                     
         elif event_type == 'ITEM_SOLD':
-            print 'Selling {}'.format(item)
             build.sell(item, timestamp)
             last_event = 'sell'
             
         else:
-            print 'Destroying {}'.format(item)
             build.destroy(item, timestamp) 
     
     return build

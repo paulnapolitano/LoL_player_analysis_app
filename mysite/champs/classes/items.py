@@ -253,7 +253,7 @@ class Build(object):
             if component.item == item and component.still_exists():
                 return self.build_history.index(component)
         return None
-        
+                
     # Can undo purchase or sale. If purchase, reverse the effects of the last
     # buy operation (including destroys). If sale, return sold item to 
     # inventory
@@ -269,7 +269,8 @@ class Build(object):
                 self.undo(last_event)
                 
             elif last_event_edited == 'buy':
-                return None
+                last_index = event_dict['last_index']
+                del self.build_history[last_index]
 
                 
         else:
