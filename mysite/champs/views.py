@@ -195,6 +195,68 @@ def match_profile(request, match_id, std_summoner_name):
     "Enchantment: Distortion",
     "Enchantment: Furor"]
     
+    my_rank_badge = 'champs/' + statset.player.tier.lower()
+    my_rank_badge += '_' + statset.player.division.lower() + '.png'
+    
+    enemy_rank_badge = 'champs/' + enemy_statset.player.tier.lower() 
+    enemy_rank_badge += '_' + enemy_statset.player.division.lower() + '.png'
+    
+    my_statsets = StatSet.objects.filter(player=player)
+    if enemy_statset:
+        enemy_statsets = StatSet.objects.filter(player=enemy_statset.player)
+    else:
+        enemy_statsets = []
+        
+    avg_score_sum = 0
+    champ_avg_score_sum = 0
+    avg_count = 0
+    champ_avg_count = 0
+    for my_statset in my_statsets:
+        tot_score = get_stat_comparison(my_statset).total_score
+        if not tot_score == 'N/A':
+            if my_statset.champ == champ:
+                champ_avg_score_sum += tot_score
+                champ_avg_count += 1
+            avg_score_sum += tot_score
+            avg_count += 1
+    
+    if avg_count:
+        my_avg_score = avg_score_sum/avg_count
+    else:
+        my_avg_score = 'N/A'
+        
+    if champ_avg_count:
+        my_champ_avg_score = champ_avg_score_sum/champ_avg_count
+    else:
+        my_champ_avg_score = 'N/A'
+    
+    
+    
+    
+    avg_score_sum = 0
+    champ_avg_score_sum = 0
+    avg_count = 0
+    champ_avg_count = 0
+    for enemy_statset in enemy_statsets:
+        tot_score = get_stat_comparison(enemy_statset).total_score
+        if not tot_score == '-' and not tot_score == 'N/A':
+            if enemy_statset.champ == champ:
+                champ_avg_score_sum += tot_score
+                champ_avg_count += 1
+            avg_score_sum += tot_score
+            avg_count += 1
+    
+    if avg_count:
+        enemy_avg_score = avg_score_sum/avg_count
+    else:
+        enemy_avg_score = 'N/A'
+        
+    if champ_avg_count:
+        enemy_champ_avg_score = champ_avg_score_sum/champ_avg_count
+    else:
+        enemy_champ_avg_score = 'N/A'
+       
+    
     context = {
         'name':name,
         'build':build,
@@ -207,7 +269,13 @@ def match_profile(request, match_id, std_summoner_name):
         'challenger_build':challenger_build,
         'challenger_final':challenger_final,
         'consumable_list':consumable_list,
-        'boots_list':boots_list
+        'boots_list':boots_list,
+        'my_rank_badge':my_rank_badge,
+        'enemy_rank_badge':enemy_rank_badge,
+        'my_avg_score':my_avg_score,
+        'my_champ_avg_score':my_champ_avg_score,
+        'enemy_avg_score':enemy_avg_score,
+        'enemy_champ_avg_score':enemy_champ_avg_score,
     }
     return render(request, 'champs/match_profile.html', context)
     

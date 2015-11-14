@@ -27,7 +27,7 @@
                     </div>
                     
                     <div class="rank_pic">
-                        <img src="{% static 'champs/PLATINUM III.png' %}"></img>
+                        <img src="{% static my_rank_badge %}"></img>
                     </div>
                     
                     <div class="summoner_league">
@@ -53,8 +53,8 @@
                         <div class="score_container loading">
                             <div class="active_border">
                                 <div class="circle">
-                                    <span class="score" data-score=50>
-                                        <p>50</p>
+                                    <span class="score" data-score={{ my_avg_score }}>
+                                        <p>{{ my_avg_score }}</p>
                                     </span>
                                 </div>
                             </div>
@@ -64,8 +64,8 @@
                         <div class="score_container loading">
                             <div class="active_border">
                                 <div class="circle">
-                                    <span class="score" data-score=90>
-                                        <p>90</p>
+                                    <span class="score" data-score={{ my_champ_avg_score }}>
+                                        <p>{{ my_champ_avg_score }}</p>
                                     </span>
                                 </div>
                             </div>
@@ -219,7 +219,7 @@
                     </div>
                      
                     <div class="rank_pic">
-                        <img src="{% static 'champs/PLATINUM III.png' %}"></img>
+                        <img src="{% static enemy_rank_badge %}"></img>
                     </div>
                     
                     <div class="summoner_league">
@@ -245,8 +245,8 @@
                         <div class="score_container loading">
                             <div class="active_border">
                                 <div class="circle">
-                                    <span class="score" data-score=50>
-                                        <p>50</p>
+                                    <span class="score" data-score={{ enemy_avg_score }}>
+                                        <p>{{ enemy_avg_score }}</p>
                                     </span>
                                 </div>
                             </div>
@@ -256,8 +256,8 @@
                         <div class="score_container loading">
                             <div class="active_border">
                                 <div class="circle">
-                                    <span class="score" data-score=90>
-                                        <p>90</p>
+                                    <span class="score" data-score={{ enemy_champ_avg_score }}>
+                                        <p>{{ enemy_champ_avg_score }}</p>
                                     </span>
                                 </div>
                             </div>

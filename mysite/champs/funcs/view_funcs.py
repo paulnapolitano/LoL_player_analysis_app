@@ -45,7 +45,54 @@ class StatComparison(object):
                 self.challenger = '-'
                 self.challenger_min = '-'
                 self.score = '-'
+            
+            if enemy_statset and enemy_statset.__dict__[stat]:
+                self.enemy_local = enemy_statset.__dict__[stat]
+                self.enemy_local_min = self.enemy_local/(self.duration/60)
                 
+                if enemy_challenger_statsets:
+                    num = len(enemy_challenger_statsets)
+                    sum = 0
+                    sum_min = 0
+                    for other_set in enemy_challenger_statsets:
+                        if other_set.__dict__[stat]:
+                            val = other_set.__dict__[stat]
+                            duration = float(other_set.match.match_duration)
+                            sum += val
+                            sum_min += (val/(duration/60))
+                        
+                    self.enemy_challenger = float(sum)/num
+                    self.enemy_challenger_min = sum_min/num
+                    
+                    if invert:                
+                        if self.enemy_local_min == 0:
+                            self.enemy_score = 500
+                        else:
+                            self.enemy_score = (self.enemy_challenger_min/
+                                                self.enemy_local_min)*100
+                        
+                    else: 
+                        if self.enemy_challenger_min == 0:
+                            self.enemy_score = 500
+                        else:
+                            self.enemy_score = (self.enemy_local_min/
+                                                self.enemy_challenger_min)*100
+                    
+                    self.enemy_challenger_min = round(self.enemy_challenger_min, 1)
+                    self.enemy_score = round(self.enemy_score, 1)
+
+                else:
+                    self.enemy_challenger = '-'
+                    self.enemy_challenger_min = '-'
+                    self.enemy_score = '-' 
+                    
+            else:
+                self.enemy_local = '-'
+                self.enemy_local_min = '-'
+                self.enemy_challenger = '-'
+                self.enemy_challenger_min = '-'
+                self.enemy_score = '-'       
+        
         else:
             self.local = '-'
             self.duration = '-'
@@ -53,59 +100,19 @@ class StatComparison(object):
             self.challenger = '-'
             self.challenger_min = '-'
             self.score = '-'
-        
-        if enemy_statset and enemy_statset.__dict__[stat]:
-            self.enemy_local = enemy_statset.__dict__[stat]
-            self.enemy_local_min = self.enemy_local/(self.duration/60)
-            
-            if enemy_challenger_statsets:
-                num = len(enemy_challenger_statsets)
-                sum = 0
-                sum_min = 0
-                for other_set in enemy_challenger_statsets:
-                    if other_set.__dict__[stat]:
-                        val = other_set.__dict__[stat]
-                        duration = float(other_set.match.match_duration)
-                        sum += val
-                        sum_min += (val/(duration/60))
-                    
-                self.enemy_challenger = float(sum)/num
-                self.enemy_challenger_min = sum_min/num
-                
-                if invert:                
-                    if self.enemy_local_min == 0:
-                        self.enemy_score = 500
-                    else:
-                        self.enemy_score = (self.enemy_challenger_min/
-                                            self.enemy_local_min)*100
-                    
-                else: 
-                    if self.enemy_challenger_min == 0:
-                        self.enemy_score = 500
-                    else:
-                        self.enemy_score = (self.enemy_local_min/
-                                            self.enemy_challenger_min)*100
-                
-                self.enemy_challenger_min = round(self.enemy_challenger_min, 1)
-                self.enemy_score = round(self.enemy_score, 1)
-
-            else:
-                self.enemy_challenger = '-'
-                self.enemy_challenger_min = '-'
-                self.enemy_score = '-' 
-                
-        else:
             self.enemy_local = '-'
             self.enemy_local_min = '-'
             self.enemy_challenger = '-'
             self.enemy_challenger_min = '-'
-            self.enemy_score = '-'         
+            self.enemy_score = '-'  
 
         if statset.__dict__[stat]:    
-            self.local_min = round(self.local_min, 1)
+            if type(self.local_min) is float:
+                self.local_min = round(self.local_min, 1)
         
         if enemy_statset and enemy_statset.__dict__[stat]:
-            self.enemy_local_min = round(self.enemy_local_min, 1)
+            if type(self.enemy_local_min) is float:
+                self.enemy_local_min = round(self.enemy_local_min, 1)
 
     def __str__(self):
         string = '{name}:'.format(name=self.name)
