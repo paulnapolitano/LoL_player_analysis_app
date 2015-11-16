@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import Champ, StatSet, Player, Match, ItemStatic, BuildComponent 
-from .models import Patch, ChampionStatic, ChampionTag
+from .models import Version, ChampionStatic, ChampionTag
 
 class StatSetInline(admin.TabularInline):
     model = StatSet
@@ -51,6 +51,6 @@ admin.site.register(Match, MatchAdmin)
 admin.site.register(StatSet)
 admin.site.register(ItemStatic)
 admin.site.register(BuildComponent)
-admin.site.register(Patch)
+admin.site.register(Version)
 admin.site.register(ChampionStatic)
 admin.site.register(ChampionTag)

@@ -3,11 +3,30 @@ import datetime
 from django.db import models
 from django.utils import timezone
 
+class Version(models.Model):
+    version = models.CharField(primary_key=True, blank=True, max_length=20)
+    region = models.CharField(blank=True, max_length=20)
+    last_check = models.DateTimeField(default=timezone.now)
+    
+    def __unicode__(self):
+        return unicode(self.version) 
+        
+
+        
+class MatchVersion(models.Model):
+    match_version = models.CharField(primary_key=True, blank=True, max_length=20)
+    dd_version = models.ForeignKey(Version, blank=True)
+    region = models.CharField(blank=True, max_length=20)
+
+    def __unicode__(self):
+        return unicode(self.match_version)
+        
+        
 # Table lists all items in the game, pointed to by ItemParentChild
 class ItemStatic(models.Model):
     item_id = models.CharField(db_index=True, blank=True, max_length=4)
     img = models.CharField(blank=True, max_length=50)
-    version = models.CharField(db_index=True, blank=True, max_length=50)
+    version = models.ForeignKey(Version, blank=True)
     
     # consume_on_full = models.BooleanField(blank=True)
     # consumed = models.BooleanField(blank=True)
@@ -122,7 +141,7 @@ class ChampionStatic(models.Model):
     champ_id = models.CharField(db_index=True, blank=True, max_length=4)
     name = models.CharField(blank=True, max_length=20)
     img = models.CharField(blank=True, max_length=50)
-    version = models.CharField(db_index=True, blank=True, max_length=50)
+    version = models.ForeignKey(Version, blank=True)
     
     # stats_attack_range = models.FloatField(blank=True)
     # stats_mp_per_level = models.FloatField(blank=True)
@@ -174,15 +193,7 @@ class SpellStatic(models.Model):
     
     
     
-class Patch(models.Model):
-    patch = models.CharField(primary_key=True, blank=True, max_length=20)
-    region = models.CharField(blank=True, max_length=20)
-    start_datetime = models.DateTimeField(default=timezone.now)
-    end_datetime = models.DateTimeField(blank=True, null=True)
-    last_check = models.DateTimeField(default=timezone.now)
-    
-    def __unicode__(self):
-        return unicode(self.patch)  
+ 
         
         
 class Player(models.Model):
@@ -229,14 +240,14 @@ class Champ(models.Model):
     champion = models.ForeignKey(ChampionStatic, blank=True, null=True)
     smart_role_name = models.CharField(max_length=20)
     league_name = models.CharField(max_length=20)
-    match_version = models.CharField(max_length=20, default='UNKNOWN')
+    match_version = models.ForeignKey(MatchVersion, blank=True, null=True)
     
     def __unicode__(self):
-        return '{champ} as {role} in {league}, patch {patch}'.format(
+        return '{champ} as {role} in {league}, version {version}'.format(
             champ=self.champion.name,
             role=self.smart_role_name,
             league=self.league_name,
-            patch=self.match_version,
+            version=self.match_version,
         )
         
     def is_in_db(self):

@@ -1,3 +1,6 @@
+from riot_app import api
+
+
 # ------------------------------- FUNCTIONS ---------------------------------
 
 
@@ -85,23 +88,19 @@ def un_camelcase(str):
     return return_str
     
 
-    
-# Converts long version into short version (as given by api.get_versions)
-# DEPENDENCIES: None    
-def version_standardize(version):
-    dots = 2
-    std_ver = ''
-    
-    for char in version:
-        # '5.20.' -> '5.20.1'
-        if dots == 0:
-            num = int(char) + 1
-            std_ver += str(num)
-            return str(std_ver)  
-        # '' -> '5.20.'
-        std_ver += char
-        if char == '.':
-            dots -= 1
+           
+# If matchVersion is '5.22.xx.xxx', we want to get data dragon version, which
+# is '5.22.a', where a is the highest number available. version_list here is 
+# already sorted by most-recent to least-recent, so simply return first 
+# version whose first and second parameters match (e.g. 5.22.0.293 -> 5.22.3)
+# DEPENDENCIES: api
+def match_version_to_dd_version(match_version, region='na'):
+    version_list = api.get_versions(region, reverse=False)
+    split_version = match_version.split('.')
+    version_start = split_version[0] + '.' + split_version[1]
+    for version in version_list:
+        if version.startswith(version_start):
+            return version
    
    
 

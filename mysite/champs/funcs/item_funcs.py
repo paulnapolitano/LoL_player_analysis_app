@@ -1,26 +1,25 @@
-print 'importing RiotAPI'
 from riot_app import api
 
-print 'importing json'
 import json
 
 import time
 
-from champs.models import ItemStatic
+from champs.models import ItemStatic, MatchVersion
 from champs.classes.items import Build
 
-from champs.funcs.text_funcs import version_standardize
+from champs.funcs.text_funcs import match_version_to_dd_version
 
 # ------------------------------- FUNCTIONS ---------------------------------
 
  
 # Get full list of items belonging to player throughout match, 
 # including item 'birth time' and 'death time' 
-# DEPENDENCIES: ItemStatic, item_events_from_frames, Build
+# DEPENDENCIES: ItemStatic, item_events_from_frames, Build, MatchVersion
 def get_player_items(participant_id, match):
     # Get version of match
-    version = version_standardize(match['matchVersion'])
-    items_this_version = ItemStatic.objects.filter(version=version)
+    mv = MatchVersion.objects.get(match_version=match['matchVersion'])
+    v = mv.dd_version
+    items_this_version = ItemStatic.objects.filter(version=v)
     
     # Get list of timestamped events, including item purchases
     timeline = match['timeline']

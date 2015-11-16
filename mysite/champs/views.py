@@ -16,7 +16,7 @@ from champs.funcs.view_funcs import get_stat_comparison
 from champs.funcs.riot_app import api, RiotException
 
 from champs.models import Player, Match, StatSet, BuildComponent, Champ
-from champs.models import ChampionStatic, Patch, ItemStatic
+from champs.models import ChampionStatic, Version, ItemStatic
 from champs.forms import NameForm
 
 # ------------------------------------ VIEWS ---------------------------------
@@ -47,13 +47,13 @@ def item_index_versioned(request, version):
     
     
 # Champion Index View
-# DEPENDENCIES: ChampionStatic, Patch
+# DEPENDENCIES: ChampionStatic, Version
 def champion_index(request):
-    current_patch = Patch.objects.get(end_datetime__isnull=True)
-    print current_patch.patch
-    champion_list = ChampionStatic.objects.filter(version=current_patch).order_by('name')
+    current_version = Version.objects.get(end_datetime__isnull=True)
+    print current_version.version
+    champion_list = ChampionStatic.objects.filter(version=current_version).order_by('name')
     context = {
-        'latest_version':current_patch,
+        'latest_version':current_version,
         'champion_list':champion_list,
     }
     
