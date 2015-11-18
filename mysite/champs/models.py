@@ -202,6 +202,7 @@ class Player(models.Model):
     profile_icon_id = models.IntegerField(blank=True, null=True)
     last_revision = models.IntegerField(blank=True, null=True)
     summoner_level = models.IntegerField(blank=True, null=True)    
+    region = models.CharField(db_index=True, max_length=3, blank=True, null=True)
     
     std_summoner_name = models.CharField(db_index=True, max_length=20, default='UNKNOWN')
     last_update = models.DateTimeField(default=timezone.now, blank=True)

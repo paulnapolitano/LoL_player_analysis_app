@@ -30,7 +30,7 @@ from django.utils import timezone
 # match_to_db(match_id, region='na')       
 # create_match(match)
 # create_champ(participant, league_name, match_version)
-# create_player(match, participant, player_id_list, sum_dict, league_dict)
+# create_player(summoner_id, sum_dict, league_dict, region)
 # create_statset(participant, timeline, champ, player, match)
 # get_timeline_attr(attr, mins, participant, timeline)
 # get_participant_timeline_attr(attr_per_min, mins)
@@ -158,7 +158,12 @@ def match_to_db(match_id, region='na'):
 
     print '----------------------------- Match ID:{id} -----------------------------'.format(id=m.match_id)
     if not m.is_in_db():
-    
+        p_count = 0
+        c_count = 0 
+        ss_count = 0
+        bc_count = 0
+        
+        
         # Initialize lists for adding to DB in bulk
         champ_insert_list = []
         statset_insert_list = [] 
@@ -183,32 +188,64 @@ def match_to_db(match_id, region='na'):
         # Get timeline
         timeline = match['timeline']
         
+        print '\t  --------------------- Creating objects --------------------'
+        print '\t  Plyr\tChmp\tStSe\tBuCo'
+        
         for participant in match['participants']:
+            # Get summoner ID for player creation
+            summoner_id = str(player_id_list[participant['participantId']-1])  
+                    
+            print '\r\t  {p}\t{c}\t{ss}\t{bc}'.format(p=p_count, 
+                                                      c=c_count, 
+                                                      ss=ss_count, 
+                                                      bc=bc_count),
             # Create Player instance and save to DB if it's not there yet
-            p = create_player(match, participant, player_id_list, sum_dict, league_dict)
+            p = create_player(summoner_id, sum_dict, league_dict, region)
+            p_count += 1
+            print '\r\t  {p}\t{c}\t{ss}\t{bc}'.format(p=p_count, 
+                                                      c=c_count, 
+                                                      ss=ss_count, 
+                                                      bc=bc_count),
             if not p in player_insert_list and not p.is_in_db():
                 player_insert_list.append(p)
 
             # Create Champ instance and save to DB if it's not there yet
             c = create_champ(participant, league_name, mv)
+            c_count += 1
+            print '\r\t  {p}\t{c}\t{ss}\t{bc}'.format(p=p_count, 
+                                                      c=c_count, 
+                                                      ss=ss_count, 
+                                                      bc=bc_count),
             if not c in champ_insert_list and not c.is_in_db():
                 champ_insert_list.append(c)
 
             # Create StatSet instance and save to DB if it's not there yet
             ss = create_statset(participant, timeline, c, p, m)
+            ss_count += 1
+            print '\r\t  {p}\t{c}\t{ss}\t{bc}'.format(p=p_count, 
+                                                      c=c_count, 
+                                                      ss=ss_count, 
+                                                      bc=bc_count),
             if not ss in statset_insert_list and not ss.is_in_db():   
                 statset_insert_list.append(ss)
                 
             participant_id = participant['participantId']
-            # Add all BuildComponents to insert list, to be saved to DB in bulk later
+            # Add all BuildComponents to insert list, to be saved to DB in 
+            # bulk later
             build = 0
             build = get_player_items(participant_id, match)
             for component in build.build_history:
                 bc = create_build_component(component, ss)
+                bc_count += 1
+                print '\r\t  {p}\t{c}\t{ss}\t{bc}'.format(p=p_count, 
+                                                          c=c_count, 
+                                                          ss=ss_count, 
+                                                          bc=bc_count),
                 if not bc in build_component_insert_list:
                     build_component_insert_list.append(bc)
+        print ''
 
-        print '\t  --------------------- Creating objects --------------------'
+        print '\t  ---------------------- Saving objects ---------------------'
         save_in_bulk(m, champ_insert_list, player_insert_list, statset_insert_list, build_component_insert_list)
         print '\t  -----------------------------------------------------------'
         print '-------------------------------------------------------------------------------\n'
@@ -263,10 +300,9 @@ def create_champ(participant, league_name, mv):
 # dictionary, list of IDs of players in the match, summoner dictionary,
 # and league dictionary
 # DEPENDENCIES: sum_name_standardize, Player
-def create_player(match, participant, player_id_list, sum_dict, league_dict):
+def create_player(summoner_id, sum_dict, league_dict, region):
     kwargs = {}
     
-    summoner_id = str(player_id_list[participant['participantId']-1])  
     summoner_name = sum_dict[summoner_id]['name']
     
     kwargs['summoner_id'] = summoner_id
@@ -274,6 +310,7 @@ def create_player(match, participant, player_id_list, sum_dict, league_dict):
     kwargs['profile_icon_id'] = sum_dict[summoner_id]['profileIconId']
     kwargs['last_revision'] = sum_dict[summoner_id]['revisionDate']
     kwargs['summoner_level'] = sum_dict[summoner_id]['summonerLevel']
+    kwargs['region'] = region
     
     kwargs['std_summoner_name'] = sum_name_standardize(summoner_name)
     
@@ -729,19 +766,30 @@ def summoner_to_db_display(std_summoner_name, sum_id=None):
             match_display = [statset.match for statset in rel_statsets]
             statset_display = rel_statsets
    
-    # If player doesn't exist, make call to api
+    # If player doesn't exist, make call to api and create player
     else:
         if sum_id is None:
             sum_dict = api.get_summoners_by_name('na', std_summoner_name)    
-            match_list = api.get_match_list('na', sum_dict[std_summoner_name]['id'])
-        else:
-            match_list = api.get_match_list('na', sum_id)
+            sum_id = sum_dict[std_summoner_name]['id']
+        
+        match_list = api.get_match_list('na', sum_id)
             
         match_id_list = [str(match['matchId']) for match in match_list['matches']]
         matches_to_db(match_id_list)
         match_display = Match.objects.filter(match_id__in=match_id_list)
         
-        req_player = Player.objects.get(std_summoner_name=std_summoner_name)
+        # Check again if matches_to_db added player to DB
+        if Player.objects.filter(std_summoner_name=std_summoner_name).exists():
+            req_player = Player.objects.get(std_summoner_name=std_summoner_name)
+        else:
+            # If sum_dict not yet declared, make API call
+            sum_dict = api.get_summoners_by_name('na', std_summoner_name)    
+            league_dict = api.get_solo_leagues(
+                region='na',
+                summoner_ids=sum_id)
+            req_player = create_player(sum_id, sum_dict, league_dict)
+            req_player.save()
+            
         statset_display = StatSet.objects.filter(player=req_player)
         
     return statset_display
