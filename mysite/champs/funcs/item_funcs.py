@@ -1,12 +1,9 @@
-from riot_app import api
-
 import json
-
 import time
 
 from champs.models import ItemStatic, MatchVersion
 from champs.classes.items import Build
-
+from champs.funcs.riot_app import api
 from champs.funcs.text_funcs import match_version_to_dd_version
 
 # ------------------------------- FUNCTIONS ---------------------------------

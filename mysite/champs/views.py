@@ -1,3 +1,5 @@
+import datetime
+
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
@@ -6,18 +8,14 @@ from django.db import models
 from django.db.models import Q
 from django.utils import timezone
 
-import datetime
-
+from champs.models import Player, Match, StatSet, BuildComponent, Champ
+from champs.models import ChampionStatic, Version, ItemStatic
+from champs.forms import NameForm
 from champs.funcs.text_funcs import sum_name_standardize
 from champs.funcs.database_funcs import matches_to_db, summoner_to_db_display
 from champs.funcs.database_funcs import challenger_to_db, master_to_db
 from champs.funcs.view_funcs import get_stat_comparison
-
 from champs.funcs.riot_app import api, RiotException
-
-from champs.models import Player, Match, StatSet, BuildComponent, Champ
-from champs.models import ChampionStatic, Version, ItemStatic
-from champs.forms import NameForm
 
 # ------------------------------------ VIEWS ---------------------------------
 
@@ -89,7 +87,7 @@ def champion_profile(request, version, name):
 # DEPENDENCIES: summoner_to_db_display, StatSet
 def user_profile(request, std_summoner_name):
     player = Player.objects.get(std_summoner_name=std_summoner_name)
-    player_statsets = summoner_to_db_display(std_summoner_name)
+    player_statsets = summoner_to_db_display(std_summoner_name, player.region, player.summoner_id)
     
     matches = [statset.match for statset in player_statsets]
     all_statsets = StatSet.objects.filter(match__match_id__in = matches)
@@ -111,7 +109,9 @@ def home(request):
         if form.is_valid():
             summoner_name = form.cleaned_data['summoner_name']
             std_summoner_name = sum_name_standardize(summoner_name)
-            summoner_to_db_display(std_summoner_name)
+            player = Player.objects.get(std_summoner_name=std_summoner_name)
+ 
+            summoner_to_db_display(std_summoner_name, player.region, player.summoner_id)
             return HttpResponseRedirect('/champs/summoner/{}/'.format(std_summoner_name))
             
     else:

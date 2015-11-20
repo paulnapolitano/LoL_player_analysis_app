@@ -1,8 +1,6 @@
-from django.db.models import Avg, Q 
 from champs.models import StatSet, Champ
-from champs.funcs.text_funcs import un_camelcase
 
-# ------------------------------- FUNCTIONS ---------------------------------
+# --------------------------------- CLASSES ----------------------------------
 
 class StatComparison(object):
     def __init__(self, stat, statset, enemy_statset, challenger_statsets, 
@@ -171,9 +169,10 @@ class Comparison(object):
     def __str__(self):
         return '{cs}\n{dmg}\n{dmg_taken}'.format(cs=self.cs, dmg=self.damage_to_champs, dmg_taken=self.damage_taken)
 
+# ------------------------------- FUNCTIONS ----------------------------------
 
 # Create stat comparison dictionary from statset to send to view
-# DEPENDENCIES: StatSet, Champ, Avg, un_camelcase, get_better_percentage, Q
+# DEPENDENCIES: StatSet, get_challenger_champ
 def get_stat_comparison(statset):
     champ = statset.champ
     match = statset.match

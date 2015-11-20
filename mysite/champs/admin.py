@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from .models import Champ, StatSet, Player, Match, ItemStatic, BuildComponent 
-from .models import Version, ChampionStatic, ChampionTag
+from champs.models import Champ, StatSet, Player, Match, ItemStatic, BuildComponent 
+from champs.models import Version, ChampionStatic, ChampionTag
 
 class StatSetInline(admin.TabularInline):
     model = StatSet

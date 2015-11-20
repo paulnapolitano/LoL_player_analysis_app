@@ -1,5 +1,6 @@
-from riot_app import api
-
+from champs.models import ChampionTag
+from champs.constants import TIERS, DIVS
+from champs.funcs.riot_app import api
 
 # ------------------------------- FUNCTIONS ---------------------------------
 
@@ -120,3 +121,90 @@ def sum_heading(std_summoner_name):
         name_heading += u'='
     
     return name_heading
+    
+    
+    
+# Get smart role (TOP, MID, SUPPORT, ADC, or JUNGLE) from champ, lane and 
+# role information
+# DEPENDENCIES: ChampionTag, support_or_adc
+def smart_role(champion, lane, role):
+    # Get relevant ChampionTags, including 'Marksman' and 'Support' for 
+    # determining role in case of ambiguity
+    tags = [tag.tag for tag in ChampionTag.objects.filter(champion=champion)]
+
+    # Declare dictionaries for translating lane & role into smart_role
+    translate_lane = {'TOP':'TOP', 
+                      'MID':'MID', 
+                      'MIDDLE':'MID',
+                      'JUNGLE':'JUNGLE',
+                      'BOTTOM':support_or_adc(tags)}
+                      
+    translate_role = {'DUO_SUPPORT':'SUPPORT',
+                      'DUO_CARRY':'ADC'}
+    
+    # Use dictionaries to get appropriate smart_role
+    if lane in translate_lane:
+        smart_role = translate_lane[lane]
+    elif role in translate_role:
+        smart_role = translate_role[role]
+    else:
+        smart_role = 'UNKNOWN'
+        
+    return smart_role
+
+    
+    
+# Checks champion tags and returns string representing role based on tags
+# DEPENDENCIES: None
+def support_or_adc(tags):
+    if 'Marksman' in tags and 'Support' in tags:
+        smart_role = 'UNKNOWN'
+    elif 'Marksman' in tags:
+        smart_role = 'ADC'
+    else:
+        smart_role = 'SUPPORT'
+    return smart_role
+    
+
+    
+# Return tier, division as number (BRONZE V -> 0, BRONZE I -> 4, SILVER V -> 5
+# GOLD V -> 10, DIAMOND I -> 24, MASTER I -> 29, CHALLENGER I -> 34)
+# DEPENDENCIES: TIERS, DIVS
+def rank_to_num(tier, div):
+    rank_num = TIERS.index(tier)*5 + DIVS.index(div)
+    
+    return rank_num
+    
+# Reverses rank_to_num translation
+# DEPENDENCIES: TIERS, DIVS
+def num_to_rank(num):
+    return TIERS[num/5], DIVS[num%5]
+    
+    
+def print_header(header_phrase, special_char=u'-', margin=0):
+    """ Prints header of specified width, with special character surrounding
+        header_phrase (e.g. ----------------- Hello World -----------------)
+    
+    Args:
+        header_phrase: String to appear centrally in header
+        special_char: Char to be repeated before and after header_phrase
+        width: String determining width of header. Wide fills terminal
+            horizontally, medium gives 10 char margin, narrow gives 20 char
+            margin
+            
+    Returns:
+        None
+    """
+    total_chars = 79 - (margin*2)
+    
+    if header_phrase is None:
+        print margin*u' ' + special_char*total_chars + margin*u' '
+    
+    else:
+        header_length = len(header_phrase)        
+        num_special = total_chars - header_length - 2
+        specials = special_char*(num_special/2)
+        spaces = u' '*margin
+
+        print (spaces + specials + u' {} '.format(header_phrase) 
+               + specials + spaces).encode('utf-8')

@@ -7,12 +7,5 @@ class Command(BaseCommand):
     help = 'populates database'
     
     def handle(self, *args, **options):
-        try: 
-            challenger_to_db()
-        except RiotException:
-            print 'Failed to load all challenger players...'
-        
-        try: 
-            master_to_db()
-        except RiotException:
-            print 'Failed to load all master players...'
+        challenger_to_db()
+        master_to_db()

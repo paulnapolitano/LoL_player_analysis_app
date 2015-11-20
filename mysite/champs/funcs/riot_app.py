@@ -4,10 +4,12 @@ import cgi
 import requests
 import time
 from collections import deque
+
 import urllib2
 
-URL_HEAD = 'https://na.api.pvp.net/'
 from api_key import API_KEY
+
+URL_HEAD = 'https://na.api.pvp.net/'
 
 URL = {
     'base':'https://{server}.api.pvp.net/api/lol/{region}/{url}',
@@ -196,8 +198,8 @@ class RiotAPI:
             return self._request(api_url, req_region, params, tries)
  
         elif r.status_code==500:
-            # Try again after 5 mins
-            retry_time = 5*60
+            # Try again after 10 secs
+            retry_time = 10
             print 'retrying after {retry_time} seconds'.format(retry_time=retry_time)
             start_time = time.time()
             while time.time() - start_time < retry_time:

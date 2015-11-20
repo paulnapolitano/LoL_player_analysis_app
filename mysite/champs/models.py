@@ -350,12 +350,12 @@ class StatSet(models.Model):
     unreal_kills = models.IntegerField(blank=True, null=True)
     tower_kills = models.IntegerField(blank=True, null=True)
     inhibitor_kills = models.IntegerField(blank=True, null=True)
-    first_blood_assist = models.BooleanField(blank=True)
-    first_blood_kill = models.BooleanField(blank=True)
-    first_inhibitor_assist = models.BooleanField(blank=True)
-    first_inhibitor_kill = models.BooleanField(blank=True)
-    first_tower_assist = models.BooleanField(blank=True)
-    first_tower_kill = models.BooleanField(blank=True)
+    first_blood_assist = models.BooleanField(blank=True, default=False)
+    first_blood_kill = models.BooleanField(blank=True, default=False)
+    first_inhibitor_assist = models.BooleanField(blank=True, default=False)
+    first_inhibitor_kill = models.BooleanField(blank=True, default=False)
+    first_tower_assist = models.BooleanField(blank=True, default=False)
+    first_tower_kill = models.BooleanField(blank=True, default=False)
     true_damage_dealt = models.IntegerField(blank=True, null=True)
     true_damage_dealt_to_champions = models.IntegerField(blank=True, null=True)
     true_damage_taken = models.IntegerField(blank=True, null=True)
@@ -364,8 +364,8 @@ class StatSet(models.Model):
     minions_killed = models.IntegerField(blank=True, null=True)
     neutral_minions_killed = models.IntegerField(blank=True, null=True)
     
-    winner = models.BooleanField(blank=True) 
-    blue_team = models.BooleanField(blank=True)
+    winner = models.BooleanField(blank=True, default=False) 
+    blue_team = models.BooleanField(blank=True, default=False)
 
     def __unicode__(self):
         return self.statset_id

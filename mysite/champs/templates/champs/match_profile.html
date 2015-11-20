@@ -79,7 +79,7 @@
                         <div class="main champ_name">
                             <h2>
                                 {{ statset.champ.champion.name }}<br>
-                                {% if statset.champ.smart_role_name == "MIDDLE" %}
+                                {% if statset.champ.smart_role_name == "MIDDLE" or statset.champ.smart_role_name == "MID"%}
                                     Mid
                                 {% elif statset.champ.smart_role_name == "SUPPORT" %}
                                     Support
@@ -108,7 +108,7 @@
                         <div class="enemy champ_name">
                             <h2>
                                 {{ enemy_statset.champ.champion.name }}<br>
-                                {% if statset.champ.smart_role_name == "MIDDLE" %}
+                                {% if statset.champ.smart_role_name == "MIDDLE" or statset.champ.smart_role_name == "MID"%}
                                     Mid
                                 {% elif statset.champ.smart_role_name == "SUPPORT" %}
                                     Support
