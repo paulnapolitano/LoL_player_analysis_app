@@ -3,11 +3,30 @@ import datetime
 from django.db import models
 from django.utils import timezone
 
+class Version(models.Model):
+    version = models.CharField(primary_key=True, blank=True, max_length=20)
+    region = models.CharField(blank=True, max_length=20)
+    last_check = models.DateTimeField(default=timezone.now)
+    
+    def __unicode__(self):
+        return unicode(self.version) 
+        
+
+        
+class MatchVersion(models.Model):
+    match_version = models.CharField(primary_key=True, blank=True, max_length=20)
+    dd_version = models.ForeignKey(Version, blank=True)
+    region = models.CharField(blank=True, max_length=20)
+
+    def __unicode__(self):
+        return unicode(self.match_version)
+        
+        
 # Table lists all items in the game, pointed to by ItemParentChild
 class ItemStatic(models.Model):
     item_id = models.CharField(db_index=True, blank=True, max_length=4)
     img = models.CharField(blank=True, max_length=50)
-    version = models.CharField(db_index=True, blank=True, max_length=50)
+    version = models.ForeignKey(Version, blank=True)
     
     # consume_on_full = models.BooleanField(blank=True)
     # consumed = models.BooleanField(blank=True)
@@ -122,7 +141,7 @@ class ChampionStatic(models.Model):
     champ_id = models.CharField(db_index=True, blank=True, max_length=4)
     name = models.CharField(blank=True, max_length=20)
     img = models.CharField(blank=True, max_length=50)
-    version = models.CharField(db_index=True, blank=True, max_length=50)
+    version = models.ForeignKey(Version, blank=True)
     
     # stats_attack_range = models.FloatField(blank=True)
     # stats_mp_per_level = models.FloatField(blank=True)
@@ -174,24 +193,26 @@ class SpellStatic(models.Model):
     
     
     
-class Patch(models.Model):
-    patch = models.CharField(primary_key=True, blank=True, max_length=20)
-    region = models.CharField(blank=True, max_length=20)
-    start_datetime = models.DateTimeField(default=timezone.now)
-    end_datetime = models.DateTimeField(blank=True, null=True)
-    last_check = models.DateTimeField(default=timezone.now)
-    
-    def __unicode__(self):
-        return unicode(self.patch)  
+ 
         
         
 class Player(models.Model):
     summoner_id = models.CharField(db_index=True, max_length=20, primary_key=True)
     summoner_name = models.CharField(max_length=20, default='UNKNOWN')
-    profile_icon_id = models.CharField(max_length=20, default='UNKNOWN', blank=True)
-    last_update = models.DateTimeField(default=timezone.now, blank=True)
-    summoner_level = models.IntegerField(default=0)
+    profile_icon_id = models.IntegerField(blank=True, null=True)
+    last_revision = models.IntegerField(blank=True, null=True)
+    summoner_level = models.IntegerField(blank=True, null=True)    
+    region = models.CharField(db_index=True, max_length=3, blank=True, null=True)
+    
     std_summoner_name = models.CharField(db_index=True, max_length=20, default='UNKNOWN')
+    last_update = models.DateTimeField(default=timezone.now, blank=True)
+
+    tier = models.CharField(max_length=10, default='UNKNOWN')
+    division = models.CharField(max_length=3, default='UNKNOWN')
+    lp = models.IntegerField(blank=True, null=True)
+    wins = models.IntegerField(blank=True, null=True)
+    losses = models.IntegerField(blank=True, null=True)
+    
     rank_num = models.IntegerField(default=0)
     
     def __unicode__(self):
@@ -220,14 +241,14 @@ class Champ(models.Model):
     champion = models.ForeignKey(ChampionStatic, blank=True, null=True)
     smart_role_name = models.CharField(max_length=20)
     league_name = models.CharField(max_length=20)
-    match_version = models.CharField(max_length=20, default='UNKNOWN')
+    match_version = models.ForeignKey(MatchVersion, blank=True, null=True)
     
     def __unicode__(self):
-        return '{champ} as {role} in {league}, patch {patch}'.format(
+        return '{champ} as {role} in {league}, version {version}'.format(
             champ=self.champion.name,
             role=self.smart_role_name,
             league=self.league_name,
-            patch=self.match_version,
+            version=self.match_version,
         )
         
     def is_in_db(self):
@@ -241,10 +262,60 @@ class StatSet(models.Model):
     match = models.ForeignKey(Match, null=True)
     statset_id = models.CharField(
         max_length=20, primary_key=True, default='UNKNOWN')
+        
     kills = models.IntegerField(blank=True, null=True)
     assists = models.IntegerField(blank=True, null=True)
     deaths = models.IntegerField(blank=True, null=True)
+    
     champ_level = models.IntegerField(blank=True, null=True)
+    xp_at_10 = models.IntegerField(blank=True, null=True)
+    xp_at_20 = models.IntegerField(blank=True, null=True)
+    xp_at_30 = models.IntegerField(blank=True, null=True)
+    
+    cs_at_10 = models.IntegerField(blank=True, null=True)
+    cs_at_20 = models.IntegerField(blank=True, null=True)
+    cs_at_30 = models.IntegerField(blank=True, null=True)
+    
+    csd_at_10 = models.IntegerField(blank=True, null=True)
+    csd_at_20 = models.IntegerField(blank=True, null=True)
+    csd_at_30 = models.IntegerField(blank=True, null=True)
+    
+    gold_at_10 = models.IntegerField(blank=True, null=True)
+    gold_at_20 = models.IntegerField(blank=True, null=True)
+    gold_at_30 = models.IntegerField(blank=True, null=True)
+   
+    total_damage_dealt = models.IntegerField(blank=True, null=True)
+    total_damage_dealt_to_champions = models.IntegerField(blank=True, null=True)
+    total_damage_taken = models.IntegerField(blank=True, null=True)
+    dmg_taken_at_10 = models.IntegerField(blank=True, null=True)
+    dmg_taken_at_20 = models.IntegerField(blank=True, null=True)
+    dmg_taken_at_30 = models.IntegerField(blank=True, null=True)
+    dmg_taken_diff_at_10 = models.IntegerField(blank=True, null=True)
+    dmg_taken_diff_at_20 = models.IntegerField(blank=True, null=True)
+    dmg_taken_diff_at_30 = models.IntegerField(blank=True, null=True)
+    
+    wards_placed = models.IntegerField(blank=True, null=True)
+    trinket_wards_placed_at_10 = models.IntegerField(blank=True, null=True)
+    trinket_wards_placed_at_20 = models.IntegerField(blank=True, null=True)
+    trinket_wards_placed_at_30 = models.IntegerField(blank=True, null=True)
+    yellow_wards_placed_at_10 = models.IntegerField(blank=True, null=True)
+    yellow_wards_placed_at_20 = models.IntegerField(blank=True, null=True)    
+    yellow_wards_placed_at_30 = models.IntegerField(blank=True, null=True)    
+    pink_wards_placed_at_10 = models.IntegerField(blank=True, null=True)
+    pink_wards_placed_at_20 = models.IntegerField(blank=True, null=True)
+    pink_wards_placed_at_30 = models.IntegerField(blank=True, null=True)
+    
+    wards_killed = models.IntegerField(blank=True, null=True)
+    trinket_wards_killed_at_10 = models.IntegerField(blank=True, null=True)
+    trinket_wards_killed_at_20 = models.IntegerField(blank=True, null=True)
+    trinket_wards_killed_at_30 = models.IntegerField(blank=True, null=True)
+    yellow_wards_killed_at_10 = models.IntegerField(blank=True, null=True)
+    yellow_wards_killed_at_20 = models.IntegerField(blank=True, null=True)    
+    yellow_wards_killed_at_30 = models.IntegerField(blank=True, null=True)    
+    pink_wards_killed_at_10 = models.IntegerField(blank=True, null=True)
+    pink_wards_killed_at_20 = models.IntegerField(blank=True, null=True)
+    pink_wards_killed_at_30 = models.IntegerField(blank=True, null=True)
+
     gold_earned = models.IntegerField(blank=True, null=True)
     gold_spent = models.IntegerField(blank=True, null=True)
     item_0 = models.IntegerField(blank=True, null=True)
@@ -254,6 +325,7 @@ class StatSet(models.Model):
     item_4 = models.IntegerField(blank=True, null=True)
     item_5 = models.IntegerField(blank=True, null=True)
     item_6 = models.IntegerField(blank=True, null=True)
+    
     largest_critical_strike = models.IntegerField(blank=True, null=True)
     killing_sprees = models.IntegerField(blank=True, null=True)
     largest_killing_spree = models.IntegerField(blank=True, null=True)
@@ -261,17 +333,13 @@ class StatSet(models.Model):
     magic_damage_dealt = models.IntegerField(blank=True, null=True)
     magic_damage_dealt_to_champions = models.IntegerField(blank=True, null=True)
     magic_damage_taken = models.IntegerField(blank=True, null=True)
-    minions_killed = models.IntegerField(blank=True, null=True)
-    neutral_minions_killed = models.IntegerField(blank=True, null=True)
+    
     neutral_minions_killed_enemy_jungle = models.IntegerField(blank=True, null=True)
     neutral_minions_killed_team_jungle = models.IntegerField(blank=True, null=True)
     physical_damage_dealt = models.IntegerField(blank=True, null=True)
     physical_damage_dealt_to_champions = models.IntegerField(blank=True, null=True)
     physical_damage_taken = models.IntegerField(blank=True, null=True)
     sight_wards_bought_in_game = models.IntegerField(blank=True, null=True)
-    total_damage_dealt = models.IntegerField(blank=True, null=True)
-    total_damage_dealt_to_champions = models.IntegerField(blank=True, null=True)
-    total_damage_taken = models.IntegerField(blank=True, null=True)
     total_heal = models.IntegerField(blank=True, null=True)
     total_time_crowd_control_dealt = models.IntegerField(blank=True, null=True)
     total_units_healed = models.IntegerField(blank=True, null=True)
@@ -282,20 +350,22 @@ class StatSet(models.Model):
     unreal_kills = models.IntegerField(blank=True, null=True)
     tower_kills = models.IntegerField(blank=True, null=True)
     inhibitor_kills = models.IntegerField(blank=True, null=True)
-    first_blood_assist = models.BooleanField(blank=True)
-    first_blood_kill = models.BooleanField(blank=True)
-    first_inhibitor_assist = models.BooleanField(blank=True)
-    first_inhibitor_kill = models.BooleanField(blank=True)
-    first_tower_assist = models.BooleanField(blank=True)
-    first_tower_kill = models.BooleanField(blank=True)
+    first_blood_assist = models.BooleanField(blank=True, default=False)
+    first_blood_kill = models.BooleanField(blank=True, default=False)
+    first_inhibitor_assist = models.BooleanField(blank=True, default=False)
+    first_inhibitor_kill = models.BooleanField(blank=True, default=False)
+    first_tower_assist = models.BooleanField(blank=True, default=False)
+    first_tower_kill = models.BooleanField(blank=True, default=False)
     true_damage_dealt = models.IntegerField(blank=True, null=True)
     true_damage_dealt_to_champions = models.IntegerField(blank=True, null=True)
     true_damage_taken = models.IntegerField(blank=True, null=True)
     vision_wards_bought_in_game = models.IntegerField(blank=True, null=True)
-    wards_placed = models.IntegerField(blank=True, null=True)
-    wards_killed = models.IntegerField(blank=True, null=True)
-    winner = models.BooleanField(blank=True) 
-    blue_team = models.BooleanField(blank=True)
+    
+    minions_killed = models.IntegerField(blank=True, null=True)
+    neutral_minions_killed = models.IntegerField(blank=True, null=True)
+    
+    winner = models.BooleanField(blank=True, default=False) 
+    blue_team = models.BooleanField(blank=True, default=False)
 
     def __unicode__(self):
         return self.statset_id

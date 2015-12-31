@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from .models import Champ, StatSet, Player, Match, ItemStatic, BuildComponent 
-from .models import Patch, ChampionStatic, ChampionTag
+from champs.models import Champ, StatSet, Player, Match, ItemStatic, BuildComponent 
+from champs.models import Version, ChampionStatic, ChampionTag
 
 class StatSetInline(admin.TabularInline):
     model = StatSet
@@ -31,9 +31,12 @@ class ChampAdmin(admin.ModelAdmin):
     inlines = [StatSetInline]
     
 class PlayerAdmin(admin.ModelAdmin):
-    fields = ['std_summoner_name', 'summoner_name', 'summoner_id', 'rank_num']
+    fields = ['std_summoner_name', 'summoner_name', 'summoner_id', 'rank_num',
+              'last_update', 'last_revision', 'tier', 'division', 'lp',
+              'wins', 'losses']
     list_display = ['std_summoner_name', 'summoner_name', 'summoner_id', 
-            'rank_num', 'last_update']
+                    'rank_num', 'last_update', 'last_revision', 'tier', 
+                    'division', 'lp', 'wins', 'losses']
     inlines = [StatSetInline]
 
 class ItemStaticAdmin(admin.ModelAdmin):
@@ -48,6 +51,6 @@ admin.site.register(Match, MatchAdmin)
 admin.site.register(StatSet)
 admin.site.register(ItemStatic)
 admin.site.register(BuildComponent)
-admin.site.register(Patch)
+admin.site.register(Version)
 admin.site.register(ChampionStatic)
 admin.site.register(ChampionTag)

@@ -1,3 +1,5 @@
+import datetime
+
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
@@ -6,18 +8,14 @@ from django.db import models
 from django.db.models import Q
 from django.utils import timezone
 
-import datetime
-
-from text_funcs import sum_name_standardize
-from database_funcs import matches_to_db, summoner_to_db_display
-from database_funcs import challenger_to_db, master_to_db
-from view_funcs import get_stat_comparison
-
-from riot_app import api, RiotException
-
-from .models import Player, Match, StatSet, BuildComponent, Champ, ItemStatic
-from .models import ChampionStatic, Patch
-from .forms import NameForm
+from champs.models import Player, Match, StatSet, BuildComponent, Champ
+from champs.models import ChampionStatic, Version, ItemStatic
+from champs.forms import NameForm
+from champs.funcs.text_funcs import sum_name_standardize
+from champs.funcs.database_funcs import matches_to_db, summoner_to_db_display
+from champs.funcs.database_funcs import challenger_to_db, master_to_db
+from champs.funcs.view_funcs import get_stat_comparison
+from champs.funcs.riot_app import api, RiotException
 
 # ------------------------------------ VIEWS ---------------------------------
 
@@ -47,13 +45,13 @@ def item_index_versioned(request, version):
     
     
 # Champion Index View
-# DEPENDENCIES: ChampionStatic, Patch
+# DEPENDENCIES: ChampionStatic, Version
 def champion_index(request):
-    current_patch = Patch.objects.get(end_datetime__isnull=True)
-    print current_patch.patch
-    champion_list = ChampionStatic.objects.filter(version=current_patch).order_by('name')
+    current_version = Version.objects.get(end_datetime__isnull=True)
+    print current_version.version
+    champion_list = ChampionStatic.objects.filter(version=current_version).order_by('name')
     context = {
-        'latest_version':current_patch,
+        'latest_version':current_version,
         'champion_list':champion_list,
     }
     
@@ -89,7 +87,7 @@ def champion_profile(request, version, name):
 # DEPENDENCIES: summoner_to_db_display, StatSet
 def user_profile(request, std_summoner_name):
     player = Player.objects.get(std_summoner_name=std_summoner_name)
-    player_statsets = summoner_to_db_display(std_summoner_name)
+    player_statsets = summoner_to_db_display(std_summoner_name, player.region, player.summoner_id)
     
     matches = [statset.match for statset in player_statsets]
     all_statsets = StatSet.objects.filter(match__match_id__in = matches)
@@ -102,6 +100,7 @@ def user_profile(request, std_summoner_name):
     return render(request, 'champs/user_profile.html', context)
     
     
+    
 # User Search View
 # DEPENDENCIES: None
 def home(request):
@@ -110,7 +109,9 @@ def home(request):
         if form.is_valid():
             summoner_name = form.cleaned_data['summoner_name']
             std_summoner_name = sum_name_standardize(summoner_name)
-            summoner_to_db_display(std_summoner_name)
+            player = Player.objects.get(std_summoner_name=std_summoner_name)
+ 
+            summoner_to_db_display(std_summoner_name, player.region, player.summoner_id)
             return HttpResponseRedirect('/champs/summoner/{}/'.format(std_summoner_name))
             
     else:
@@ -194,6 +195,68 @@ def match_profile(request, match_id, std_summoner_name):
     "Enchantment: Distortion",
     "Enchantment: Furor"]
     
+    my_rank_badge = 'champs/' + statset.player.tier.lower()
+    my_rank_badge += '_' + statset.player.division.lower() + '.png'
+    
+    enemy_rank_badge = 'champs/' + enemy_statset.player.tier.lower() 
+    enemy_rank_badge += '_' + enemy_statset.player.division.lower() + '.png'
+    
+    my_statsets = StatSet.objects.filter(player=player)
+    if enemy_statset:
+        enemy_statsets = StatSet.objects.filter(player=enemy_statset.player)
+    else:
+        enemy_statsets = []
+        
+    avg_score_sum = 0
+    champ_avg_score_sum = 0
+    avg_count = 0
+    champ_avg_count = 0
+    for my_statset in my_statsets:
+        tot_score = get_stat_comparison(my_statset).total_score
+        if not tot_score == 'N/A':
+            if my_statset.champ == champ:
+                champ_avg_score_sum += tot_score
+                champ_avg_count += 1
+            avg_score_sum += tot_score
+            avg_count += 1
+    
+    if avg_count:
+        my_avg_score = avg_score_sum/avg_count
+    else:
+        my_avg_score = 'N/A'
+        
+    if champ_avg_count:
+        my_champ_avg_score = champ_avg_score_sum/champ_avg_count
+    else:
+        my_champ_avg_score = 'N/A'
+    
+    
+    
+    
+    avg_score_sum = 0
+    champ_avg_score_sum = 0
+    avg_count = 0
+    champ_avg_count = 0
+    for enemy_statset in enemy_statsets:
+        tot_score = get_stat_comparison(enemy_statset).total_score
+        if not tot_score == '-' and not tot_score == 'N/A':
+            if enemy_statset.champ == champ:
+                champ_avg_score_sum += tot_score
+                champ_avg_count += 1
+            avg_score_sum += tot_score
+            avg_count += 1
+    
+    if avg_count:
+        enemy_avg_score = avg_score_sum/avg_count
+    else:
+        enemy_avg_score = 'N/A'
+        
+    if champ_avg_count:
+        enemy_champ_avg_score = champ_avg_score_sum/champ_avg_count
+    else:
+        enemy_champ_avg_score = 'N/A'
+       
+    
     context = {
         'name':name,
         'build':build,
@@ -206,7 +269,13 @@ def match_profile(request, match_id, std_summoner_name):
         'challenger_build':challenger_build,
         'challenger_final':challenger_final,
         'consumable_list':consumable_list,
-        'boots_list':boots_list
+        'boots_list':boots_list,
+        'my_rank_badge':my_rank_badge,
+        'enemy_rank_badge':enemy_rank_badge,
+        'my_avg_score':my_avg_score,
+        'my_champ_avg_score':my_champ_avg_score,
+        'enemy_avg_score':enemy_avg_score,
+        'enemy_champ_avg_score':enemy_champ_avg_score,
     }
     return render(request, 'champs/match_profile.html', context)
     

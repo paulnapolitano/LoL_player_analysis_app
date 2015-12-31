@@ -1,0 +1,2 @@
+TIERS = ['BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'MASTER', 'CHALLENGER']
+DIVS = ['V', 'IV', 'III', 'II', 'I']
